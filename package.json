@@ -1,0 +1,43 @@
+{
+    "name": "squad",
+    "version": "1.0.0",
+    "private": true,
+    "main": "index.js",
+    "repository": "https://github.com/brkelley/squad",
+    "author": "Brendan Kelley",
+    "dependencies": {
+        "axios": "^0.18.0",
+        "moment": "^2.24.0",
+        "react": "^16.8.6",
+        "react-dom": "^16.8.6",
+        "react-router-dom": "^5.0.0",
+        "webpack": "^4.39.1",
+        "webpack-cli": "^3.3.0",
+        "@babel/core": "^7.4.3",
+        "@babel/preset-env": "^7.4.3",
+        "@babel/preset-react": "^7.0.0",
+        "babel-loader": "^8.0.5",
+        "css-loader": "^2.1.1",
+        "file-loader": "^4.1.0",
+        "sass-loader": "^7.1.0",
+        "style-loader": "^0.23.1",
+        "@fortawesome/fontawesome-free": "^5.9.0",
+        "lodash": "^4.17.11",
+        "node-sass": "^4.11.0",
+        "path": "^0.12.7",
+        "react-hot-loader": "^4.8.4",
+        "webpack-dev-server": "^3.3.1"
+    },
+    "devDependencies": {
+        "@fortawesome/fontawesome-svg-core": "^1.2.19",
+        "@fortawesome/free-brands-svg-icons": "^5.9.0",
+        "@fortawesome/free-regular-svg-icons": "^5.9.0",
+        "@fortawesome/free-solid-svg-icons": "^5.9.0",
+        "@fortawesome/react-fontawesome": "^0.1.4"
+    },
+    "scripts": {
+        "start-dev": "webpack-dev-server --config ./webpack.config.js --mode=development --port 8080",
+        "bundle": "webpack --mode=production --config webpack.production.config.js",
+        "prestart": "npm install && npm run bundle"
+    }
+}
