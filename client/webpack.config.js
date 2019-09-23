@@ -1,11 +1,11 @@
 const webpack = require('webpack');
-const path = require("path");
-const paths = require("./paths");
+const path = require('path');
+const paths = require('./paths');
 
 module.exports = {
-    entry: './src/index.js',
+    entry: './src/index.jsx',
     output: {
-        path: __dirname + '/dist',
+        path: `${__dirname}/dist`,
         publicPath: '/',
         filename: 'bundle.js'
     },
@@ -14,28 +14,28 @@ module.exports = {
             {
                 test: /\.(js|jsx)$/,
                 exclude: /node_modules/,
-                use: [ 'babel-loader' ]
+                use: ['babel-loader']
             },
             {
                 test: /\.(png|svg|jpg|gif)$/,
-                use: [ 'file-loader' ]
+                use: ['file-loader']
             },
             {
                 test: /\.(css|scss)$/,
                 include: [path.resolve(paths.appSrc)],
                 use: [
                     {
-                        loader: "style-loader"
+                        loader: 'style-loader'
                     },
                     {
-                        loader: "css-loader"
+                        loader: 'css-loader'
                     },
                     {
                         loader: 'sass-loader',
                         options: {
-                            sourceMap: true,
-                        },
-                    },
+                            sourceMap: true
+                        }
+                    }
                 ]
             }
         ]

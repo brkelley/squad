@@ -1,0 +1,26 @@
+@import '../style/variables.scss';
+
+.prediction-wrapper {
+    color: $light-tan;
+
+    .prediction-title {
+        text-align: center;
+        font-size: 4rem;
+        font-weight: bold;
+        padding: 24px;
+    }
+
+    .prediction-section-title {
+        font-size: 2rem;
+        padding: 24px 24px 75px 24px;
+        text-align: center;
+    }
+
+    .prediction-matches-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+@import './prediction-match/prediction-match.scss';

@@ -1,0 +1,34 @@
+@import '../../style/variables.scss';
+
+.prediction-match-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+
+    .team-wrapper {
+        text-align: center;
+        margin-bottom: 75px;
+
+        &.red-side {
+            padding-right: 75px;
+        }
+
+        &.blue-side {
+            padding-left: 75px;
+        }
+
+        .team-logo-wrapper {
+            padding-bottom: 12px;
+
+            .team-logo {
+                height: 100px;
+                width: auto;
+            }
+        }
+
+        .team-name {
+            font-size: 1.7rem;
+            color: $light-tan;
+        }
+    }
+}
