@@ -8,8 +8,17 @@ export default class Predictions extends Component {
 
         this.props.fetchMatches();
 
+        this.renderPredictionsFilters = this.renderPredictionsFilters.bind(this);
         this.renderMatches = this.renderMatches.bind(this);
         this.renderLoading = this.renderLoading.bind(this);
+    }
+
+    renderPredictionsFilters () {
+        return (
+            <div className="predictions-filters-wrapper">
+                <div className="prediction-section">Play-ins - Group Stage</div>
+            </div>
+        );
     }
 
     renderMatches () {
@@ -38,9 +47,7 @@ export default class Predictions extends Component {
                 <div className="prediction-title">
                     Predictions
                 </div>
-                <div className="prediction-section-title">
-                    Play-ins - Group stage
-                </div>
+                {this.renderPredictionsFilters()}
                 {(this.props.fetching || isEmpty(this.props.matches)) ? this.renderLoading() : this.renderMatches()}
             </div>
         );

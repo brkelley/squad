@@ -1,5 +1,5 @@
+import axios from 'axios';
 import { SET_FETCHING, SET_MATCHES } from './predictions.constants.js';
-import matchData from '../fakeData/match-schedule.json';
 import isEmpty from 'lodash/isEmpty';
 
 export const setFetching = fetching => ({
@@ -17,7 +17,7 @@ export const fetchMatches = () => (dispatch, getState) => {
         return Promise.resolve();
     }
     dispatch(setFetching(true));
-    return Promise.resolve(matchData).then(results => {
+    return axios.get('http://localhost:4444/matches').then(({ data: results }) => {
         console.log(results);
         dispatch(setMatches(results));
         dispatch(setFetching(false));
