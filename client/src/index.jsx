@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './app.jsx';
+import AppRoute from './app.route';
 
 import rootReducer from './store/reducers.js';
 import { createStore, applyMiddleware } from 'redux';
@@ -14,7 +14,7 @@ const store = createStore(
 
 ReactDOM.render(
     <Provider store={store}>
-        <App />
+        <AppRoute store={store} />
     </Provider>,
     document.getElementById('app')
 );

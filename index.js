@@ -12,14 +12,38 @@ require('./database/database.js');
 // Passport config
 require('./config/passport.js');
 
-// routes
-const user = require('./routes/user/user.js');
-const predictionsMatches = require('./routes/predictions/predictions-matches.js');
-
 app.use(bodyParser.json());
+app.use(passport.initialize());
+app.use(passport.session());
 
-app.get('/matches', predictionsMatches.matches);
-app.post('/user/register', user.register);
+passport.serializeUser(function (user, done) {
+    console.log('serializing: ' + user.id);
+    done(null, user.id);
+});
+  
+passport.deserializeUser(function (id, done) {
+    console.log('deserializing');
+    User.findById(id, function (err, user) {
+        done(err, user);
+    });
+});
+
+// error handlers
+// Catch unauthorised errors
+app.use(function (err, req, res, next) {
+    if (err.name === 'UnauthorizedError') {
+        res.status(401);
+        res.json({"message" : err.name + ": " + err.message});
+    }
+});
+
+app.use(function (req, res, next) {
+    // console.log(req.headers);
+    next();
+});
+
+// routes
+require('./routes/routes.js')(app);
 
 const port = 4444;
 
