@@ -1,5 +1,9 @@
 import axios from 'axios';
-import { SET_FETCHING, SET_USER, SET_USER_TOKEN } from './user.constants.js';
+import {
+    SET_FETCHING,
+    SET_USER,
+    SET_USER_TOKEN
+} from './user.constants.js';
 
 export const setFetching = fetching => ({
     type: SET_FETCHING,
@@ -15,6 +19,18 @@ export const setUserToken = userToken => ({
     type: SET_USER_TOKEN,
     userToken
 });
+
+export const registerNewUser = ({username, summonerId, password }) => dispatch => {
+    dispatch(setFetching(true));
+    const body = { username, summonerId, password };
+    return axios.post('http://localhost:4444/user/register', body)
+        .then(({data: results}) => {
+            console.log(results);
+            dispatch(setUser(results.user));
+            dispatch(setUserToken(results.token));
+            dispatch(setFetching(false));
+        });
+};
 
 export const login = (username, password) => (dispatch, getState) => {
     const { userReducer: state } = getState();
@@ -32,4 +48,8 @@ export const login = (username, password) => (dispatch, getState) => {
         .catch(err => {
             console.log(err);
         });
+};
+
+export const validateSummonerName = summonerName => () => {
+    return axios.get(`http://localhost:4444/user/validate?summonerName=${summonerName}`);
 };

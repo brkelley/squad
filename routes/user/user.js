@@ -1,11 +1,10 @@
 const passport = require('passport');
-const mongoose = require('mongoose');
+const axios = require('axios');
 const User = require('../../models/user.schema.js');
 
 module.exports.register = function (req, res) {
     var user = new User();
 
-    user.name = req.body.name;
     user.username = req.body.username;
     user.summonerId = req.body.summonerId;
 
@@ -16,7 +15,7 @@ module.exports.register = function (req, res) {
             console.log('save error ', err);
         }
         const token = user.generateJwt();
-        res.status(200).json({ token });
+        res.status(200).json({ token, user });
     });
 };
 
@@ -36,4 +35,18 @@ module.exports.login = (req, res, next) => {
             res.status(401).json(info);
         }
     })(req, res, next);
+};
+
+module.exports.validate = (req, res) => {
+    const headers = {
+        'X-Riot-Token': 'RGAPI-e87c79eb-2a79-4e12-a1ec-1073b7c6d7f1'
+    };
+    const { summonerName } = req.query;
+    axios.get(`https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-name/${summonerName}`, { headers })
+        .then(response => {
+            res.status(200).json(response.data);
+        })
+        .catch(err => {
+            res.status(401).json(err);
+        });
 };

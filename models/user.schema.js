@@ -8,10 +8,6 @@ const userSchema = new mongoose.Schema({
         unique: true,
         required: true
     },
-    name: {
-        type: String,
-        required: true
-    },
     summonerId: {
         type: String,
         required: true
@@ -36,8 +32,7 @@ userSchema.methods.generateJwt = function() {
   
     return jwt.sign({
         _id: this._id,
-        email: this.email,
-        name: this.name,
+        username: this.username,
         exp: parseInt(expiry.getTime() / 1000),
     }, 'MY_SECRET'); // DO NOT KEEP YOUR SECRET IN THE CODE!
 };

@@ -1,5 +1,5 @@
 @import './variables.scss';
-@import url('https://fonts.googleapis.com/css?family=Nunito&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Muli&display=swap');
 
 body {
     margin: 0;
@@ -7,8 +7,8 @@ body {
     .app-wrapper {
         width: 100vw;
         height: 100vh;
-        background-color: $darkest-blue;
-        font-family: 'Nunito', sans-serif;
+        font-family: 'Muli', sans-serif;
+        background-color: $teal;
     }
 }
 

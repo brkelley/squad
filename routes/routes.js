@@ -15,4 +15,5 @@ module.exports = function (app) {
     // user endpoints
     app.post('/user/register', user.register);
     app.post('/user/login', user.login);
+    app.get('/user/validate', user.validate);
 };

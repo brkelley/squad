@@ -1,4 +1,8 @@
-import { SET_FETCHING, SET_USER, SET_USER_TOKEN } from './user.constants.js';
+import {
+    SET_FETCHING,
+    SET_USER,
+    SET_USER_TOKEN
+} from './user.constants.js';
 
 const initialState = {
     user: {},

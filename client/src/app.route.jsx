@@ -1,10 +1,11 @@
 import React from 'react';
-import { Router, Route } from 'react-router-dom';
+import { Router, Switch, Route, Redirect } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
 
 import PrivateRoute from './components/private-route/private-route.jsx';
 import Homepage from './homepage/homepage.jsx';
 import LoginContainer from './login/login.container.jsx';
+import RegisterContainer from './register/register.container.jsx';
 import PredictionsContainer from './predictions/predictions.container.jsx';
 
 const history = createBrowserHistory();
@@ -21,19 +22,25 @@ class AppRoute extends React.Component {
     render () {
         return (
             <Router history={history}>
-                <Route
-                    exact
-                    path="/"
-                    component={Homepage} />
-                <Route
-                    exact
-                    path="/login"
-                    component={LoginContainer} />
-                <PrivateRoute
-                    exact
-                    path="/predictions"
-                    userToken={this.state.userToken}
-                    component={PredictionsContainer} />
+                <Switch>
+                    <PrivateRoute
+                        path="/"
+                        exact
+                        component={Homepage} />
+                    <Route
+                        path="/login"
+                        exact
+                        component={LoginContainer} />
+                    <Route
+                        path="/register"
+                        exact
+                        component={RegisterContainer} />
+                    <PrivateRoute
+                        path="/predictions"
+                        exact
+                        userToken={this.state.userToken}
+                        component={PredictionsContainer} />
+                </Switch>
             </Router>
         );
     }
