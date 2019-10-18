@@ -1,10 +1,20 @@
 import React from 'react';
 
 export default function PredictionMatch (props) {
-    const { redSide, blueSide } = props;
+    const { redSide, blueSide, predicted, onPredictionClick, index } = props;
+
+    let redSideClassName = '';
+    let blueSideClassName = '';
+    if (predicted) {
+        redSideClassName = predicted === redSide.name ? 'predicted' : 'not-predicted';
+        blueSideClassName = predicted === blueSide.name ? 'predicted' : 'not-predicted'; 
+    }
+
     return (
         <div className="prediction-match-wrapper">
-            <div className="team-wrapper red-side">
+            <div
+                className={`team-wrapper red-side ${redSideClassName}`}
+                onClick={() => onPredictionClick({ name: redSide.name, index })}>
                 <div className="team-logo-wrapper">
                     <img
                         src={redSide.logo}
@@ -14,7 +24,9 @@ export default function PredictionMatch (props) {
                     {redSide.name}
                 </div>
             </div>
-            <div className="team-wrapper blue-side">
+            <div
+                className={`team-wrapper blue-side ${blueSideClassName}`}
+                onClick={() => onPredictionClick({ name: blueSide.name, index })}>
                 <div className="team-logo-wrapper">
                     <img
                         src={blueSide.logo}

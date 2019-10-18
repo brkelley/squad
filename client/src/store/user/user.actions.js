@@ -4,6 +4,7 @@ import {
     SET_USER,
     SET_USER_TOKEN
 } from './user.constants.js';
+import Cookies from 'js-cookie';
 
 export const setFetching = fetching => ({
     type: SET_FETCHING,
@@ -28,6 +29,7 @@ export const registerNewUser = ({username, summonerId, password }) => dispatch =
             console.log(results);
             dispatch(setUser(results.user));
             dispatch(setUserToken(results.token));
+            Cookies.set('userToken', results.token);
             dispatch(setFetching(false));
         });
 };
@@ -43,10 +45,22 @@ export const login = (username, password) => (dispatch, getState) => {
             console.log(results);
             dispatch(setUser(results.user));
             dispatch(setUserToken(results.token));
+            Cookies.set('userToken', results.token);
             dispatch(setFetching(false));
         })
         .catch(err => {
             console.log(err);
+        });
+};
+
+export const validateUserToken = token => dispatch => {
+    return axios.post('http://localhost:4444/user/validateToken', { token })
+        .then(({ data: results }) => {
+            const { token, valid, username, _id } = results;
+            dispatch(setUser({ _id, username }));
+            dispatch(setUserToken(token));
+
+            return { token, valid, username, _id };
         });
 };
 

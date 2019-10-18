@@ -1,2 +1,4 @@
 export const SET_FETCHING = 'SET_FETCHING';
 export const SET_MATCHES = 'SET_MATCHES';
+export const SET_USER_PREDICTIONS = 'SET_USER_PREDICTIONS';
+export const SET_FILTERS = 'SET_FILTERS';

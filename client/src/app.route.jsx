@@ -1,8 +1,8 @@
 import React from 'react';
-import { Router, Switch, Route, Redirect } from 'react-router-dom';
+import { Router, Switch, Route } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
 
-import PrivateRoute from './components/private-route/private-route.jsx';
+import PrivateRoute from './components/private-route/private-route.container.jsx';
 import Homepage from './homepage/homepage.jsx';
 import LoginContainer from './login/login.container.jsx';
 import RegisterContainer from './register/register.container.jsx';

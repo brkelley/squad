@@ -1,0 +1,12 @@
+@import '../../style/variables.scss';
+
+.predictions-filters {
+    display: flex;
+    align-items: center;
+    margin-top: 12px;
+    color: $rose-gold;
+
+    .prediction-dropdown {
+        padding: 0 24px;
+    }
+}

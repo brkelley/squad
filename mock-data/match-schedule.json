@@ -1,421 +1,132 @@
-{
-    "section": "play-ins",
-    "stage": "group",
-    "matches": {
-        "day1": {
-            "timestamp": 1570287600,
-            "games": [
-                {
-                    "bestOf": 1,
-                    "team1": {
-                        "name": "Fnatic",
-                        "abbreviation": "FNC",
-                        "logo": "https://logos-download.com/wp-content/uploads/2016/06/Fnatic_logo.png"
-                    },
-                    "team2": {
-                        "name": "Team Liquid",
-                        "abbreviation": "TL",
-                        "logo": "https://lolstatic-a.akamaihd.net/esports-assets/production/team/team-liquid-3wlr7jka.png"
-                    }
-                },
-                {
-                    "bestOf": 1,
-                    "team1": {
-                        "name": "Fnatic",
-                        "abbreviation": "FNC",
-                        "logo": "https://logos-download.com/wp-content/uploads/2016/06/Fnatic_logo.png"
-                    },
-                    "team2": {
-                        "name": "Team Liquid",
-                        "abbreviation": "TL",
-                        "logo": "https://lolstatic-a.akamaihd.net/esports-assets/production/team/team-liquid-3wlr7jka.png"
-                    }
-                },
-                {
-                    "bestOf": 1,
-                    "team1": {
-                        "name": "Fnatic",
-                        "abbreviation": "FNC",
-                        "logo": "https://logos-download.com/wp-content/uploads/2016/06/Fnatic_logo.png"
-                    },
-                    "team2": {
-                        "name": "Team Liquid",
-                        "abbreviation": "TL",
-                        "logo": "https://lolstatic-a.akamaihd.net/esports-assets/production/team/team-liquid-3wlr7jka.png"
-                    }
-                },
-                {
-                    "bestOf": 1,
-                    "team1": {
-                        "name": "Fnatic",
-                        "abbreviation": "FNC",
-                        "logo": "https://logos-download.com/wp-content/uploads/2016/06/Fnatic_logo.png"
-                    },
-                    "team2": {
-                        "name": "Team Liquid",
-                        "abbreviation": "TL",
-                        "logo": "https://lolstatic-a.akamaihd.net/esports-assets/production/team/team-liquid-3wlr7jka.png"
-                    }
-                },
-                {
-                    "bestOf": 1,
-                    "team1": {
-                        "name": "Fnatic",
-                        "abbreviation": "FNC",
-                        "logo": "https://logos-download.com/wp-content/uploads/2016/06/Fnatic_logo.png"
-                    },
-                    "team2": {
-                        "name": "Team Liquid",
-                        "abbreviation": "TL",
-                        "logo": "https://lolstatic-a.akamaihd.net/esports-assets/production/team/team-liquid-3wlr7jka.png"
-                    }
-                },
-                {
-                    "bestOf": 1,
-                    "team1": {
-                        "name": "Fnatic",
-                        "abbreviation": "FNC",
-                        "logo": "https://logos-download.com/wp-content/uploads/2016/06/Fnatic_logo.png"
-                    },
-                    "team2": {
-                        "name": "Team Liquid",
-                        "abbreviation": "TL",
-                        "logo": "https://lolstatic-a.akamaihd.net/esports-assets/production/team/team-liquid-3wlr7jka.png"
-                    }
-                }
-            ]
-        },
-        "day2": {
-            "timestamp": 1570287600,
-            "games": [
-                {
-                    "bestOf": 1,
-                    "team1": {
-                        "name": "Fnatic",
-                        "abbreviation": "FNC",
-                        "logo": "https://logos-download.com/wp-content/uploads/2016/06/Fnatic_logo.png"
-                    },
-                    "team2": {
-                        "name": "Team Liquid",
-                        "abbreviation": "TL",
-                        "logo": "https://lolstatic-a.akamaihd.net/esports-assets/production/team/team-liquid-3wlr7jka.png"
-                    }
-                },
-                {
-                    "bestOf": 1,
-                    "team1": {
-                        "name": "Fnatic",
-                        "abbreviation": "FNC",
-                        "logo": "https://logos-download.com/wp-content/uploads/2016/06/Fnatic_logo.png"
-                    },
-                    "team2": {
-                        "name": "Team Liquid",
-                        "abbreviation": "TL",
-                        "logo": "https://lolstatic-a.akamaihd.net/esports-assets/production/team/team-liquid-3wlr7jka.png"
-                    }
-                },
-                {
-                    "bestOf": 1,
-                    "team1": {
-                        "name": "Fnatic",
-                        "abbreviation": "FNC",
-                        "logo": "https://logos-download.com/wp-content/uploads/2016/06/Fnatic_logo.png"
-                    },
-                    "team2": {
-                        "name": "Team Liquid",
-                        "abbreviation": "TL",
-                        "logo": "https://lolstatic-a.akamaihd.net/esports-assets/production/team/team-liquid-3wlr7jka.png"
-                    }
-                },
-                {
-                    "bestOf": 1,
-                    "team1": {
-                        "name": "Fnatic",
-                        "abbreviation": "FNC",
-                        "logo": "https://logos-download.com/wp-content/uploads/2016/06/Fnatic_logo.png"
-                    },
-                    "team2": {
-                        "name": "Team Liquid",
-                        "abbreviation": "TL",
-                        "logo": "https://lolstatic-a.akamaihd.net/esports-assets/production/team/team-liquid-3wlr7jka.png"
-                    }
-                },
-                {
-                    "bestOf": 1,
-                    "team1": {
-                        "name": "Fnatic",
-                        "abbreviation": "FNC",
-                        "logo": "https://logos-download.com/wp-content/uploads/2016/06/Fnatic_logo.png"
-                    },
-                    "team2": {
-                        "name": "Team Liquid",
-                        "abbreviation": "TL",
-                        "logo": "https://lolstatic-a.akamaihd.net/esports-assets/production/team/team-liquid-3wlr7jka.png"
-                    }
-                },
-                {
-                    "bestOf": 1,
-                    "team1": {
-                        "name": "Fnatic",
-                        "abbreviation": "FNC",
-                        "logo": "https://logos-download.com/wp-content/uploads/2016/06/Fnatic_logo.png"
-                    },
-                    "team2": {
-                        "name": "Team Liquid",
-                        "abbreviation": "TL",
-                        "logo": "https://lolstatic-a.akamaihd.net/esports-assets/production/team/team-liquid-3wlr7jka.png"
-                    }
-                }
-            ]
-        },
-        "day3": {
-            "timestamp": 1570287600,
-            "games": [
-                {
-                    "bestOf": 1,
-                    "team1": {
-                        "name": "Fnatic",
-                        "abbreviation": "FNC",
-                        "logo": "https://logos-download.com/wp-content/uploads/2016/06/Fnatic_logo.png"
-                    },
-                    "team2": {
-                        "name": "Team Liquid",
-                        "abbreviation": "TL",
-                        "logo": "https://lolstatic-a.akamaihd.net/esports-assets/production/team/team-liquid-3wlr7jka.png"
-                    }
-                },
-                {
-                    "bestOf": 1,
-                    "team1": {
-                        "name": "Fnatic",
-                        "abbreviation": "FNC",
-                        "logo": "https://logos-download.com/wp-content/uploads/2016/06/Fnatic_logo.png"
-                    },
-                    "team2": {
-                        "name": "Team Liquid",
-                        "abbreviation": "TL",
-                        "logo": "https://lolstatic-a.akamaihd.net/esports-assets/production/team/team-liquid-3wlr7jka.png"
-                    }
-                },
-                {
-                    "bestOf": 1,
-                    "team1": {
-                        "name": "Fnatic",
-                        "abbreviation": "FNC",
-                        "logo": "https://logos-download.com/wp-content/uploads/2016/06/Fnatic_logo.png"
-                    },
-                    "team2": {
-                        "name": "Team Liquid",
-                        "abbreviation": "TL",
-                        "logo": "https://lolstatic-a.akamaihd.net/esports-assets/production/team/team-liquid-3wlr7jka.png"
-                    }
-                },
-                {
-                    "bestOf": 1,
-                    "team1": {
-                        "name": "Fnatic",
-                        "abbreviation": "FNC",
-                        "logo": "https://logos-download.com/wp-content/uploads/2016/06/Fnatic_logo.png"
-                    },
-                    "team2": {
-                        "name": "Team Liquid",
-                        "abbreviation": "TL",
-                        "logo": "https://lolstatic-a.akamaihd.net/esports-assets/production/team/team-liquid-3wlr7jka.png"
-                    }
-                },
-                {
-                    "bestOf": 1,
-                    "team1": {
-                        "name": "Fnatic",
-                        "abbreviation": "FNC",
-                        "logo": "https://logos-download.com/wp-content/uploads/2016/06/Fnatic_logo.png"
-                    },
-                    "team2": {
-                        "name": "Team Liquid",
-                        "abbreviation": "TL",
-                        "logo": "https://lolstatic-a.akamaihd.net/esports-assets/production/team/team-liquid-3wlr7jka.png"
-                    }
-                },
-                {
-                    "bestOf": 1,
-                    "team1": {
-                        "name": "Fnatic",
-                        "abbreviation": "FNC",
-                        "logo": "https://logos-download.com/wp-content/uploads/2016/06/Fnatic_logo.png"
-                    },
-                    "team2": {
-                        "name": "Team Liquid",
-                        "abbreviation": "TL",
-                        "logo": "https://lolstatic-a.akamaihd.net/esports-assets/production/team/team-liquid-3wlr7jka.png"
-                    }
-                }
-            ]
-        },
-        "day4": {
-            "timestamp": 1570287600,
-            "games": [
-                {
-                    "bestOf": 1,
-                    "team1": {
-                        "name": "Fnatic",
-                        "abbreviation": "FNC",
-                        "logo": "https://logos-download.com/wp-content/uploads/2016/06/Fnatic_logo.png"
-                    },
-                    "team2": {
-                        "name": "Team Liquid",
-                        "abbreviation": "TL",
-                        "logo": "https://lolstatic-a.akamaihd.net/esports-assets/production/team/team-liquid-3wlr7jka.png"
-                    }
-                },
-                {
-                    "bestOf": 1,
-                    "team1": {
-                        "name": "Fnatic",
-                        "abbreviation": "FNC",
-                        "logo": "https://logos-download.com/wp-content/uploads/2016/06/Fnatic_logo.png"
-                    },
-                    "team2": {
-                        "name": "Team Liquid",
-                        "abbreviation": "TL",
-                        "logo": "https://lolstatic-a.akamaihd.net/esports-assets/production/team/team-liquid-3wlr7jka.png"
-                    }
-                },
-                {
-                    "bestOf": 1,
-                    "team1": {
-                        "name": "Fnatic",
-                        "abbreviation": "FNC",
-                        "logo": "https://logos-download.com/wp-content/uploads/2016/06/Fnatic_logo.png"
-                    },
-                    "team2": {
-                        "name": "Team Liquid",
-                        "abbreviation": "TL",
-                        "logo": "https://lolstatic-a.akamaihd.net/esports-assets/production/team/team-liquid-3wlr7jka.png"
-                    }
-                },
-                {
-                    "bestOf": 1,
-                    "team1": {
-                        "name": "Fnatic",
-                        "abbreviation": "FNC",
-                        "logo": "https://logos-download.com/wp-content/uploads/2016/06/Fnatic_logo.png"
-                    },
-                    "team2": {
-                        "name": "Team Liquid",
-                        "abbreviation": "TL",
-                        "logo": "https://lolstatic-a.akamaihd.net/esports-assets/production/team/team-liquid-3wlr7jka.png"
-                    }
-                },
-                {
-                    "bestOf": 1,
-                    "team1": {
-                        "name": "Fnatic",
-                        "abbreviation": "FNC",
-                        "logo": "https://logos-download.com/wp-content/uploads/2016/06/Fnatic_logo.png"
-                    },
-                    "team2": {
-                        "name": "Team Liquid",
-                        "abbreviation": "TL",
-                        "logo": "https://lolstatic-a.akamaihd.net/esports-assets/production/team/team-liquid-3wlr7jka.png"
-                    }
-                },
-                {
-                    "bestOf": 1,
-                    "team1": {
-                        "name": "Fnatic",
-                        "abbreviation": "FNC",
-                        "logo": "https://logos-download.com/wp-content/uploads/2016/06/Fnatic_logo.png"
-                    },
-                    "team2": {
-                        "name": "Team Liquid",
-                        "abbreviation": "TL",
-                        "logo": "https://lolstatic-a.akamaihd.net/esports-assets/production/team/team-liquid-3wlr7jka.png"
-                    }
-                }
-            ]
-        },
-        "day5": {
-            "timestamp": 1570287600,
-            "games": [
-                {
-                    "bestOf": 1,
-                    "team1": {
-                        "name": "Fnatic",
-                        "abbreviation": "FNC",
-                        "logo": "https://logos-download.com/wp-content/uploads/2016/06/Fnatic_logo.png"
-                    },
-                    "team2": {
-                        "name": "Team Liquid",
-                        "abbreviation": "TL",
-                        "logo": "https://lolstatic-a.akamaihd.net/esports-assets/production/team/team-liquid-3wlr7jka.png"
-                    }
-                },
-                {
-                    "bestOf": 1,
-                    "team1": {
-                        "name": "Fnatic",
-                        "abbreviation": "FNC",
-                        "logo": "https://logos-download.com/wp-content/uploads/2016/06/Fnatic_logo.png"
-                    },
-                    "team2": {
-                        "name": "Team Liquid",
-                        "abbreviation": "TL",
-                        "logo": "https://lolstatic-a.akamaihd.net/esports-assets/production/team/team-liquid-3wlr7jka.png"
-                    }
-                },
-                {
-                    "bestOf": 1,
-                    "team1": {
-                        "name": "Fnatic",
-                        "abbreviation": "FNC",
-                        "logo": "https://logos-download.com/wp-content/uploads/2016/06/Fnatic_logo.png"
-                    },
-                    "team2": {
-                        "name": "Team Liquid",
-                        "abbreviation": "TL",
-                        "logo": "https://lolstatic-a.akamaihd.net/esports-assets/production/team/team-liquid-3wlr7jka.png"
-                    }
-                },
-                {
-                    "bestOf": 1,
-                    "team1": {
-                        "name": "Fnatic",
-                        "abbreviation": "FNC",
-                        "logo": "https://logos-download.com/wp-content/uploads/2016/06/Fnatic_logo.png"
-                    },
-                    "team2": {
-                        "name": "Team Liquid",
-                        "abbreviation": "TL",
-                        "logo": "https://lolstatic-a.akamaihd.net/esports-assets/production/team/team-liquid-3wlr7jka.png"
-                    }
-                },
-                {
-                    "bestOf": 1,
-                    "team1": {
-                        "name": "Fnatic",
-                        "abbreviation": "FNC",
-                        "logo": "https://logos-download.com/wp-content/uploads/2016/06/Fnatic_logo.png"
-                    },
-                    "team2": {
-                        "name": "Team Liquid",
-                        "abbreviation": "TL",
-                        "logo": "https://lolstatic-a.akamaihd.net/esports-assets/production/team/team-liquid-3wlr7jka.png"
-                    }
-                },
-                {
-                    "bestOf": 1,
-                    "team1": {
-                        "name": "Fnatic",
-                        "abbreviation": "FNC",
-                        "logo": "https://logos-download.com/wp-content/uploads/2016/06/Fnatic_logo.png"
-                    },
-                    "team2": {
-                        "name": "Team Liquid",
-                        "abbreviation": "TL",
-                        "logo": "https://lolstatic-a.akamaihd.net/esports-assets/production/team/team-liquid-3wlr7jka.png"
-                    }
-                }
-            ]
-        }
+[
+    {
+        "year": 2019,
+        "tournament": "worlds",
+        "section": "main",
+        "stage": "groups",
+        "round": "round1",
+        "bestOf": 1,
+        "matches": [
+            {
+                "redSide": "Fnatic",
+                "blueSide": "SK Telecom T1",
+                "time": 1570881600000
+            },
+            {
+                "redSide": "Royal Never Give Up",
+                "blueSide": "Clutch Gaming",
+                "time": 1570885200000
+            },
+            {
+                "redSide": "Invictus Gaming",
+                "blueSide": "ahq e-Sports Club",
+                "time": 1570888800000
+            },
+            {
+                "redSide": "DAMWON Gaming",
+                "blueSide": "Team Liquid",
+                "time": 1570892400000
+            },
+            {
+                "redSide": "CTBC J Team",
+                "blueSide": "FunPlus Phoenix",
+                "time": 1570896000000
+            },
+            {
+                "redSide": "GAM Esports",
+                "blueSide": "Splyce",
+                "time": 1570899600000
+            },
+            {
+                "redSide": "SK Telecom T1",
+                "blueSide": "Royal Never Give Up",
+                "time": 1570968000000
+            },
+            {
+                "redSide": "Fnatic",
+                "blueSide": "Clutch Gaming",
+                "time": 1570971600000
+            },
+            {
+                "redSide": "Team Liquid",
+                "blueSide": "Invictus Gaming",
+                "time": 1570975200000
+            },
+            {
+                "redSide": "ahq e-Sports Club",
+                "blueSide": "DAMWON Gaming",
+                "time": 1570978800000
+            },
+            {
+                "redSide": "Griffin",
+                "blueSide": "G2 Esports",
+                "time": 1570982400000
+            },
+            {
+                "redSide": "Cloud9",
+                "blueSide": "Hong Kong Attitude",
+                "time": 1570986000000
+            },
+            {
+                "redSide": "Invictus Gaming",
+                "blueSide": "DAMWON Gaming",
+                "time": 1571058000000
+            },
+            {
+                "redSide": "ahq e-Sports Club",
+                "blueSide": "Team Liquid",
+                "time": 1571061600000
+            },
+            {
+                "redSide": "FunPlus Phoenix",
+                "blueSide": "Splyce",
+                "time": 1571065200000
+            },
+            {
+                "redSide": "CTBC J Team",
+                "blueSide": "GAM Esports",
+                "time": 1571068800000
+            },
+            {
+                "redSide": "Griffin",
+                "blueSide": "Hong Kong Attitude",
+                "time": 1571072400000
+            },
+            {
+                "redSide": "G2 Esports",
+                "blueSide": "Cloud9",
+                "time": 1571076000000
+            },
+            {
+                "redSide": "Royal Never Give Up",
+                "blueSide": "Fnatic",
+                "time": 1571144400000
+            },
+            {
+                "redSide": "Clutch Gaming",
+                "blueSide": "SK Telecom T1",
+                "time": 1571148000000
+            },
+            {
+                "redSide": "FunPlus Phoenix",
+                "blueSide": "GAM Esports",
+                "time": 1571151600000
+            },
+            {
+                "redSide": "Splyce",
+                "blueSide": "CTBC J Team",
+                "time": 1571155200000
+            },
+            {
+                "redSide": "Cloud9",
+                "blueSide": "Griffin",
+                "time": 1571158800000
+            },
+            {
+                "redSide": "Hong Kong Attitude",
+                "blueSide": "G2 Esports",
+                "time": 1571162400000
+            }
+        ]
     }
-}
+]

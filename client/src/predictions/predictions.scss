@@ -1,11 +1,18 @@
 @import '../style/variables.scss';
 
 .prediction-wrapper {
+    height: 100%;
 
-    .prediction-title {
-        font-size: 4rem;
-        font-weight: bold;
-        padding: 24px;
+    .predictions-header {
+        display: flex;
+        align-items: center;
+        color: $rose-gold;
+
+        .prediction-title {
+            font-size: 4rem;
+            font-weight: bold;
+            padding: 24px;
+        }
     }
 
     .prediction-section-title {
@@ -22,3 +29,4 @@
 }
 
 @import './prediction-match/prediction-match.scss';
+@import './prediction-filters/prediction-filters.scss';

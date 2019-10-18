@@ -1,35 +1,49 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PredictionMatch from './prediction-match/prediction-match.jsx';
+import PredictionFilters from './prediction-filters/prediction-filters.container.jsx';
 import isEmpty from 'lodash/isEmpty';
 
-export default class Predictions extends Component {
+export default class Predictions extends React.Component {
     constructor (props) {
         super(props);
 
-        this.props.fetchMatches();
+        this.state = {
+            userSelections: {
+                0: 'SK Telecom T1'
+            }
+        };
 
-        this.renderPredictionsFilters = this.renderPredictionsFilters.bind(this);
+        this.fetchData = this.fetchData.bind(this);
         this.renderMatches = this.renderMatches.bind(this);
         this.renderLoading = this.renderLoading.bind(this);
+        this.onPredictionClick = this.onPredictionClick.bind(this);
     }
 
-    renderPredictionsFilters () {
-        return (
-            <div className="predictions-filters-wrapper">
-                <div className="prediction-section">Play-ins - Group Stage</div>
-            </div>
-        );
+    fetchData () {
+        this.props.fetchMatches();
+        this.props.fetchUserPredictions();
+    }
+
+    onPredictionClick ({ name, index }) {
+        this.props.updateUserPredictions({
+            ...this.props.userPredictions,
+            ...{ [index]: name }
+        });
     }
 
     renderMatches () {
         return (
             <div className="prediction-matches-wrapper">
                 {
-                    this.props.matches.matches.day1.games.map(match => {
+                    this.props.matches[0].matches.map((match, index) => {
                         return (
                             <PredictionMatch
-                                redSide={match.team1}
-                                blueSide={match.team2} />
+                                key={index}
+                                index={index}
+                                predicted={this.props.userPredictions[index]}
+                                redSide={match.redSide}
+                                blueSide={match.blueSide}
+                                onPredictionClick={this.onPredictionClick} />
                         )
                     })
                 }
@@ -44,10 +58,15 @@ export default class Predictions extends Component {
     render () {
         return (
             <div className="prediction-wrapper">
-                <div className="prediction-title">
-                    Predictions
+                <div className="predictions-header">
+                    <div className="prediction-title">
+                        Predictions
+                    </div>
+                    <PredictionFilters
+                        filters={this.props.filters}
+                        onValidFilters={this.fetchData} />
+
                 </div>
-                {this.renderPredictionsFilters()}
                 {(this.props.fetching || isEmpty(this.props.matches)) ? this.renderLoading() : this.renderMatches()}
             </div>
         );

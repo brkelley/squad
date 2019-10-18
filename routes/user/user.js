@@ -1,5 +1,6 @@
 const passport = require('passport');
 const axios = require('axios');
+const jwt = require('jsonwebtoken');
 const User = require('../../models/user.schema.js');
 
 module.exports.register = function (req, res) {
@@ -35,6 +36,12 @@ module.exports.login = (req, res, next) => {
             res.status(401).json(info);
         }
     })(req, res, next);
+};
+
+module.exports.validateUserToken = (req, res) => {
+    const { _id, username, exp } = jwt.decode(req.body.token);
+    const valid = exp < (new Date().getTime() / 1000);
+    res.status(200).json({ valid, _id, username, token: req.body.token });
 };
 
 module.exports.validate = (req, res) => {
