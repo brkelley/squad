@@ -6,7 +6,7 @@
     .predictions-header {
         display: flex;
         align-items: center;
-        color: $rose-gold;
+        color: $lightest-gray;
 
         .prediction-title {
             font-size: 4rem;
@@ -25,6 +25,13 @@
         display: flex;
         flex-direction: column;
         align-items: center;
+        padding-bottom: 48px;
+
+        .matches-day-header {
+            color: $lightest-gray;
+            font-size: 2rem;
+            padding-top: 48px;
+        }
     }
 }
 

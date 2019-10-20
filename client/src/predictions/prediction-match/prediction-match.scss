@@ -2,51 +2,84 @@
 
 .prediction-match-wrapper {
     width: 100%;
-    display: flex;
-    justify-content: center;
-    border-bottom: solid $rose-gold 1px;
 
-    .team-wrapper {
-        text-align: center;
-        padding: 24px;
-        width: 200px;
-        transition: all 0.2s;
+    .prediction-time {
+        font-size: 1.6rem;
+        color: $lightest-gray;
+        padding-left: 60px;
+        padding-top: 12px;
+    }
 
-        &:hover {
-            background-color: lighten($onyx, 10%);
-            cursor: pointer;
-            opacity: 1 !important;
-            transition: all 0.2s;
-        }
+    .prediction-match {
+        width: 100%;
+        display: flex;
+        justify-content: center;
 
-        &.predicted {
-            font-weight: bold;
-        }
+        .prediction-card {
+            display: flex;
+            align-items: center;
+            border-bottom: solid 2px black;
 
-        &.not-predicted {
-            opacity: 0.2;
-        }
-
-        &.red-side {
-            margin-right: 16px;
-        }
-
-        &.blue-side {
-            margin-left: 16px;
-        }
-
-        .team-logo-wrapper {
-            padding-bottom: 12px;
-
-            .team-logo {
-                height: 64px;
-                width: auto;
+            &.active-card {
+                background-color: $teal;
+                border-radius: 25px;
             }
-        }
 
-        .team-name {
-            font-size: 1.2rem;
-            color: $lightest-gray;
+            .team-wrapper {
+                text-align: center;
+                padding: 24px;
+                width: 200px;
+                transition: all 0.2s;
+    
+                &.predicted-hover:hover {
+                    background-color: lighten($onyx, 10%);
+                    cursor: pointer;
+                    opacity: 1 !important;
+                    transition: all 0.2s;
+                    border-radius: 25px;
+                }
+    
+                &.predicted {
+                    font-weight: bold;
+                }
+    
+                &.not-predicted {
+                    opacity: 0.4;
+                }
+    
+                &.red-side {
+                    margin-right: 16px;
+                }
+    
+                &.blue-side {
+                    margin-left: 16px;
+                }
+    
+                .team-logo-wrapper {
+                    padding-bottom: 12px;
+    
+                    .team-logo {
+                        height: 64px;
+                        width: auto;
+                    }
+                }
+    
+                .team-name {
+                    font-size: 1.2rem;
+                    color: $lightest-gray;
+                }
+            }
+
+            .prediction-results-indicator {
+                font-size: 1.5rem;
+
+                .fa-check {
+                    color: green;
+                }
+                .fa-times {
+                    color: red;
+                }
+            }
         }
     }
 }

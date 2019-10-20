@@ -13,7 +13,7 @@ exports.getUserPrediction = (req, res) => {
         ...userId && { userId }
     };
 
-    UserPrediction.find(findQuery).then((predictions, error) => {
+    UserPrediction.findOne(findQuery).then((predictions, error) => {
         if (error) {
             res.status(400).json({ error });
             return;
