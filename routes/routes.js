@@ -1,6 +1,7 @@
 const passport = require('passport');
 const teams = require('./teams/teams.js');
 const tournament = require('./tournament/match-metadata.js');
+const tournamentV2 = require('./tournament/tournament.js');
 const userPrediction = require('./tournament/user-prediction.js');
 const matchResults = require('./tournament/match-results.js');
 const user = require('./user/user.js');
@@ -12,6 +13,9 @@ const auth = jwt({
 });
 
 module.exports = function (app) {
+    // tournament predictions
+    app.get('/tournament/:tournament/:year/predictions', tournamentV2.getTournamentPredictions);
+
     // teams endpoints
     app.get('/teams', teams.getTeamData);
     app.get('/teams/:name', teams.getTeamByName);
@@ -25,6 +29,7 @@ module.exports = function (app) {
     app.post('/userPredictions/:tournament/:year/:userId', userPrediction.createUserPrediction);
     app.get('/userPredictions/:tournament/:year/:userId', userPrediction.getUserPrediction);
     app.patch('/userPredictions/:tournament/:year/:userId', userPrediction.updateUserPredictions);
+    app.get('/userPredictions/currentStandings/:tournament/:year', userPrediction.getCurrentStandings);
 
     // Match result endpoints
     app.get('/matchResults/:tournament/:year', matchResults.getResults);

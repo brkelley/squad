@@ -8,8 +8,8 @@ import {
 
 const initialState = {
     matches: {},
-    userPredictions: {},
-    matchResults: {},
+    userPredictions: [],
+    matchResults: [],
     fetching: false,
     filters: {
         year: '2019',

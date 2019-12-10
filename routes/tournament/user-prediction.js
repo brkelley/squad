@@ -1,6 +1,7 @@
 const UserPrediction = require('../../models/user-prediction.schema.js');
+const MatchResults = require('../../models/match-results.schema.js');
 
-exports.getUserPrediction = (req, res) => {
+exports.getUserPrediction = async (req, res) => {
     const { year, tournament, userId } = req.params;
     const { section, stage, round } = req.query;
 
@@ -13,16 +14,15 @@ exports.getUserPrediction = (req, res) => {
         ...userId && { userId }
     };
 
-    UserPrediction.findOne(findQuery).then((predictions, error) => {
-        if (error) {
-            res.status(400).json({ error });
-            return;
-        }
+    try {
+        const predictions = await UserPrediction.find(findQuery);
         res.status(200).json(predictions);
-    });
+    } catch (error) {
+        res.status(400).json({ error });
+    }
 };
 
-exports.createUserPrediction = (req, res) => {
+exports.createUserPrediction = async (req, res) => {
     const { year, tournament, userId } = req.params;
     const { section, stage, round } = req.query;
     const { predictions } = req.body;
@@ -37,33 +37,43 @@ exports.createUserPrediction = (req, res) => {
         predictions
     });
 
-    userPrediction.save().then((result, err) => {
-        if (err) {
-            res.status(400).json({ err });
-            return;
-        }
+    try {
+        const result = await userPrediction.save();
         res.status(201).json(result);
-    });
+    } catch (error) {
+        res.status(400).json({ err });
+    }
 };
 
-exports.updateUserPredictions = (req, res) => {
-
+exports.updateUserPredictions = async (req, res) => {
     const { year, tournament, userId } = req.params;
     const { section, stage, round } = req.query;
     const { predictions } = req.body;
 
-    const userPrediction = new UserPrediction({
-        year,
-        tournament,
-        userId,
-        section,
-        stage,
-        round,
-        predictions
-    });
+    try {
+        const userPrediction = await UserPrediction.findOneAndUpdate({ year, tournament, userId, section, stage, round }, { predictions });
+        res.status(201).json(userPrediction);
+    } catch (error) {
+        res.status(400).json({ err });
+    }
+};
 
-    UserPrediction.findOneAndUpdate({ year, tournament, userId, section, stage, round }, { predictions })
-        .then(() => {
-            res.status(201).json(userPrediction);
-        });
+exports.getCurrentStandings = async (req, res) => {
+    const { year, tournament } = req.params;
+    let results, userPredictions;
+
+    console.log('IN HERE');
+
+    try {
+        results = MatchResults.find({ year, tournament });
+        userPredictions = UserPrediction.find({ year, tournament });
+    } catch (error) {
+        res.status(400).json({ error });
+        return;
+    }
+
+    console.log('results: ', results);
+    console.log('userPredictions: ', userPredictions);
+
+    res.status(200).json({ results, userPredictions });
 };

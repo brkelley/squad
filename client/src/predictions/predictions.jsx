@@ -40,7 +40,7 @@ export default class Predictions extends React.Component {
                 {
                     matchDay.map((match, index) => {
                         const results = get(this.props.matchResults, `results.${match.time}`);
-                        return (
+                        return this.props.userPredictions && (
                             <PredictionMatch
                                 key={index}
                                 predicted={this.props.userPredictions[match.time]}

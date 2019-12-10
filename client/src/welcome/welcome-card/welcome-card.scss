@@ -1,0 +1,48 @@
+@import "../../style/variables.scss";
+
+.welcome-card-wrapper {
+    background-color: #c32148;
+    color: white;
+    width: 606px;
+    height: 323px;
+    transition: all 0.2s;
+    overflow-y: hidden;
+
+    .welcome-card__navigation-wrapper {
+        display: inline-block;
+        vertical-align: top;
+        width: 150px;
+        height: 100%;
+
+        .welcome-card__navigation {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background-color: darken(#c32148, 15%);
+
+            .welcome-card__navigation-item {
+                padding: 12px;
+                font-size: 1.35rem;
+                transition: all 0.2s;
+                cursor: pointer;
+                text-align: right;
+
+                &:hover {
+                    background-color: darken(#c32148, 5%);
+                    transition: all 0.2s;
+                }
+
+                &.active-nav {
+                    background-color: #c32148;
+                }
+            }
+        }
+    }
+
+    .welcome-card__content {
+        width: 400px;
+        padding: 28px;
+        transition: all 0.5s;
+        display: inline-block;
+    }
+}

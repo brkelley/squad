@@ -44,16 +44,31 @@ module.exports.validateUserToken = (req, res) => {
     res.status(200).json({ valid, _id, username, token: req.body.token });
 };
 
-module.exports.validate = (req, res) => {
+module.exports.validate = async(req, res) => {
     const headers = {
-        'X-Riot-Token': 'RGAPI-e87c79eb-2a79-4e12-a1ec-1073b7c6d7f1'
+        'X-Riot-Token': 'RGAPI-45b394c8-0ac5-42e3-9398-230cc12a637f'
     };
     const { summonerName } = req.query;
-    axios.get(`https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-name/${summonerName}`, { headers })
-        .then(response => {
-            res.status(200).json(response.data);
-        })
-        .catch(err => {
-            res.status(401).json(err);
-        });
+    let leagueSummoner, users;
+    
+    try {
+        leagueSummoner = await axios.get(`https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-name/${summonerName}`, { headers });
+    } catch (err) {
+        res.status(404).json({ message: 'Invalid summoner name' });
+        return;
+    }
+
+    try {
+        users = await User.find({});
+    } catch (err) {
+        res.status(500).json({ message: 'database error' });
+        return;
+    }
+
+    const usernames = users.map(el => el.username);
+    if (usernames.includes(summonerName)) {
+        res.status(400).json({ message: 'User already exists' });
+        return;
+    }
+    res.status(200).send(leagueSummoner.data);
 };

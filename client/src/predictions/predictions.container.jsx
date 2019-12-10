@@ -1,5 +1,7 @@
 import { connect } from 'react-redux';
 import Predictions from './predictions.jsx';
+import get from 'lodash/get';
+
 import {
     setPredictionFilters,
     fetchUserPredictions,
@@ -14,7 +16,7 @@ const mapStateToProps = ({ predictionReducer, userReducer }) => ({
     matches: predictionReducer.matches,
     filters: predictionReducer.filters,
     matchResults: predictionReducer.matchResults,
-    userPredictions: predictionReducer.userPredictions,
+    userPredictions: get(predictionReducer, 'userPredictions[0].predictions'),
     user: userReducer.user
 });
 

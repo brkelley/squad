@@ -70,8 +70,8 @@ export const fetchUserPredictions = () => (dispatch, getState) => {
 
     dispatch(setFetching(true));
     return axios.get(`http://localhost:4444/userPredictions/${tournament}/${year}/${_id}?section=${section}&stage=${stage}&round=${round}`)
-        .then(({ data: results }) => {
-            dispatch(setUserPredictions(get(results, 'predictions', {})));
+        .then(({ data: predictions }) => {
+            dispatch(setUserPredictions(predictions));
         });
 };
 

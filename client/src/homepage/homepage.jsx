@@ -1,6 +1,12 @@
+import './homepage.scss';
+
 import React from 'react';
-import { Link } from 'react-router-dom';
+import PredictionWidget from './prediction-widget/prediction-widget.jsx';
 
 export default function Homepage () {
-    return <Link to="/predictions">Predictions</Link>;
-}
+    return (
+        <div className="homepage-wrapper">
+            <PredictionWidget />
+        </div>
+    );
+};

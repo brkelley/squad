@@ -1,49 +1,54 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Router, Switch, Route } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
 
 import PrivateRoute from './components/private-route/private-route.container.jsx';
 import Homepage from './homepage/homepage.jsx';
-import LoginContainer from './login/login.container.jsx';
-import RegisterContainer from './register/register.container.jsx';
 import PredictionsContainer from './predictions/predictions.container.jsx';
+import WelcomeContainer from './welcome/welcome.container.jsx';
+import TopNavbar from './components/top-navbar/top-navbar.jsx';
 
 const history = createBrowserHistory();
 
-class AppRoute extends React.Component {
-    constructor (props) {
-        super(props);
+export default function AppRoute (props) {
+    const [username] = useState(props.store.getState().userReducer.userToken);
+    const [displayNavbar, setDisplayNavbar] = useState(!['/login', '/register', '/spectate'].includes(history.location.pathname));
 
-        this.state = {
-            userToken: props.store.getState().userReducer.userToken
-        }
-    }
+    history.listen(location => {
+        setDisplayNavbar(!['/login', '/register', '/spectate'].includes(location.pathname));
+    });
 
-    render () {
-        return (
-            <Router history={history}>
-                <Switch>
-                    <PrivateRoute
-                        path="/"
-                        exact
-                        component={Homepage} />
-                    <Route
-                        path="/login"
-                        exact
-                        component={LoginContainer} />
-                    <Route
-                        path="/register"
-                        exact
-                        component={RegisterContainer} />
-                    <PrivateRoute
-                        path="/predictions"
-                        exact
-                        userToken={this.state.userToken}
-                        component={PredictionsContainer} />
-                </Switch>
-            </Router>
-        );
-    }
+    return (
+        <Router history={history}>
+            {displayNavbar && <TopNavbar />}
+            <Switch>
+                <PrivateRoute
+                    path="/"
+                    exact
+                    component={Homepage} />
+                <Route
+                    path="/login"
+                    exact
+                    component={WelcomeContainer} />
+                <Route
+                    path="/register"
+                    exact
+                    component={WelcomeContainer} />
+                <Route
+                    path="/spectate"
+                    exact
+                    component={WelcomeContainer} />
+                <PrivateRoute
+                    path="/predictions"
+                    exact
+                    userToken={username}
+                    component={PredictionsContainer} />
+                <Route
+                    path="/welcome"
+                    exact
+                    component={WelcomeContainer} />
+            </Switch>
+        </Router>
+    );
 }
 
-export default AppRoute;
