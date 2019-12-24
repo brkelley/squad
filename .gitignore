@@ -1,5 +1,4 @@
 client/node_modules/
 node_modules/
 
-dist/
-!dist/index.html
+client/dist/bundle.js
