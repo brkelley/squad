@@ -5,10 +5,6 @@ import {
 } from './user.constants.js';
 import Cookies from 'js-cookie';
 
-export const USER_TYPE_CONSTANTS = {
-    label
-}
-
 export const setUser = user => ({
     type: SET_USER,
     user
@@ -23,8 +19,7 @@ export const setUserObject = ({ username }) => dispatch => {
     dispatch(setUser({ username }));
 }
 
-export const registerNewUser = ({username, summonerId, password }) => dispatch => {
-    const body = { username, summonerId, password };
+export const registerNewUser = body => dispatch => {
     return axios.post('http://localhost:4444/user/register', body)
         .then(({data: results}) => {
             dispatch(setUser(results.user));
@@ -33,12 +28,12 @@ export const registerNewUser = ({username, summonerId, password }) => dispatch =
         });
 };
 
-export const login = (username, password) => (dispatch, getState) => {
+export const login = (summonerName, password) => (dispatch, getState) => {
     const { userReducer: state } = getState();
     if (state.userToken && state.userToken !== '') {
         return Promise.resolve();
     }
-    return axios.post('http://localhost:4444/user/login', { username, password })
+    return axios.post('http://localhost:4444/user/login', { summonerName, password })
         .then(({ data: results }) => {
             dispatch(setUser(results.user));
             dispatch(setUserToken(results.token));
@@ -56,8 +51,8 @@ export const validateUserToken = token => dispatch => {
         });
 };
 
-export const validateSummonerName = summonerName => dispatch => {
-    return axios.get(`http://localhost:4444/user/validate?summonerName=${summonerName}`)
+export const validateSummonerName = summonerName => () => {
+    return axios.get(`http://localhost:4444/user/validateSummonerName?summonerName=${summonerName}`)
         .catch(({ response }) => {
             console.log(response);
             return Promise.reject({ message: response.data.message })

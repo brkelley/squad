@@ -1,7 +1,9 @@
 import './welcome.scss';
 
-import React, { useState } from 'react';
+import React from 'react';
 import WelcomeCard from './welcome-card/welcome-card.jsx';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMicrophone } from '@fortawesome/free-solid-svg-icons';
 
 export default function Welcome (props) {
     let activeTab = props.location.pathname.split('/')[1];
@@ -16,16 +18,20 @@ export default function Welcome (props) {
 
     return (
         <div className="welcome-wrapper">
-            <div className="welcome__app-title">
-                SQUAD
+            <div className="welcome__content-card">
+                <div className="welcome__app-title">
+                    SQUAD
+                </div>
+                <div className="welcome__content">
+                    <WelcomeCard
+                        activeTab={activeTab}
+                        redirectUrl={redirect} />
+                </div>
             </div>
-            <div className="welcome__app-logo">
-                <i className="fa fa-microphone" />
-            </div>
-            <div className="welcome__content">
-                <WelcomeCard
-                    activeTab={activeTab}
-                    redirectUrl={redirect} />
+            <div className="welcome__designs">
+                <FontAwesomeIcon
+                    icon={faMicrophone}
+                    className="welcome-icon" />
             </div>
         </div>
     );

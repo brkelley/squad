@@ -8,7 +8,7 @@ const express    = require('express'),
 app.use(cors());
 
 // database
-require('./database/database.js');
+const database = require('./database/sqlite/sqlite-database.js');
 
 // Passport config
 require('./config/passport.js');

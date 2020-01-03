@@ -1,16 +1,35 @@
 import './login.scss';
 
 import React, { useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUser, faLock } from '@fortawesome/free-solid-svg-icons';
 
 export default function Login (props) {
-    const [username, setUsername] = useState('');
+    const [summonerName, setSummonerName] = useState('');
     const [password, setPassword] = useState('');
+    const [loginError, setLoginError] = useState('');
 
     const onLoginClick = () => {
-        props.login(username, password)
+        props.login(summonerName, password)
             .then(() => {
                 props.onRedirect('/');
             })
+            .catch(() => {
+                setLoginError('incorrect username or password!');
+                setPassword('');
+            });
+    }
+
+    const renderLoginError = () => {
+        if (loginError) {
+            return (
+                <div className="login-error-wrapper">
+                    {loginError}
+                </div>
+            );
+        } else {
+            return '';
+        }
     }
 
     const renderLogin = () => {
@@ -19,25 +38,32 @@ export default function Login (props) {
                 <div className="login-textbox-wrapper">
                     <input
                         type="text"
+                        value={summonerName}
                         className={`login-input ${props.error && 'input-error'}`}
-                        placeholder="Username"
-                        onChange={e => setUsername(e.target.value)} />
-                    <i className={`fa fa-user input-icon ${props.error && 'icon-error'}`}></i>
+                        placeholder="summoner name"
+                        onChange={e => setSummonerName(e.target.value)} />
+                    <FontAwesomeIcon
+                        icon={faUser}
+                        className={`input-icon ${props.error && 'icon-error'}`} />
                 </div>
                 <div className="login-textbox-wrapper">
                     <input
                         type="password"
+                        value={password}
                         className={`login-input ${props.error && 'input-error'}`}
-                        placeholder="Password"
+                        placeholder="password"
                         onChange={e => setPassword(e.target.value)} />
-                    <i className={`fa fa-lock input-icon ${props.error && 'icon-error'}`}></i>
+                        <FontAwesomeIcon
+                            icon={faLock}
+                            className={`input-icon ${props.error && 'icon-error'}`} />
                 </div>
                 <button
                     className="login-button"
-                    disabled={!username || !password}
+                    disabled={!summonerName || !password}
                     onClick={onLoginClick}>
                     LOG IN
                 </button>
+                {renderLoginError()}
             </div>
         );
     }

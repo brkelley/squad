@@ -1,40 +1,36 @@
 @import "../../style/variables.scss";
 
 .welcome-card-wrapper {
-    background-color: #c32148;
     color: white;
-    width: 606px;
-    height: 323px;
     transition: all 0.2s;
     overflow-y: hidden;
 
+    .welcome-card__nav-separator {
+        border: solid 1px gray;
+        width: 55%;
+    }
+
     .welcome-card__navigation-wrapper {
-        display: inline-block;
-        vertical-align: top;
-        width: 150px;
-        height: 100%;
+        display: flex;
+        justify-content: space-around;
+        padding-bottom: 22px;
 
-        .welcome-card__navigation {
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            background-color: darken(#c32148, 15%);
+        .welcome-card__navigation-item {
+            color: #c32148;
+            padding: 8px 12px;
+            width: 65px;
+            border-radius: 10px;
+            text-align: center;
 
-            .welcome-card__navigation-item {
-                padding: 12px;
-                font-size: 1.35rem;
+            &.active-nav {
+                background-color: #c32148;
+                color: white;
+            }
+
+            &:hover {
+                text-decoration: underline;
                 transition: all 0.2s;
                 cursor: pointer;
-                text-align: right;
-
-                &:hover {
-                    background-color: darken(#c32148, 5%);
-                    transition: all 0.2s;
-                }
-
-                &.active-nav {
-                    background-color: #c32148;
-                }
             }
         }
     }

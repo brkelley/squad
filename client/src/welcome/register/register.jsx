@@ -1,105 +1,205 @@
 import './register.scss';
 
 import React, { useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+    faCircle,
+    faCheck,
+    faUser,
+    faTimes,
+    faLock,
+    faSignature,
+    faAt
+} from '@fortawesome/free-solid-svg-icons';
 
 export default function Register (props) {
-    const [validating, setValidating] = useState(false);
-    const [invalidSummonerId, setInvalidSummonerId] = useState(false);
-    const [usernameDirty, setUsernameDirty] = useState(false);
-    const [username, setUsername] = useState('');
+    // summoner name fields
+    const [summonerName, setSummonerName] = useState('');
     const [summonerId, setSummonerId] = useState('');
+    const [validatingSummonerName, setValidatingSummonerName] = useState(false);
+    const [invalidSummonerName, setInvalidSummonerName] = useState(false);
+    const [summonerNameDirty, setSummonerNameDirty] = useState(false);
+
+    // password fields
     const [password, setPassword] = useState('');
     const [passwordConfirm, setPasswordConfirm] = useState('');
     const [mismatchedPasswords, setMismatchedPasswords] = useState(false);
 
+    // first & last name and email fields
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [email, setEmail] = useState('');
+
+    // errors
+    const [error, setError] = useState(null);
+
     const onInputChange = (e, inputType) => {
-        if (inputType === 'username') {
-            setUsername(e.target.value);
-        } else if (inputType === 'password') {
-            setPassword(e.target.value);
-        } else if (inputType === 'passwordConfirm') {
-            setPasswordConfirm(e.target.value);
+        switch (inputType) {
+            case 'summonerName':
+                setSummonerName(e.target.value);
+                break;
+            case 'password':
+                setPassword(e.target.value);
+                break;
+            case 'passwordConfirm':
+                setPasswordConfirm(e.target.value);
+                break;
+            case 'firstName':
+                setFirstName(e.target.value);
+                break;
+            case 'lastName':
+                setLastName(e.target.value);
+                break;
+            case 'email':
+                setEmail(e.target.value);
+                break;
         }
     };
 
-    const validateSummonerName = async (summonerName) => {
+    const validateSummonerName = async summonerName => {
         if (!summonerName) return;
-        setValidating(true);
-        setUsernameDirty(true);
-        setInvalidSummonerId(false);
-        let verifiedUsername;
+        setValidatingSummonerName(true);
+        setSummonerNameDirty(true);
+        setInvalidSummonerName(false);
+        let verifiedSummonerName;
 
         try {
-            verifiedUsername = await props.verifySummonerName(summonerName);
+            verifiedSummonerName = await props.verifySummonerName(summonerName);
+            setError(null);
         } catch (err) {
-            console.log(err);
-            setInvalidSummonerId(true);
-            setValidating(false);
+            setInvalidSummonerName(true);
+            setValidatingSummonerName(false);
+            setError(err.message + '!');
             return;
         }
 
-        setSummonerId(verifiedUsername.data.id);
-        setValidating(false);
+        setSummonerId(verifiedSummonerName.data.id);
+        setValidatingSummonerName(false);
     };
 
     const onPasswordConfirm = () => {
-        if (password !== passwordConfirm) {
+        const bothBoxesFull = password !== '' && passwordConfirm !== '';
+        if (bothBoxesFull && password !== passwordConfirm) {
             setMismatchedPasswords(true);
-            props.onUserError('Passwords must match');
+            setError('passwords must match!');
+        } else {
+            setMismatchedPasswords(false);
+            setError(null);
         }
     }
 
-    const registerNewUser = () => {
-        props.registerNewUser({ username, summonerId, password });
+    const registerNewUser = async () => {
+        setPasswordConfirm('');
+        setPassword('');
+        try {
+            await props.registerNewUser({ summonerName, summonerId, password, email, firstName, lastName, role: 3 });
+            props.onRedirect('/');
+        } catch (error) {
+            setError('cannot create new user, please try again later');
+        }
+
     };
 
-    const renderUsernameIcon = () => {
-        if (!usernameDirty) {
-            return <i className="fa fa-user input-icon"></i>;
-        } else if (validating) {
+    const renderSummonerNameIcon = () => {
+        if (!summonerNameDirty) {
+            return <FontAwesomeIcon icon={faUser} className="input-icon" />;
+        } else if (validatingSummonerName) {
             return (
                 <div className="input-icon load-icon">
-                    <i className="fa fa-circle load-dot"></i>
-                    <i className="fa fa-circle load-dot"></i>
-                    <i className="fa fa-circle load-dot"></i>
+                    <FontAwesomeIcon
+                        icon={faCircle}
+                        className="load-dot" />
+                    <FontAwesomeIcon
+                        icon={faCircle}
+                        className="load-dot" />
+                    <FontAwesomeIcon
+                        icon={faCircle}
+                        className="load-dot" />
                 </div>
             );
-        } else if (invalidSummonerId) {
-            return <i className={`fa fa-times input-icon error-icon ${props.error && 'icon-error'}`}></i>;
+        } else if (invalidSummonerName) {
+            return <FontAwesomeIcon icon={faTimes} className={`input-icon error-icon icon-error`} />;
         } else {
-            return <i className="fa fa-check input-icon valid-icon"></i>;
+            return <FontAwesomeIcon icon={faCheck} className="input-icon valid-icon" />;
+        }
+    }
+
+    const renderError = () => {
+        if (error) {
+            return (
+                <div className="login-error-wrapper">
+                    {error}
+                </div>
+            )
         }
     }
 
     const renderRegister = () => {
-        const buttonDisabled = mismatchedPasswords || invalidSummonerId || !username || !password || !passwordConfirm;
+        const buttonDisabled = mismatchedPasswords || invalidSummonerName || !summonerName || !password || !passwordConfirm;
         return (
             <div className="login-action-wrapper">
                 <div className="login-textbox-wrapper">
                     <input
                         type="text"
-                        className={`login-input ${invalidSummonerId && 'input-error'}`}
-                        placeholder="League username"
+                        className={`login-input ${invalidSummonerName && 'input-error'}`}
+                        placeholder="summoner name"
                         onBlur={e => validateSummonerName(e.target.value)}
-                        onChange={e => onInputChange(e, 'username')} />
-                    {renderUsernameIcon()}
+                        onChange={e => onInputChange(e, 'summonerName')} />
+                    {renderSummonerNameIcon()}
                 </div>
                 <div className="login-textbox-wrapper">
                     <input
                         type="password"
+                        value={password}
                         className={`login-input ${mismatchedPasswords && 'input-error'}`}
-                        placeholder="Password"
-                        onChange={e => onInputChange(e, 'password')} />
-                        <i className={`fa fa-${mismatchedPasswords ? 'times error-icon icon-error' : 'lock'} input-icon`}></i>
+                        placeholder="password"
+                        onChange={e => onInputChange(e, 'password')}
+                        onBlur={onPasswordConfirm} />
+                        <FontAwesomeIcon
+                            icon={faLock}
+                            className={`input-icon ${mismatchedPasswords && 'error-icon icon-error'}`} />
                 </div>
                 <div className="login-textbox-wrapper">
                     <input
                         type="password"
+                        value={passwordConfirm}
                         className={`login-input ${mismatchedPasswords && 'input-error'}`}
-                        placeholder="Verify password"
+                        placeholder="verify password"
                         onChange={e => onInputChange(e, 'passwordConfirm')}
                         onBlur={onPasswordConfirm} />
-                    <i className={`fa fa-${mismatchedPasswords ? 'times error-icon icon-error' : 'lock'} input-icon`}></i>
+                        <FontAwesomeIcon
+                            icon={faLock}
+                            className={`input-icon ${mismatchedPasswords && 'error-icon icon-error'}`} />
+                </div>
+                <div className="login-textbox-wrapper">
+                    <input
+                        type="input"
+                        className={`login-input`}
+                        placeholder="first name (optional)"
+                        onChange={e => onInputChange(e, 'firstName')} />
+                        <FontAwesomeIcon
+                            icon={faSignature}
+                            className="input-icon" />
+                </div>
+                <div className="login-textbox-wrapper">
+                    <input
+                        type="input"
+                        className={`login-input`}
+                        placeholder="last name (optional)"
+                        onChange={e => onInputChange(e, 'lastName')} />
+                        <FontAwesomeIcon
+                            icon={faSignature}
+                            className="input-icon" />
+                </div>
+                <div className="login-textbox-wrapper">
+                    <input
+                        type="input"
+                        className={`login-input`}
+                        placeholder="email (optional)"
+                        onChange={e => onInputChange(e, 'email')} />
+                        <FontAwesomeIcon
+                            icon={faAt}
+                            className="input-icon" />
                 </div>
                 <button
                     className="login-button"
@@ -107,6 +207,7 @@ export default function Register (props) {
                     disabled={buttonDisabled}>
                     REGISTER
                 </button>
+                {renderError()}
             </div>
         );
     };

@@ -1,21 +1,27 @@
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
-const mongoose = require('mongoose');
-const User = require('../models/user.schema.js');
+const crypto = require('crypto');
+const db = require('../database/sqlite/sqlite-database.js');
 
-passport.use(new LocalStrategy(function (username, password, done) {
-        User.findOne({ username }, function (err, user) {
-            if (err) {
-                return done(err);
+passport.use(new LocalStrategy(
+    { usernameField: 'summonerName' },
+    async (username, password, done) => {
+        try {
+            const localUser = await db.retrieveOne('summonerName', username, 'users');
+            if (!localUser) {
+                return done(null, false, { message: 'User not found '});
             }
-            if (!user) {
-                return done(null, false, { message: 'User not found' });
-            }
-            if (!user.validatePassword(password)) {
+            if (!validatePassword(password, localUser)) {
                 return done(null, false, { message: 'Incorrect password' });
             }
-
-            return done(null, user);
-        })
+            return done(null, localUser);
+        } catch (err) {
+            return done(err);
+        }
     }
 ));
+
+const validatePassword = (password, user) => {
+    const hash = crypto.pbkdf2Sync(password, user.salt, 1000, 64, 'sha512').toString('hex');
+    return user.hash === hash;
+};
