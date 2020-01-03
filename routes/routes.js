@@ -1,9 +1,4 @@
 const passport = require('passport');
-const teams = require('./teams/teams.js');
-const tournament = require('./tournament/match-metadata.js');
-const tournamentV2 = require('./tournament/tournament.js');
-const userPrediction = require('./tournament/user-prediction.js');
-const matchResults = require('./tournament/match-results.js');
 const user = require('./user/user-sqlite.js');
 
 const jwt = require('express-jwt');
@@ -37,8 +32,10 @@ module.exports = function (app) {
     // app.patch('/matchResults/:tournament/:year', matchResults.editResults);
 
     // user endpoints
+    app.get('/user', user.getUserBySummonerName);
     app.post('/user/register', user.register);
     app.post('/user/login', user.login);
+    app.patch('/user/updatePassword', user.updatePassword);
     app.get('/user/validateSummonerName', user.validateSummonerName);
     app.post('/user/validateToken', user.validateUserToken);
 };

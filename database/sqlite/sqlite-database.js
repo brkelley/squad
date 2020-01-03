@@ -50,6 +50,30 @@ class Database {
         }
     }
 
+    /**
+     * fields:      [{ key: id, value: '123' }, { key: name, value: 'Name' }]
+     * comparator:  { key: name, value: 'Name' }
+     */
+    async update (fields, comparator, table) {
+        const updateString = fields.reduce((str, field) => {
+            return str ? `${str},${field.key}=?` : `${field.key}=?`;
+        }, '');
+        const data = fields.map(field => field.value);
+        data.push(comparator.value);
+        try {
+            await this.db.run(
+                `
+                    UPDATE ${table}
+                    SET ${updateString}
+                    WHERE ${comparator.key}=?
+                `,
+                data
+            );
+        } catch (error) {
+            throw new Error('DATABASE ERROR: Could not update database row');
+        }
+    }
+
     async retrieveOne (key, value, table) {
         try {
             const sqlString = `SELECT * FROM ${table} WHERE ${snakeCase(key)} = ?`;

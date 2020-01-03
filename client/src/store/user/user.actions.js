@@ -28,6 +28,15 @@ export const registerNewUser = body => dispatch => {
         });
 };
 
+export const resetPassword = body => dispatch => {
+    return axios.patch('http://localhost:4444/user/updatePassword', body)
+        .then(({ data: results }) => {
+            dispatch(setUser(results.user));
+            dispatch(setUserToken(results.token));
+            Cookies.set('userToken', results.token);
+        });
+};
+
 export const login = (summonerName, password) => (dispatch, getState) => {
     const { userReducer: state } = getState();
     if (state.userToken && state.userToken !== '') {

@@ -2,7 +2,7 @@ import { connect } from 'react-redux';
 import Login from './login.jsx';
 import { login } from '../../store/user/user.actions.js';
 
-const mapStateToProps = ({ userReducer: state }) => ({});
+const mapStateToProps = () => ({});
 
 const mapDispatchToProps = dispatch => ({
     login: (username, password) => dispatch(login(username, password))

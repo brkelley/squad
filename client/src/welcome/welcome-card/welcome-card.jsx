@@ -3,6 +3,7 @@ import './welcome-card.scss';
 import React, { useState, useEffect } from 'react';
 import LoginContainer from '../login/login.container.jsx';
 import RegisterContainer from '../register/register.container.jsx';
+import ResetPasswordContainer from '../reset-password/reset-password.container.jsx';
 
 export default function WelcomeCard (props) {
     const [activeTab, setActiveTab] = useState('login');
@@ -12,7 +13,9 @@ export default function WelcomeCard (props) {
     });
 
     const constructNavigationItemClass = (tabName) => {
-        return `welcome-card__navigation-item ${activeTab === tabName && 'active-nav'}`
+        let isActiveTab = activeTab === tabName;
+        if (tabName === 'login' && activeTab === 'reset-password') isActiveTab = true;
+        return `welcome-card__navigation-item ${isActiveTab && 'active-nav'}`;
     };
 
     const onRedirect = url => {
@@ -47,6 +50,8 @@ export default function WelcomeCard (props) {
                 return <LoginContainer onRedirect={onRedirect} />;
             case 'register':
                 return <RegisterContainer onRedirect={onRedirect} />;
+            case 'reset-password':
+                return <ResetPasswordContainer onRedirect={onRedirect} />;
         }
     };
 

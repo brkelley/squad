@@ -12,10 +12,10 @@ const history = createBrowserHistory();
 
 export default function AppRoute (props) {
     const [username] = useState(props.store.getState().userReducer.userToken);
-    const [displayNavbar, setDisplayNavbar] = useState(!['/login', '/register', '/spectate'].includes(history.location.pathname));
+    const [displayNavbar, setDisplayNavbar] = useState(!['/login', '/register', '/spectate', '/reset-password'].includes(history.location.pathname));
 
     history.listen(location => {
-        setDisplayNavbar(!['/login', '/register', '/spectate'].includes(location.pathname));
+        setDisplayNavbar(!['/login', '/register', '/spectate', '/reset-password'].includes(location.pathname));
     });
 
     return (
@@ -36,6 +36,10 @@ export default function AppRoute (props) {
                     component={WelcomeContainer} />
                 <Route
                     path="/spectate"
+                    exact
+                    component={WelcomeContainer} />
+                <Route
+                    path="/reset-password"
                     exact
                     component={WelcomeContainer} />
                 <PrivateRoute

@@ -5,6 +5,21 @@ const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const uuidv4 = require('uuid/v4');
 
+module.exports.getUserBySummonerName = async (req, res) => {
+    try {
+        const user = await db.retrieveOne('summonerName', req.query.summonerName, 'users');
+        if (!user) {
+            res.status(404).send({ message: 'username not found' });
+            return;
+        }
+        res.status(200).json(user);
+        return;
+    } catch (error) {
+        res.status(400).json({ message: 'database error' });
+        return;
+    }
+};
+
 module.exports.register = async (req, res) => {
     const user = { id: uuidv4(), ...req.body };
     user.salt = crypto.randomBytes(16).toString('hex');
@@ -14,6 +29,25 @@ module.exports.register = async (req, res) => {
         await db.insert([user], 'users');
         delete user.salt;
         delete user.hash;
+        res.status(201).json(user);
+        return;
+    } catch (error) {
+        res.status(400).send({ message: '' + error });
+        return;
+    }
+};
+
+// As of right now, this is hardcoded to resetting password
+module.exports.updatePassword = async (req, res) => {
+    const salt = crypto.randomBytes(16).toString('hex');
+    const hash = crypto.pbkdf2Sync(req.body.password, salt, 1000, 64, 'sha512').toString('hex');
+    
+    const fields = [{ key: 'salt', value: salt }, { key: 'hash', value: hash }];
+    const comparator = { key: 'id', value: req.body.id };
+    try {
+        await db.update(fields, comparator, 'users');
+        const user = await db.retrieveOne('id', req.body.id, 'users');
+        console.log(user);
         res.status(201).json(user);
         return;
     } catch (error) {

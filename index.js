@@ -16,7 +16,12 @@ require('./config/passport.js');
 // error handlers
 // Catch unauthorised errors
 app.use((req, res, next) => {
-    if (req.url.includes('/login') || req.url.includes('/register') || req.url.includes('/user/validate')) {
+    if (req.url.includes('/login') ||
+        req.url.includes('/register') ||
+        req.url.includes('/user') ||
+        req.url.includes('/user/validateToken') ||
+        req.url.includes('/user/updatePassword') ||
+        req.url.includes('/user/validateSummonerName')) {
         next();
         return;
     }
