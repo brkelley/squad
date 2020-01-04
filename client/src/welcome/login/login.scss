@@ -83,6 +83,19 @@
         }
     }
 
+    .forgot-password-prompt {
+        text-align: center;
+        color: grey;
+        padding-top: 20px;
+        font-style: italic;
+        font-size: 0.9rem;
+
+        &:hover {
+            text-decoration: underline;
+            cursor: pointer;
+        }
+    }
+
     .login-error-wrapper {
         text-align: center;
         color: red;

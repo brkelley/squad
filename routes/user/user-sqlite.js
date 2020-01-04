@@ -29,7 +29,8 @@ module.exports.register = async (req, res) => {
         await db.insert([user], 'users');
         delete user.salt;
         delete user.hash;
-        res.status(201).json(user);
+        token = generateJwt(user);
+        res.status(201).json({ user, token });
         return;
     } catch (error) {
         res.status(400).send({ message: '' + error });
@@ -47,8 +48,8 @@ module.exports.updatePassword = async (req, res) => {
     try {
         await db.update(fields, comparator, 'users');
         const user = await db.retrieveOne('id', req.body.id, 'users');
-        console.log(user);
-        res.status(201).json(user);
+        token = generateJwt(user);
+        res.status(201).json({ user, token });
         return;
     } catch (error) {
         res.status(400).send({ message: '' + error });

@@ -19,6 +19,14 @@ export default function Login (props) {
                 setPassword('');
             });
     }
+    
+    const renderForgotPassword = () => {
+        return (
+            <div className="forgot-password-prompt" onClick={() => props.onRedirect('/reset-password')}>
+                forgot password?
+            </div>
+        )
+    };
 
     const renderLoginError = () => {
         if (loginError) {
@@ -63,6 +71,7 @@ export default function Login (props) {
                     onClick={onLoginClick}>
                     LOG IN
                 </button>
+                {renderForgotPassword()}
                 {renderLoginError()}
             </div>
         );
