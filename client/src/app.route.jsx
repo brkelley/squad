@@ -4,7 +4,7 @@ import { createBrowserHistory } from 'history';
 
 import PrivateRoute from './components/private-route/private-route.container.jsx';
 import Homepage from './homepage/homepage.jsx';
-import PredictionsContainer from './predictions/predictions.container.jsx';
+import Predictions from './predictions/predictions.jsx';
 import WelcomeContainer from './welcome/welcome.container.jsx';
 import TopNavbar from './components/top-navbar/top-navbar.jsx';
 
@@ -46,7 +46,7 @@ export default function AppRoute (props) {
                     path="/predictions"
                     exact
                     userToken={username}
-                    component={PredictionsContainer} />
+                    component={Predictions} />
                 <Route
                     path="/welcome"
                     exact
