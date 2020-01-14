@@ -36,16 +36,18 @@ class Database {
         const keyValueArrays = data.map(el => convertObjectToKeyValues(el, table));
         const keys = keyValueArrays[0].map(el => el.key);
         const values = keyValueArrays[0].map(el => el.value);
+        const sqlString = `
+            INSERT INTO ${table}(${keys.join(', ')})
+            VALUES(${values.map(() => '?').join(', ')})
+        `;
+        console.log('Inserting into DB: ', sqlString);
+        console.log('Values: ', values);
         try {
-            await this.db.run(
-                `
-                    INSERT INTO ${table}(${keys.join(', ')})
-                    VALUES(${values.map(() => '?').join(', ')})
-                `,
-                values
-            );
+            await this.db.run(sqlString, values);
             return data;
         } catch (error) {
+            console.log('logging database error');
+            console.log(error);
             throw new Error('DATABASE ERROR: Could not insert into database');
         }
     }

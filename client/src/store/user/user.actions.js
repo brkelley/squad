@@ -20,7 +20,7 @@ export const setUserObject = ({ username }) => dispatch => {
 }
 
 export const registerNewUser = body => dispatch => {
-    return axios.post('http://172.125.170.167:4444/user/register', body)
+    return axios.post('http://localhost:4444/user/register', body)
         .then(({data: results}) => {
             dispatch(setUser(results.user));
             dispatch(setUserToken(results.token));
