@@ -3,7 +3,7 @@ const axios = require('axios');
 const jwt = require('jsonwebtoken');
 const User = require('../../models/user.schema.js');
 
-module.exports.register = function (req, res) {
+module.exports.register = (req, res) => {
     var user = new User();
 
     user.username = req.body.username;
@@ -44,7 +44,7 @@ module.exports.validateUserToken = (req, res) => {
     res.status(200).json({ valid, _id, username, token: req.body.token });
 };
 
-module.exports.validate = async(req, res) => {
+module.exports.validate = async (req, res) => {
     const headers = {
         'X-Riot-Token': 'RGAPI-45b394c8-0ac5-42e3-9398-230cc12a637f'
     };

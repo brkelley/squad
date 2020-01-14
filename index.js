@@ -7,9 +7,6 @@ const express    = require('express'),
 
 app.use(cors());
 
-// database
-const database = require('./database/sqlite/sqlite-database.js');
-
 // Passport config
 require('./config/passport.js');
 
@@ -32,7 +29,7 @@ app.use((req, res, next) => {
     }
 
     const { exp } = jwt.decode(req.headers.squadtoken);
-    const valid = exp < (new Date().getTime() / 1000);
+    const valid = exp > (new Date().getTime() / 1000);
     if (valid) {
         next();
     } else {

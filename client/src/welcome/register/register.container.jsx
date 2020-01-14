@@ -6,7 +6,7 @@ const mapStateToProps = () => ({});
 
 const mapDispatchToProps = dispatch => ({
     verifySummonerName: summonerName => dispatch(validateSummonerName(summonerName)),
-    registerNewUser: (registerBody) => dispatch(registerNewUser(registerBody))
+    registerNewUser: registerBody => dispatch(registerNewUser(registerBody))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Register);

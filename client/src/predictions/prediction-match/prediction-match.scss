@@ -1,0 +1,63 @@
+.prediction-match-wrapper {
+    margin: 16px;
+    padding: 12px 36px;
+    background-color: #f5f5f5;
+    border: solid 1px #c9c9c9;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .prediction-block {
+        width: 150px;
+        font-weight: bold;
+    }
+
+    .prediction-content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .prediction-team { 
+            flex: 0 0 150px;
+            padding: 12px 0;
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.2s;
+    
+            &:hover {
+                cursor: pointer;
+                background-color: lightgrey;
+                transition: all 0.2s;
+            }
+    
+            .team-image {
+                height: 48px;
+                padding: 8px;
+                margin-bottom: 4px;
+                border-radius: 12px;
+                background-color: lighten(black, 20%);
+    
+                &.not-predicted {
+                    opacity: 0.3;
+                    transition: all 0.2s;
+                }
+            }
+    
+            .team-name {
+                color: lighten(black, 20%);
+                font-size: 0.9rem;
+    
+                &.not-predicted {
+                    opacity: 0.3;
+                    transition: all 0.2s;
+                }
+            }
+        }
+    }
+
+    .prediction-team-separator {
+        padding: 24px;
+        font-size: 1.2rem;
+        font-weight: bold;
+    }
+}

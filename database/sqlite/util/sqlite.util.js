@@ -1,23 +1,9 @@
-const camelCase = require('lodash/camelCase');
-
-const tableRows = {
-    users: [
-        'id',
-        'first_name',
-        'last_name',
-        'summoner_id',
-        'email',
-        'hash',
-        'salt',
-        'role',
-        'summoner_name'
-    ]
-}
+const snakeCase = require('lodash/snakeCase');
 
 const convertObjectToKeyValues = (obj, table) => {
-    const rows = tableRows[table];
-    return rows.reduce((keyValArr, row) => {
-        keyValArr.push({ key: row, value: obj[camelCase(row)] });
+    const keys = Object.keys(obj);
+    return keys.reduce((keyValArr, key) => {
+        keyValArr.push({ key: snakeCase(key), value: obj[key] });
         return keyValArr;
     }, []);
 };

@@ -12,11 +12,7 @@ export default function Dropdown (props) {
                 value={value}
                 onChange={onChange}
                 className="dropdown-wrapper"
-                autoWidth={false}
-                inputProps={{
-                    name: 'age',
-                    id: 'age-simple',
-                }}>
+                autoWidth={false}>
                 {options.map(option => (
                     <MenuItem
                         key={option.value}

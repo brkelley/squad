@@ -84,10 +84,19 @@ class Database {
         }
     }
 
-    async retrieveAll (table) {
+    async retrieveAll (table, filters) {
+        let sqlString = `SELECT * FROM ${table}`;
+        let params = [];
+        if (filters && filters.length > 0) {
+            sqlString = filters.reduce((aggString, filter, index) => {
+                aggString += index === 0 ? ` WHERE ${filter.key}=?` : ` AND ${filter.key}=?`;
+                return aggString;
+            }, sqlString);
+
+            params = filters.map(el => el.value);
+        }
         try {
-            const sqlString = `SELECT * FROM ${table}`;
-            return await this.db.all(sqlString);
+            return await this.db.all(sqlString, params);
         } catch (err) {
             throw new Error(err);
         }

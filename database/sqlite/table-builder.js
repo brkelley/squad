@@ -12,6 +12,16 @@ const buildTables = async sqlite => {
             summoner_name TEXT NOT NULL UNIQUE
         )
     `);
+
+    await sqlite.run(`
+    CREATE TABLE IF NOT EXISTS predictions (
+        id TEXT PRIMARY KEY NOT NULL UNIQUE,
+        user_id TEXT NOT NULL,
+        match_id TEXT NOT NULL UNIQUE,
+        prediction TEXT NOT NULL,
+        league_id TEXT NOT NULL
+    )
+`);
 };
 
 module.exports = buildTables;

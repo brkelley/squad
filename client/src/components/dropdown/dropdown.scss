@@ -1,11 +1,11 @@
 @import '../../style/variables.scss';
 
 .form-control-wrapper {
-    width: 180px;
+    min-width: 150px !important;
 
     .dropdown-wrapper {
         font-family: $font !important;
-        font-size: 1.5rem !important;
+        font-size: 1.1rem !important;
         color: inherit;
     }
 }

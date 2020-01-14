@@ -1,5 +1,7 @@
 const passport = require('passport');
+const proPlayMetadata = require('./pro-play-metadata/pro-play-metadata.js');
 const user = require('./user/user-sqlite.js');
+const predictions = require('./predictions/predictions.js');
 
 const jwt = require('express-jwt');
 const auth = jwt({
@@ -20,7 +22,12 @@ module.exports = function (app) {
     // app.post('/tournament/:tournament/:year', tournament.addMatchMetadata);
     // app.put('/tournament/:tournament/:year', tournament.saveMatchMetadata);
 
-    // // User Prediction endpoints
+    // Pro play metadata endpoints
+    app.get('/pro-play/leagues', proPlayMetadata.getLeagues);
+
+    // User Prediction endpoints
+    app.get('/predictions', predictions.getSchedule);
+    app.post('/predictions', predictions.saveOrUpdatePrediction);
     // app.post('/userPredictions/:tournament/:year/:userId', userPrediction.createUserPrediction);
     // app.get('/userPredictions/:tournament/:year/:userId', userPrediction.getUserPrediction);
     // app.patch('/userPredictions/:tournament/:year/:userId', userPrediction.updateUserPredictions);
