@@ -25,6 +25,7 @@ export const registerNewUser = body => dispatch => {
             dispatch(setUser(results.user));
             dispatch(setUserToken(results.token));
             Cookies.set('userToken', results.token);
+            axios.defaults.headers.common['squadToken'] = results.token;
         });
 };
 
@@ -47,6 +48,7 @@ export const login = (summonerName, password) => (dispatch, getState) => {
             dispatch(setUser(results.user));
             dispatch(setUserToken(results.token));
             Cookies.set('userToken', results.token);
+            axios.defaults.headers.common['squadToken'] = results.token;
         });
 };
 
