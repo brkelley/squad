@@ -14,7 +14,7 @@ export const retrieveLeagues = () => async (dispatch, state) => {
 
     let leagues;
     try {
-        const data = await axios.get('http://localhost:4444/pro-play/leagues');
+        const data = await axios.get('http://172.125.170.167:4444/pro-play/leagues');
         leagues = data.data;
     } catch (error) {
         throw new Error(error);

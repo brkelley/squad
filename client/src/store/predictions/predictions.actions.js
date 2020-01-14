@@ -22,7 +22,7 @@ export const setPredictionFilter = predictionFilter => ({
 export const updatePrediction = prediction => async dispatch => {
     let savedPrediction;
     try {
-        const data = await axios.post('http://localhost:4444/predictions', prediction);
+        const data = await axios.post('http://172.125.170.167:4444/predictions', prediction);
         savedPrediction = data.data;
     } catch (error) {
         throw new Error(error);
@@ -35,7 +35,7 @@ export const retrievePredictions = ({ forceReload, leagueId }) => async (dispatc
 
     if (!forceReload && !isEmpty(state.predictionMap)) return;
     try {
-        const data = await axios.get(`http://localhost:4444/predictions?leagueId=${leagueId}`);
+        const data = await axios.get(`http://172.125.170.167:4444/predictions?leagueId=${leagueId}`);
         predictionData = data.data;
     } catch (error) {
         throw new Error(error);
