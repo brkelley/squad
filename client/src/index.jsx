@@ -31,4 +31,4 @@ ReactDOM.render(
     </Provider>,
     document.getElementById('app')
 );
-module.hot.accept();
+// module.hot.accept();
