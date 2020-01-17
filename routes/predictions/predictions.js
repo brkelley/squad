@@ -1,5 +1,5 @@
 const axios = require('axios');
-const db = require('../../database/sqlite/sqlite-database.js');
+// const db = require('../../database/sqlite/sqlite-database.js');
 const LEAGUES = require('../../constants/leagues.json');
 const jwt = require('jsonwebtoken');
 const groupBy = require('lodash/groupBy');

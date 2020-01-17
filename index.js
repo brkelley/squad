@@ -5,6 +5,8 @@ const express    = require('express'),
       jwt        = require('jsonwebtoken'),
       passport   = require('passport');
 
+const db = require('./database/firestore/firestore.js');
+
 app.use(cors());
 
 // Passport config

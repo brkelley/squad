@@ -1,6 +1,6 @@
 const passport = require('passport');
 const proPlayMetadata = require('./pro-play-metadata/pro-play-metadata.js');
-const user = require('./user/user-sqlite.js');
+const user = require('./user/user.js');
 const predictions = require('./predictions/predictions.js');
 
 const jwt = require('express-jwt');
