@@ -1,6 +1,7 @@
 const firebase = require('firebase');
 // Required for side-effects
 require('firebase/firestore');
+const firestoreConfig = require('./firestore-config.json');
 
 class Database {
     constructor () {
@@ -10,7 +11,7 @@ class Database {
 
     _connect () {
         // Initialize Cloud Firestore through Firebase
-        
+        firebase.initializeApp(firestoreConfig);
         
         console.log('connecting to firebase...');
         this.db = firebase.firestore();
