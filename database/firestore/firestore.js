@@ -10,15 +10,7 @@ class Database {
 
     _connect () {
         // Initialize Cloud Firestore through Firebase
-        firebase.initializeApp({
-            apiKey: 'AIzaSyC-Gt5AQyqBJmsR46QcdeNn6zhWSFWzuoM',
-            authDomain: 'squad-265301.firebaseapp.com',
-            databaseURL: 'https://squad-265301.firebaseio.com',
-            projectId: 'squad-265301',
-            storageBucket: 'squad-265301.appspot.com',
-            messagingSenderId: '335752683280',
-            appId: '1:335752683280:web:9e9aee0098163372b9cf95'
-        });
+        
         
         console.log('connecting to firebase...');
         this.db = firebase.firestore();
