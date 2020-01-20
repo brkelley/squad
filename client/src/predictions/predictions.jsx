@@ -25,7 +25,6 @@ export default function Predictions (props) {
     };
 
     const init = () => {
-        retrievePredictions();
         retrieveLeagues();
     }
 

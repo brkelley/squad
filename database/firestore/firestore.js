@@ -1,5 +1,6 @@
-const admin = require('firebase-admin');
-let serviceAccount = require('./firestore-config/firestore-config.json');
+const firebase = require('firebase');
+// Required for side-effects
+require('firebase/firestore');
 
 class Database {
     constructor () {
@@ -8,18 +9,52 @@ class Database {
     }
 
     _connect () {
-        console.log('Connecting to firestore...');
-        admin.initializeApp({
-          credential: admin.credential.cert(serviceAccount)
+        // Initialize Cloud Firestore through Firebase
+        firebase.initializeApp({
+            apiKey: 'AIzaSyC-Gt5AQyqBJmsR46QcdeNn6zhWSFWzuoM',
+            authDomain: 'squad-265301.firebaseapp.com',
+            databaseURL: 'https://squad-265301.firebaseio.com',
+            projectId: 'squad-265301',
+            storageBucket: 'squad-265301.appspot.com',
+            messagingSenderId: '335752683280',
+            appId: '1:335752683280:web:9e9aee0098163372b9cf95'
         });
         
-        this.db = admin.firestore();
+        console.log('connecting to firebase...');
+        this.db = firebase.firestore();
     }
 
     async retrieveOne (key, value, table) {
+        let doc;
+        try {
+            // need difference for id vs other field
+            if (key === 'id') {
+                doc = await this.db.collection(table).doc(value).get();
+            } else {
+                const snapshot = await this.db.collection(table).where(key, '==', value).get();
+                snapshot.forEach(el => {
+                    doc = el;
+                    return doc;
+                });
+            }
+        } catch (error) {
+            console.log(error);
+            return error;
+        }
+
+        return { id: doc.id, ...doc.data() };
+    }
+
+    async retrieveAll (table, filters) {
         let snapshot;
         try {
-            snapshot = await this.db.collection(table).where(key, '==', value).get();
+            const collection = this.db.collection(table);
+            if (filters && filters.length > 0) {
+                filters.forEach(filter => {
+                    collection.where(filter.key, '==', filter.value);
+                });
+            }
+            snapshot = await collection.get();
         } catch (error) {
             return error;
         }
@@ -32,7 +67,44 @@ class Database {
             data.push(item);
         });
 
-        return data[0];
+        return data;
+    }
+
+    async insert (doc, table) {
+        let finishedDoc;
+        try {
+            const setDoc = await this.db.collection(table).add(doc);
+            finishedDoc = { id: setDoc.id, ...doc };
+        } catch (error) {
+            console.log('error in insert: ', error);
+            return error;
+        }
+
+        return finishedDoc;
+    }
+
+    async update (fields, comparator, table) {
+        // firestore always compares on ID
+        if (comparator.key !== 'id') {
+            console.log('Updating with firestore requires ID!');
+            return null;
+        }
+
+        const fieldsAsObject = fields.reduce((obj, field) => {
+            obj[field.key] = field.value;
+            return obj;
+        }, {});
+
+        let updateDoc;
+        try {
+            updateDoc = await this.db.collection(table).doc(comparator.value);
+            updateDoc.update(fieldsAsObject);
+        } catch (error) {
+            console.log(error);
+            return error;
+        }
+
+        return updateDoc;
     }
 }
 

@@ -44,7 +44,11 @@ module.exports = {
         extensions: ['*', '.js', '.jsx']
     },
     plugins: [
-        new webpack.HotModuleReplacementPlugin()
+        new webpack.HotModuleReplacementPlugin(),
+        new webpack.DefinePlugin({
+            'SERVER_URL': '"http://localhost:4444"',
+            'ENVIRONMENT': '"production"'
+        }),
     ],
     devServer: {
         historyApiFallback: true,

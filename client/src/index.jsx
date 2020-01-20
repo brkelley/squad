@@ -13,6 +13,10 @@ import './style/app.scss';
 const token = Cookies.get('userToken');
 if (token) {
     axios.defaults.headers.common['squadToken'] = token;
+    axios.interceptors.request.use(config => {
+        config.url = `${SERVER_URL}${config.url}`;
+        return config;
+    });
 }
 
 const store = createStore(

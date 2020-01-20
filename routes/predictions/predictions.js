@@ -1,5 +1,5 @@
 const axios = require('axios');
-// const db = require('../../database/sqlite/sqlite-database.js');
+const db = require('../../database/firestore/firestore.js');
 const LEAGUES = require('../../constants/leagues.json');
 const jwt = require('jsonwebtoken');
 const groupBy = require('lodash/groupBy');
@@ -24,7 +24,6 @@ module.exports.getSchedule = async (req, res) => {
     try {
         scheduleMetadata = await axios.get(esportsUrl, { headers });
         userPredictions = await db.retrieveAll('predictions', filters);
-        console.log(userPredictions);
         scheduleMetadata = scheduleMetadata.data.data.schedule.events;
     } catch (error) {
         console.log(error);
@@ -33,7 +32,7 @@ module.exports.getSchedule = async (req, res) => {
     }
     scheduleMetadata = scheduleMetadata.filter(el => el.state === 'unstarted');
     scheduleMetadata = scheduleMetadata.map(metadata => {
-        const prediction = userPredictions.find(el => el.match_id === metadata.match.id);
+        const prediction = userPredictions.find(el => el.matchId === metadata.match.id);
 
         if (prediction) {
             metadata.match.prediction = {
@@ -47,19 +46,24 @@ module.exports.getSchedule = async (req, res) => {
 };
 
 module.exports.saveOrUpdatePrediction = async (req, res) => {
-    const prediction = { ...req.body };
-    try {
-        if (prediction.id) {
-            const fields = [{ key: 'prediction', value: req.body.prediction }];
-            const comparator = { key: 'id', value: req.body.id };
-            await db.update(fields, comparator, 'predictions');
-        } else {
-            prediction.id = uuidv4();
-            await db.insert([prediction], 'predictions');
+    const predictions = req.body;
+    const finalPredictions = [];
+    predictions.forEach(async prediction => {
+        let returnedPrediction;
+        try {
+            if (prediction.id) {
+                // only want to update the prediction field
+                const fields = [{ key: 'prediction', value: prediction.prediction }];
+                const comparator = { key: 'id', value: prediction.id };
+                returnedPrediction = await db.update(fields, comparator, 'predictions');
+            } else {
+                returnedPrediction = await db.insert(prediction, 'predictions');
+            }
+        } catch (error) {
+            res.status(400).send({ message: '' + error });
+            return;
         }
-    } catch (error) {
-        res.status(400).send({ message: '' + error });
-        return;
-    }
-    res.status(201).json(prediction);
+        finalPredictions.push(returnedPrediction);
+    });
+    res.status(201).json(finalPredictions);
 };

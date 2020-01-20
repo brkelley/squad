@@ -20,7 +20,7 @@ export const setUserObject = ({ username }) => dispatch => {
 }
 
 export const registerNewUser = body => dispatch => {
-    return axios.post('http://localhost:4444/user/register', body)
+    return axios.post('/user/register', body)
         .then(({data: results}) => {
             dispatch(setUser(results.user));
             dispatch(setUserToken(results.token));
@@ -30,7 +30,7 @@ export const registerNewUser = body => dispatch => {
 };
 
 export const resetPassword = body => dispatch => {
-    return axios.patch('http://172.125.170.167:4444/user/updatePassword', body)
+    return axios.patch('/user/updatePassword', body)
         .then(({ data: results }) => {
             dispatch(setUser(results.user));
             dispatch(setUserToken(results.token));
@@ -43,7 +43,7 @@ export const login = (summonerName, password) => (dispatch, getState) => {
     if (state.userToken && state.userToken !== '') {
         return Promise.resolve();
     }
-    return axios.post('http://172.125.170.167:4444/user/login', { summonerName, password })
+    return axios.post('/user/login', { summonerName, password })
         .then(({ data: results }) => {
             dispatch(setUser(results.user));
             dispatch(setUserToken(results.token));
@@ -53,7 +53,7 @@ export const login = (summonerName, password) => (dispatch, getState) => {
 };
 
 export const validateUserToken = token => dispatch => {
-    return axios.post('http://172.125.170.167:4444/user/validateToken', { token })
+    return axios.post('/user/validateToken', { token })
         .then(({ data: results }) => {
             const { token, valid, username, _id } = results;
             dispatch(setUser({ _id, username }));
@@ -63,7 +63,7 @@ export const validateUserToken = token => dispatch => {
 };
 
 export const validateSummonerName = summonerName => () => {
-    return axios.get(`http://172.125.170.167:4444/user/validateSummonerName?summonerName=${summonerName}`)
+    return axios.get(`/user/validateSummonerName?summonerName=${summonerName}`)
         .catch(({ response }) => {
             console.log(response);
             return Promise.reject({ message: response.data.message })

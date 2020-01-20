@@ -1,4 +1,5 @@
 client/node_modules/
 node_modules/
+database/firestore/firestore-config/
 
 client/dist/bundle.js

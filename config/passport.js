@@ -1,7 +1,7 @@
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const crypto = require('crypto');
-// const db = require('../database/sqlite/sqlite-database.js');
+const db = require('../database/firestore/firestore.js');
 
 passport.use(new LocalStrategy(
     { usernameField: 'summonerName' },

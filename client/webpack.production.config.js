@@ -40,6 +40,9 @@ module.exports = {
             }
         ]
     },
+    externals: {
+        serverUrl: ''
+    },
     resolve: {
         extensions: ['*', '.js', '.jsx']
     }

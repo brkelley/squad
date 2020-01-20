@@ -3,7 +3,6 @@ const passport = require('passport');
 const axios = require('axios');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
-const uuidv4 = require('uuid/v4');
 
 module.exports.getUserBySummonerName = async (req, res) => {
     try {
@@ -22,16 +21,16 @@ module.exports.getUserBySummonerName = async (req, res) => {
 };
 
 module.exports.register = async (req, res) => {
-    const user = { id: uuidv4(), ...req.body };
+    const user = { ...req.body };
     user.salt = crypto.randomBytes(16).toString('hex');
     user.hash = crypto.pbkdf2Sync(req.body.password, user.salt, 1000, 64, 'sha512').toString('hex');
     delete user.password;
     try {
-        await db.insert([user], 'users');
-        delete user.salt;
-        delete user.hash;
-        token = generateJwt(user);
-        res.status(201).json({ user, token });
+        const savedUser = await db.insert(user, 'users');
+        delete savedUser.salt;
+        delete savedUser.hash;
+        token = generateJwt(savedUser);
+        res.status(201).json({ user: savedUser, token });
         return;
     } catch (error) {
         res.status(400).send({ message: '' + error });
@@ -114,7 +113,6 @@ module.exports.validateUserToken = (req, res) => {
 const generateJwt = user => {
     const expiry = new Date();
     expiry.setDate(expiry.getDate() + 7);
-    console.log(user);
 
     return jwt.sign({
         _id: user.id,

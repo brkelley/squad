@@ -1,6 +1,7 @@
 import { SET_PREDICTION_MAP, SET_PREDICTION,SET_PREDICTION_FILTER } from './predictions.constants.js';
 import keyBy from 'lodash/keyBy';
 import isEmpty from 'lodash/isEmpty';
+import debounce from 'lodash/debounce';
 import axios from 'axios';
 
 export const setPredictionMap = predictionMap => ({
@@ -19,15 +20,23 @@ export const setPredictionFilter = predictionFilter => ({
     value: predictionFilter.value
 });
 
-export const updatePrediction = prediction => async dispatch => {
-    let savedPrediction;
+let debouncedPredictions = {};
+const debouncedSavePrediction = debounce(async () => {
     try {
-        const data = await axios.post('http://172.125.170.167:4444/predictions', prediction);
-        savedPrediction = data.data;
+        const data = await axios.post('/predictions', Object.values(debouncedPredictions));
+        debouncedPredictions = {};
+        // savedPrediction = data.data;
     } catch (error) {
         throw new Error(error);
     }
-    dispatch(setPrediction(savedPrediction));
+}, 1000);
+
+export const updatePrediction = prediction => async dispatch => {
+    // let savedPrediction;
+    debouncedPredictions[prediction.matchId] = prediction;
+    debouncedSavePrediction(prediction);
+
+    dispatch(setPrediction(prediction));
 };
 
 export const retrievePredictions = ({ forceReload, leagueId }) => async (dispatch, state) => {
@@ -35,7 +44,7 @@ export const retrievePredictions = ({ forceReload, leagueId }) => async (dispatc
 
     if (!forceReload && !isEmpty(state.predictionMap)) return;
     try {
-        const data = await axios.get(`http://172.125.170.167:4444/predictions?leagueId=${leagueId}`);
+        const data = await axios.get(`/predictions?leagueId=${leagueId}`);
         predictionData = data.data;
     } catch (error) {
         throw new Error(error);
