@@ -23,19 +23,17 @@ export const setPredictionFilter = predictionFilter => ({
 let debouncedPredictions = {};
 const debouncedSavePrediction = debounce(async () => {
     try {
-        const data = await axios.post('/predictions', Object.values(debouncedPredictions));
+        await axios.post('/predictions', Object.values(debouncedPredictions));
         debouncedPredictions = {};
-        // savedPrediction = data.data;
     } catch (error) {
         throw new Error(error);
     }
 }, 1000);
 
 export const updatePrediction = prediction => async dispatch => {
-    // let savedPrediction;
+    debouncedSavePrediction.cancel();
     debouncedPredictions[prediction.matchId] = prediction;
     debouncedSavePrediction(prediction);
-
     dispatch(setPrediction(prediction));
 };
 

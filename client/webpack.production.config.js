@@ -45,5 +45,12 @@ module.exports = {
     },
     resolve: {
         extensions: ['*', '.js', '.jsx']
-    }
+    },
+    plugins: [
+        new webpack.HotModuleReplacementPlugin(),
+        new webpack.DefinePlugin({
+            'SERVER_URL': '""',
+            'ENVIRONMENT': '"production"'
+        }),
+    ],
 };

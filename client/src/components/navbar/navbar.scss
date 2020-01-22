@@ -5,7 +5,7 @@
     height: 100%;
 
     .navbar-wrapper {
-        width: 150px;
+        width: $navbar-size;
         height: 100%;
         background-color: #5d001e;
         display: flex;
@@ -23,7 +23,7 @@
 
         .navbar-links {
             width: 100%;
-            font-size: 1rem;
+            font-size: 0.8rem;
 
             .navbar-link {
                 color: $lightest-gray;
@@ -35,12 +35,12 @@
                 flex-direction: column;
                 align-items: center;
                 font-size: 1rem;
-                color: darken(white, 20%);
+                color: darken(white, 40%);
 
                 &:hover {
                     cursor: pointer;
                     transition: all .2s;
-                    background-color: darken(#5d001e, 5%);
+                    background-color: darken(#5d001e, 3%);
                 }
 
                 &.active {

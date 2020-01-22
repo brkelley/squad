@@ -1,11 +1,16 @@
 const express    = require('express'),
       cors       = require('cors'),
-      app        = express(),
+    //   app        = express(),
       bodyParser = require('body-parser'),
       jwt        = require('jsonwebtoken'),
+      path       = require('path'),
       passport   = require('passport');
 
-const db = require('./database/firestore/firestore.js');
+const app = express();
+const router = express.Router();
+const routes = require('./routes/routes.js');
+
+require('./database/firestore/firestore.js');
 
 app.use(cors());
 
@@ -56,9 +61,11 @@ passport.deserializeUser(function (id, done) {
 });
 
 // routes
-require('./routes/routes.js')(app);
+// require('./routes/routes.js')(app);
+routes(router);
+app.use('/api/v1', router);
 
-const port = 4444;
+const port = process.env.PORT || 4444;
 
 app.listen(port, function () {
     console.log(`Listening on port ${port}...`);

@@ -1,5 +1,9 @@
+@import '../style/variables.scss';
+
 .welcome-wrapper {
     display: flex;
+    justify-content: center;
+    margin-right: $navbar-size;
 
     .welcome__content-card {
         padding-top: 100px;
@@ -11,17 +15,6 @@
             text-align: center;
             padding-bottom: 40px;
             text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
-        }
-    }
-
-    .welcome__designs {
-        flex: 3 1 auto;
-        text-align: center;
-
-        .welcome-icon {
-            padding-top: 300px;
-            height: 100px;
-            width: 100px;
         }
     }
 }

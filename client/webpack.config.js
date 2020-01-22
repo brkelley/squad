@@ -46,8 +46,8 @@ module.exports = {
     plugins: [
         new webpack.HotModuleReplacementPlugin(),
         new webpack.DefinePlugin({
-            'SERVER_URL': '"http://localhost:4444"',
-            'ENVIRONMENT': '"production"'
+            'SERVER_URL': '"https://squad-265800.appspot.com"',
+            'ENVIRONMENT': '"dev"'
         }),
     ],
     devServer: {

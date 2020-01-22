@@ -50,9 +50,9 @@
         "sass": "^1.24.0"
     },
     "scripts": {
+        "start": "webpack --mode=production --config webpack.production.config.js",
         "start-dev": "webpack-dev-server --config ./webpack.config.js --mode=development --port 5555",
         "bundle": "webpack --mode=production --config webpack.production.config.js",
-        "prestart": "npm install && npm run bundle",
         "lint": "eslint src --ext .js --ext .jsx"
     }
 }

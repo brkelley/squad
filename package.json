@@ -4,7 +4,8 @@
     "description": "Server for squad",
     "main": "index.js",
     "scripts": {
-        "start": "cd client && npm install && npm run bundle && cd .. && npm install && node index.js"
+        "start": "node index.js",
+        "client": "npm start --prefix client"
     },
     "author": "brkelley",
     "license": "ISC",

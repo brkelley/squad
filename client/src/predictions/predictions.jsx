@@ -1,18 +1,21 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import './predictions.scss';
 
 import PredictionMatch from './prediction-match/prediction-match.jsx';
 import PredictionFiltersContainer from './prediction-filters/prediction-filters.container.jsx';
+import LoadingIndicator from '../components/loading-indicator/loading-indicator.jsx';
 import isEmpty from 'lodash/isEmpty';
-import keyBy from 'lodash/keyBy';
 import moment from 'moment';
 
 export default function Predictions (props) {
+    const [ predictionsLoading, setPredictionsLoading ] = useState(false);
     const retrievePredictions = async forceReload => {
+        setPredictionsLoading(true);
         if (!forceReload && !isEmpty(props.predictionMap)) return;
 
         const leagueId = props.predictionFilters.leagueId;
-        props.retrievePredictions({ forceReload, leagueId });
+        await props.retrievePredictions({ forceReload, leagueId });
+        setPredictionsLoading(false);
     };
 
     useEffect(() => {
@@ -68,7 +71,7 @@ export default function Predictions (props) {
     const renderDatestamp = (match, topPadding) => {
         return (
             <div className={`datestamp-wrapper ${topPadding && 'solo-datestamp'}`}>
-                {moment(match.startTime).format('dddd, MMMM do')}
+                {moment(match.startTime).format('dddd, MMMM D')}
             </div>
         );
     };
@@ -101,15 +104,31 @@ export default function Predictions (props) {
         });
     };
 
+    const renderPredictionsContent = () => {
+        if (predictionsLoading) {
+            return (
+                <div className="loading-indicator-wrapper">
+                    <LoadingIndicator />
+                </div>
+            );
+        } else {
+            return (
+                <div className="predictions-content">
+                    <PredictionFiltersContainer
+                        leagues={props.leagues.filter(el => ['LEC', 'LCS'].includes(el.name))}
+                        filters={props.predictionFilters} />
+                    {renderPredictionSets()}
+                </div>
+            );
+        }
+    };
+
     return (
         <div className="predictions-wrapper">
             <div className="page-title-wrapper">
                 Predictions
             </div>
-            <PredictionFiltersContainer
-                leagues={props.leagues.filter(el => ['LEC', 'LCS'].includes(el.name))}
-                filters={props.predictionFilters} />
-            {renderPredictionSets()}
+            {renderPredictionsContent()}
         </div>
     );
 };

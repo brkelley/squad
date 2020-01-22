@@ -14,7 +14,7 @@ const token = Cookies.get('userToken');
 if (token) {
     axios.defaults.headers.common['squadToken'] = token;
     axios.interceptors.request.use(config => {
-        config.url = `${SERVER_URL}${config.url}`;
+        config.url = `${SERVER_URL}/api/v1${config.url}`;
         return config;
     });
 }

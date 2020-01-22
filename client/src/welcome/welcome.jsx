@@ -28,11 +28,6 @@ export default function Welcome (props) {
                         redirectUrl={redirect} />
                 </div>
             </div>
-            <div className="welcome__designs">
-                <FontAwesomeIcon
-                    icon={faMicrophone}
-                    className="welcome-icon" />
-            </div>
         </div>
     );
 };
