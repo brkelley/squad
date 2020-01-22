@@ -3,7 +3,7 @@ import PrivateRoute from './private-route.jsx';
 import { validateUserToken } from '../../store/user/user.actions.js';
 
 const mapStateToProps = ({ userReducer }) => ({
-    user: userReducer.user
+    userToken: userReducer.userToken
 });
 
 const mapDispatchToProps = dispatch => ({

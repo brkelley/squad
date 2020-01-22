@@ -12,14 +12,14 @@ const headers = {
 
 module.exports.getSchedule = async (req, res) => {
     let scheduleMetadata, userPredictions;
-    const { _id } = jwt.decode(req.headers.squadtoken);
+    const { id } = jwt.decode(req.headers.squadtoken);
     const filters = [
-        { key: 'user_id', value: _id }
+        { key: 'userId', value: id }
     ];
     let esportsUrl = 'https://esports-api.lolesports.com/persisted/gw/getSchedule?hl=en-US';
     if (get(req, 'query.leagueId')) {
         esportsUrl += `&leagueId=${req.query.leagueId}`;
-        filters.push({ key: 'league_id', value: req.query.leagueId });
+        filters.push({ key: 'leagueId', value: req.query.leagueId });
     }
     try {
         scheduleMetadata = await axios.get(esportsUrl, { headers });

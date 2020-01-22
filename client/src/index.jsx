@@ -13,17 +13,25 @@ import './style/app.scss';
 const token = Cookies.get('userToken');
 if (token) {
     axios.defaults.headers.common['squadToken'] = token;
-    axios.interceptors.request.use(config => {
-        config.url = `${SERVER_URL}/api/v1${config.url}`;
-        return config;
-    });
+}
+
+axios.interceptors.request.use(config => {
+    config.url = `${SERVER_URL}/api/v1${config.url}`;
+    return config;
+});
+
+const composeParams = [
+    applyMiddleware(thunk)
+];
+
+if (ENVIRONMENT === 'dev' && window.__REDUX_DEVTOOLS_EXTENSION__) {
+    composeParams.push(window.__REDUX_DEVTOOLS_EXTENSION__());
 }
 
 const store = createStore(
     rootReducer,
     compose(
-        applyMiddleware(thunk)
-        // window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+        ...composeParams
     )
 );
 

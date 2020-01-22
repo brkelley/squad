@@ -61,7 +61,6 @@ export default function AppRoute (props) {
                     <PrivateRoute
                         path="/predictions"
                         exact
-                        userToken={username}
                         component={PredictionsContainer} />
                 </Switch>
             </div>

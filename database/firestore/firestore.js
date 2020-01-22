@@ -41,14 +41,15 @@ class Database {
     async retrieveAll (table, filters) {
         let snapshot;
         try {
-            const collection = this.db.collection(table);
+            let collection = this.db.collection(table);
             if (filters && filters.length > 0) {
                 filters.forEach(filter => {
-                    collection.where(filter.key, '==', filter.value);
+                    collection = collection.where(filter.key, '==', filter.value);
                 });
             }
             snapshot = await collection.get();
         } catch (error) {
+            console.log(error);
             return error;
         }
 

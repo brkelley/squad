@@ -4,7 +4,7 @@ import { retrievePredictions, updatePrediction } from '../store/predictions/pred
 import { retrieveLeagues } from '../store/pro-play-metadata/pro-play-metadata.actions.js';
 
 const mapStateToProps = ({ userReducer, predictionReducer, proPlayMetadataReducer }) => ({
-    userId: userReducer.user._id,
+    userId: userReducer.user.id,
     predictionMap: predictionReducer.predictionMap,
     predictionFilters: predictionReducer.predictionFilters,
     leagues: proPlayMetadataReducer.leagues

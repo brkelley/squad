@@ -40,7 +40,7 @@ export const resetPassword = body => dispatch => {
 
 export const login = (summonerName, password) => (dispatch, getState) => {
     const { userReducer: state } = getState();
-    if (state.userToken && state.userToken !== '') {
+    if (state.userToken && !['', 'INVALID'].includes(state.userToken)) {
         return Promise.resolve();
     }
     return axios.post('/user/login', { summonerName, password })
@@ -52,14 +52,28 @@ export const login = (summonerName, password) => (dispatch, getState) => {
         });
 };
 
-export const validateUserToken = token => dispatch => {
-    return axios.post('/user/validateToken', { token })
-        .then(({ data: results }) => {
-            const { token, valid, username, _id } = results;
-            dispatch(setUser({ _id, username }));
-            dispatch(setUserToken(token));
-            return { token, valid, username, _id };
-        });
+export const validateUserToken = () => async (dispatch, getState) => {
+    const { userReducer: state } = getState();
+    if (state.userToken) {
+        return Promise.resolve(state.userValid);
+    }
+
+    let results;
+    try {
+        const token = Cookies.get('userToken');
+        const data = await axios.post('/user/validateToken', { token });
+        results = data.data;
+    } catch (error) {
+        console.log('ERROR: ', error);
+    }
+    const { userToken, valid, username, id } = results;
+
+    if (!valid) {
+        dispatch(setUserToken('INVALID'));
+    } else {
+        dispatch(setUser({ id, username }));
+        dispatch(setUserToken(userToken));
+    }
 };
 
 export const validateSummonerName = summonerName => () => {
