@@ -107,6 +107,10 @@ module.exports.validateUserToken = (req, res) => {
         return;
     }
     const { id, summonerName, exp } = jwt.decode(req.body.token);
+    if (!summonerName) {
+        res.status(200).json({ valid: false });
+        return;
+    }
 
     const sevenDaysFromNow = new Date();
     sevenDaysFromNow.setDate(sevenDaysFromNow.getDate() + 7);
@@ -125,7 +129,7 @@ const generateJwt = user => {
 
     return jwt.sign({
         id: user.id,
-        summonerName: user.summoner_name,
+        summonerName: user.summonerName,
         exp: parseInt(expiry.getTime() / 1000)
     }, 'MY_SECRET');
 };

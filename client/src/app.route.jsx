@@ -7,17 +7,21 @@ import Homepage from './homepage/homepage.jsx';
 import PredictionsContainer from './predictions/predictions.container.jsx';
 import WelcomeContainer from './welcome/welcome.container.jsx';
 import Navbar from './components/navbar/navbar.jsx';
+import Header from './components/header/header.jsx';
 
 const history = createBrowserHistory();
 
-export default function AppRoute (props) {
-    const [username] = useState(props.store.getState().userReducer.userToken);
+export default function AppRoute () {
     const routesWithoutNavbar = ['/login', '/register', '/spectate', '/reset-password'];
     const [displayNavbar, setDisplayNavbar] = useState(!routesWithoutNavbar.includes(history.location.pathname));
 
     history.listen(location => {
         setDisplayNavbar(!routesWithoutNavbar.includes(location.pathname));
     });
+
+    const renderHeader = () => {
+        if (displayNavbar) return <Header />;
+    };
 
     const renderNavbar = () => {
         if (displayNavbar) {
@@ -33,6 +37,7 @@ export default function AppRoute (props) {
         <Router history={history}>
             {renderNavbar()}
             <div className="content-wrapper">
+                {renderHeader()}
                 <Switch>
                     <PrivateRoute
                         path="/"

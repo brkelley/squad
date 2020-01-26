@@ -19,6 +19,11 @@ export const setUserObject = ({ username }) => dispatch => {
     dispatch(setUser({ username }));
 }
 
+export const logout = () => dispatch => {
+    Cookies.remove('userToken');
+    dispatch(setUserToken(null));
+};
+
 export const registerNewUser = body => dispatch => {
     return axios.post('/user/register', body)
         .then(({data: results}) => {
@@ -66,12 +71,12 @@ export const validateUserToken = () => async (dispatch, getState) => {
     } catch (error) {
         console.log('ERROR: ', error);
     }
-    const { userToken, valid, username, id } = results;
+    const { userToken, valid, summonerName, id } = results;
 
     if (!valid) {
         dispatch(setUserToken('INVALID'));
     } else {
-        dispatch(setUser({ id, username }));
+        dispatch(setUser({ id, summonerName }));
         dispatch(setUserToken(userToken));
     }
 };

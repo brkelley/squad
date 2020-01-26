@@ -1,44 +1,83 @@
 const axios = require('axios');
 const db = require('../../database/firestore/firestore.js');
-const LEAGUES = require('../../constants/leagues.json');
 const jwt = require('jsonwebtoken');
-const groupBy = require('lodash/groupBy');
 const get = require('lodash/get');
-const uuidv4 = require('uuid/v4');
+const cache = require('../../cache/cache.js');
 
 const headers = {
     'x-api-key': '0TvQnueqKa5mxJntVWt0w4LpLfEkrV1Ta8rQBb9Z'
 };
 
 module.exports.getSchedule = async (req, res) => {
-    let scheduleMetadata, userPredictions;
+    let scheduleMetadata, userPredictions, usersMetadata;
     const { id } = jwt.decode(req.headers.squadtoken);
+    const getAllData = req.query.all === 'true';
     const filters = [
         { key: 'userId', value: id }
     ];
-    let esportsUrl = 'https://esports-api.lolesports.com/persisted/gw/getSchedule?hl=en-US';
+
+    let getScheduleUrl = 'https://esports-api.lolesports.com/persisted/gw/getSchedule?hl=en-US';
     if (get(req, 'query.leagueId')) {
-        esportsUrl += `&leagueId=${req.query.leagueId}`;
+        getScheduleUrl += `&leagueId=${req.query.leagueId}`;
         filters.push({ key: 'leagueId', value: req.query.leagueId });
     }
+
+    let getCompletedGamesUrl = 'https://esports-api.lolesports.com/persisted/gw/getCompletedEvents?hl=en-US';
+    getCompletedGamesUrl += `&tournamentId=${cache.get('currentTournamentIds').join(',')}`;
+
     try {
-        scheduleMetadata = await axios.get(esportsUrl, { headers });
-        userPredictions = await db.retrieveAll('predictions', filters);
-        scheduleMetadata = scheduleMetadata.data.data.schedule.events;
+        scheduleMetadata = await axios.get(getScheduleUrl, { headers });
+        scheduleMetadata = scheduleMetadata.data.data.schedule;
+        let newerPageToken = get(scheduleMetadata, 'pages.newer');
+        // if the "newer" field is open, take it
+        while (newerPageToken) {
+            const newerScheduleMetadata = await axios.get(`${getScheduleUrl}&pageToken=${newerPageToken}`, { headers });
+            scheduleMetadata.events.push(...get(newerScheduleMetadata.data.data.schedule, 'events', []));
+            newerPageToken = newerScheduleMetadata.data.data.schedule.pages.newer;
+        }
+
+        scheduleMetadata = scheduleMetadata.events;
+        scheduleMetadata = scheduleMetadata.filter(el => ['unstarted', 'inProgress'].includes(el.state));
+
+        const completedGamesData = await axios.get(getCompletedGamesUrl, { headers });
+        let completedGames = completedGamesData.data.data.schedule.events;
+        completedGames = completedGames.map(el => {
+            el.state = 'completed';
+            delete el.games;
+            return el;
+        });
+
+        scheduleMetadata.push(...completedGames);
+
+        userPredictions = await db.retrieveAll('predictions', getAllData ? undefined : filters);
+
+        if (getAllData) {
+            usersMetadata = await db.retrieveAll('users');
+        }
     } catch (error) {
         console.log(error);
         res.status(500).json({ message: 'Database error' });
         return;
     }
-    scheduleMetadata = scheduleMetadata.filter(el => el.state === 'unstarted');
     scheduleMetadata = scheduleMetadata.map(metadata => {
-        const prediction = userPredictions.find(el => el.matchId === metadata.match.id);
+        let prediction = userPredictions.filter(el => el.matchId === metadata.match.id);
+        if (!getAllData) prediction = prediction[0];
 
-        if (prediction) {
-            metadata.match.prediction = {
+        if (prediction && getAllData) {
+            if (!metadata.match.prediction) metadata.match.prediction = [];
+            metadata.match.prediction = prediction.map(el => {
+                const user = usersMetadata.find(user => user.id === el.userId);
+                return {
+                    team: el.prediction,
+                    id: el.id,
+                    user: user
+                }
+            });
+        } else if (prediction) {
+            metadata.match.prediction = [{
                 team: prediction.prediction,
                 id: prediction.id
-            };
+            }];
         }
         return metadata;
     });
@@ -48,6 +87,16 @@ module.exports.getSchedule = async (req, res) => {
 module.exports.saveOrUpdatePrediction = async (req, res) => {
     const predictions = req.body;
     const finalPredictions = [];
+    const currentDate = Date.now();
+    
+    if (predictions.matchTime) {
+        const matchTimeEpoch = new Date(predictions.matchTime).getTime();
+        if (currentDate >= matchTimeEpoch) {
+            res.status(400).send({ message: 'match has started!' });
+            return;
+        }
+    }
+
     predictions.forEach(async prediction => {
         let returnedPrediction;
         try {

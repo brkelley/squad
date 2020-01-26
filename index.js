@@ -1,14 +1,15 @@
 const express    = require('express'),
       cors       = require('cors'),
-    //   app        = express(),
       bodyParser = require('body-parser'),
       jwt        = require('jsonwebtoken'),
-      path       = require('path'),
-      passport   = require('passport');
-
-const app = express();
-const router = express.Router();
-const routes = require('./routes/routes.js');
+      passport   = require('passport'),
+      app        = express(),
+      router     = express.Router(),
+      routes     = require('./routes/routes.js')
+      axios      = require('axios'),
+      cache      = require('./cache/cache.js'),
+      last       = require('lodash/last'),
+      LEAGUES    = require('./constants/leagues.json');
 
 require('./database/firestore/firestore.js');
 
@@ -60,10 +61,38 @@ passport.deserializeUser(function (id, done) {
     });
 });
 
-// routes
-// require('./routes/routes.js')(app);
 routes(router);
 app.use('/api/v1', router);
+
+// a few functions to run at startup
+(async () => {
+    const leagueIds = LEAGUES.filter(league => ['LEC', 'LCS'].includes(league.name)).map(el => el.id);
+    const headers = {
+        'x-api-key': '0TvQnueqKa5mxJntVWt0w4LpLfEkrV1Ta8rQBb9Z'
+    };
+    let esportsUrl = 'https://esports-api.lolesports.com/persisted/gw/getTournamentsForLeague?hl=en-US';
+
+    let leagues;
+    try {
+        const data = await axios.get(`${esportsUrl}&leagueId=${leagueIds}`, { headers });
+        leagues = data.data.data.leagues;
+    } catch (error) {
+        console.log('ERROR IN INIT FUNCTION');
+        console.log(error)
+    }
+
+    const currentTournamentIds = [];
+
+    // Algorithm right now is just to return the latest tournament for LCS & LEC
+    leagues.forEach(league => {
+        const tournamentsSortedByEndDate = league.tournaments.sort((first, second) => {
+            return new Date(first.endDate).getTime() - new Date(second.endDate).getTime();
+        });
+        currentTournamentIds.push(last(tournamentsSortedByEndDate.map(el => el.id)));
+    });
+
+    cache.set('currentTournamentIds', currentTournamentIds);
+})();
 
 const port = process.env.PORT || 4444;
 

@@ -7,7 +7,7 @@ import moment from 'moment';
 export default function PredictionMatch (props) {
     const [blueSide, redSide] = props.matchMetadata.match.teams;
 
-    const predictionMetadata = props.matchMetadata.match.prediction;
+    const predictionMetadata = get(props.matchMetadata.match, 'prediction[0]');
     const predictionId = get(predictionMetadata, 'id');
     const predictedTeam = get(predictionMetadata, 'team');
 
@@ -24,7 +24,8 @@ export default function PredictionMatch (props) {
             userId: props.userId,
             matchId: props.matchMetadata.match.id,
             prediction: team,
-            leagueId: props.leagueId
+            leagueId: props.leagueId,
+            matchTime: props.matchMetadata.startTime
         };
 
         props.updatePrediction(body);

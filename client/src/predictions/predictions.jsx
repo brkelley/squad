@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
 import './predictions.scss';
+import React, { useState, useEffect } from 'react';
 
 import PredictionMatch from './prediction-match/prediction-match.jsx';
 import PredictionFiltersContainer from './prediction-filters/prediction-filters.container.jsx';
@@ -9,6 +9,7 @@ import moment from 'moment';
 
 export default function Predictions (props) {
     const [ predictionsLoading, setPredictionsLoading ] = useState(false);
+
     const retrievePredictions = async forceReload => {
         setPredictionsLoading(true);
         if (!forceReload && !isEmpty(props.predictionMap)) return;
@@ -79,7 +80,9 @@ export default function Predictions (props) {
     const renderPredictionSets = () => {
         if (!props.predictionMap) return;
 
-        const groupedMatches = groupPredictionsByDay(Object.values(props.predictionMap));
+        const uncompletedMatches = Object.values(props.predictionMap)
+            .filter(el => ['unstarted', 'inProgress'].includes(el.state));
+        const groupedMatches = groupPredictionsByDay(uncompletedMatches);
         let blockName = '';
         let renderBlock = false;
 
@@ -125,9 +128,6 @@ export default function Predictions (props) {
 
     return (
         <div className="predictions-wrapper">
-            <div className="page-title-wrapper">
-                Predictions
-            </div>
             {renderPredictionsContent()}
         </div>
     );
