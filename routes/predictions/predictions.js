@@ -2,7 +2,10 @@ const axios = require('axios');
 const db = require('../../database/firestore/firestore.js');
 const jwt = require('jsonwebtoken');
 const get = require('lodash/get');
+const groupBy = require('lodash/groupBy');
+const entries = require('lodash/entries');
 const cache = require('../../cache/cache.js');
+const leagueMetadata = require('../../constants/leagues.json');
 
 const headers = {
     'x-api-key': '0TvQnueqKa5mxJntVWt0w4LpLfEkrV1Ta8rQBb9Z'
@@ -18,7 +21,7 @@ module.exports.getSchedule = async (req, res) => {
 
     let getScheduleUrl = 'https://esports-api.lolesports.com/persisted/gw/getSchedule?hl=en-US';
     if (get(req, 'query.leagueId')) {
-        getScheduleUrl += `&leagueId=${req.query.leagueId}`;
+        getScheduleUrl += `&leagueId=${getAllData ? '98767991302996019,98767991299243165' : req.query.leagueId}`;
         filters.push({ key: 'leagueId', value: req.query.leagueId });
     }
 
@@ -50,10 +53,6 @@ module.exports.getSchedule = async (req, res) => {
         scheduleMetadata.push(...completedGames);
 
         userPredictions = await db.retrieveAll('predictions', getAllData ? undefined : filters);
-
-        if (getAllData) {
-            usersMetadata = await db.retrieveAll('users');
-        }
     } catch (error) {
         console.log(error);
         res.status(500).json({ message: 'Database error' });
@@ -66,11 +65,10 @@ module.exports.getSchedule = async (req, res) => {
         if (prediction && getAllData) {
             if (!metadata.match.prediction) metadata.match.prediction = [];
             metadata.match.prediction = prediction.map(el => {
-                const user = usersMetadata.find(user => user.id === el.userId);
                 return {
                     team: el.prediction,
                     id: el.id,
-                    user: user
+                    userId: el.userId
                 }
             });
         } else if (prediction) {
@@ -82,6 +80,39 @@ module.exports.getSchedule = async (req, res) => {
         return metadata;
     });
     res.status(200).json(scheduleMetadata);
+};
+
+module.exports.getAllPredictions = async (req, res) => {
+    let userPredictions;
+
+    try {
+        userPredictions = await db.retrieveAll('predictions');
+    } catch (error) {
+        console.log(error);
+        res.status(400).json(error);
+        return;
+    }
+    userPredictions = groupBy(userPredictions, 'leagueId');
+    const groupedUserPredictions = {};
+
+    entries(userPredictions).forEach(([key, value]) => {
+        groupedUserPredictions[key] = groupBy(value, 'userId');
+    });
+
+    res.status(200).send(groupedUserPredictions);
+};
+
+module.exports.getPredictionsByUser = async (req, res) => {
+    let userPredictions;
+
+    try {
+        userPredictions = await db.retrieveAll('predictions', [{ key: 'userId', value: req.params.userId }]);
+    } catch (error) {
+        console.log(error);
+        res.status(400).json(error);
+        return;
+    }
+    res.status(200).send(userPredictions);
 };
 
 module.exports.saveOrUpdatePrediction = async (req, res) => {

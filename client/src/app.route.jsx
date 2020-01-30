@@ -4,7 +4,7 @@ import { createBrowserHistory } from 'history';
 
 import PrivateRoute from './components/private-route/private-route.container.jsx';
 import Homepage from './homepage/homepage.jsx';
-import PredictionsContainer from './predictions/predictions.container.jsx';
+import PredictionsContainer from './predictions/predictions.jsx';
 import WelcomeContainer from './welcome/welcome.container.jsx';
 import Navbar from './components/navbar/navbar.jsx';
 import Header from './components/header/header.jsx';

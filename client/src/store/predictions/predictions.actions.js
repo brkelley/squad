@@ -37,19 +37,18 @@ export const updatePrediction = prediction => async dispatch => {
     dispatch(setPrediction(prediction));
 };
 
-export const retrievePredictions = ({ forceReload, leagueId }) => async (dispatch, state) => {
+export const retrievePredictions = ({ forceReload }) => async (dispatch, state) => {
     let predictionData;
 
     if (!forceReload && !isEmpty(state.predictionMap)) return;
     try {
-        const data = await axios.get(`/predictions?leagueId=${leagueId}`);
+        const data = await axios.get('/predictions');
         predictionData = data.data;
     } catch (error) {
         throw new Error(error);
     }
 
-    const predictionMap = keyBy(predictionData, obj => obj.match.id);
-    dispatch(setPredictionMap(predictionMap));
+    dispatch(setPredictionMap(predictionData));
 };
 
 export const updatePredictionFilter = predictionFilter => dispatch => {

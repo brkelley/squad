@@ -7,7 +7,7 @@
     .navbar-wrapper {
         width: $navbar-size;
         height: 100%;
-        background-color: #5d001e;
+        background-color: #a92f41;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -35,16 +35,16 @@
                 flex-direction: column;
                 align-items: center;
                 font-size: 0.8rem;
-                color: darken(white, 40%);
+                opacity: 0.7;
 
                 &:hover {
                     cursor: pointer;
                     transition: all .2s;
-                    background-color: darken(#5d001e, 3%);
+                    background-color: darken(#a92f41, 5%);
                 }
 
                 &.active {
-                    color: white;
+                    opacity: 1;
                 }
         
                 .nav-icon {
@@ -68,7 +68,7 @@
             &:hover {
                 cursor: pointer;
                 transition: all .2s;
-                background-color: darken(#5d001e, 3%);
+                background-color: darken(#a92f41, 3%);
             }
 
             .nav-icon {

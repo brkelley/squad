@@ -6,7 +6,8 @@ import PredictionWidget from './prediction-widget/prediction-widget.jsx';
 export default function Homepage () {
     return (
         <div className="homepage-wrapper">
-            <PredictionWidget />
+            <PredictionWidget timespan="Week 2" />
+            <PredictionWidget timespan="Week 1" />
         </div>
     );
 };

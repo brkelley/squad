@@ -7,9 +7,9 @@ import moment from 'moment';
 export default function PredictionMatch (props) {
     const [blueSide, redSide] = props.matchMetadata.match.teams;
 
-    const predictionMetadata = get(props.matchMetadata.match, 'prediction[0]');
+    const predictionMetadata = get(props, 'prediction');
     const predictionId = get(predictionMetadata, 'id');
-    const predictedTeam = get(predictionMetadata, 'team');
+    const predictedTeam = get(predictionMetadata, 'prediction');
 
     const renderPredicted = (teamName) => {
         if (predictedTeam && teamName !== predictedTeam) {
@@ -19,6 +19,12 @@ export default function PredictionMatch (props) {
 
     const saveOrUpdatePrediction = async team => {
         if (predictedTeam === team) return;
+
+        const getNow = Date.now();
+        const matchTime = moment(props.matchMetadata.startTime).valueOf();
+
+        if (getNow >= matchTime) return;
+
         const body = {
             ...predictionId && { id: predictionId },
             userId: props.userId,
@@ -31,27 +37,34 @@ export default function PredictionMatch (props) {
         props.updatePrediction(body);
     };
 
+    const renderTeamBlock = team => {
+        const getNow = Date.now();
+        const matchTime = moment(props.matchMetadata.startTime).valueOf();
+        const predictionPassed = getNow >= matchTime;
+
+        const clickFcn = predictionPassed ? () => {} : () => saveOrUpdatePrediction(team.name);
+
+        return (
+            <div className={`prediction-team ${predictionPassed ? '' : 'hoverable'} blue-side`} onClick={clickFcn}>
+                <img className={`team-image ${renderPredicted(team.name)}`} src={team.image} />
+                <div className={`team-name ${renderPredicted(team.name)}`}>
+                    {team.name}
+                </div>
+            </div>
+        );
+    };
+
     return (
         <div className="prediction-match-wrapper">
             <div className="prediction-block">
                 {moment(props.matchMetadata.startTime).format('h:mm A')}
             </div>
             <div className="prediction-content">
-                <div className="prediction-team blue-side" onClick={() => saveOrUpdatePrediction(blueSide.name)}>
-                    <img className={`team-image ${renderPredicted(blueSide.name)}`} src={blueSide.image} />
-                    <div className={`team-name ${renderPredicted(blueSide.name)}`}>
-                        {blueSide.name}
-                    </div>
-                </div>
+                {renderTeamBlock(blueSide)}
                 <div className="prediction-team-separator">
                     VS
                 </div>
-                <div className="prediction-team red-side" onClick={() => saveOrUpdatePrediction(redSide.name)}>
-                <img className={`team-image ${renderPredicted(redSide.name)}`} src={redSide.image} />
-                    <div className={`team-name ${renderPredicted(redSide.name)}`}>
-                        {redSide.name}
-                    </div>
-                </div>
+                {renderTeamBlock(redSide)}
             </div>
             <div className="prediction-block"></div>
         </div>

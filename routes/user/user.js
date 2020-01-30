@@ -20,6 +20,22 @@ module.exports.getUserBySummonerName = async (req, res) => {
     }
 };
 
+module.exports.getUsers = async (req, res) => {
+    let users;
+    try {
+        users = await db.retrieveAll('users');
+    } catch (error) {
+        console.log(error);
+    }
+
+    const cleanUsers = users.map(user => {
+        delete user.salt;
+        delete user.hash;
+        return user;
+    });
+    res.status(200).json(cleanUsers);
+}
+
 module.exports.register = async (req, res) => {
     const user = { ...req.body };
     user.salt = crypto.randomBytes(16).toString('hex');

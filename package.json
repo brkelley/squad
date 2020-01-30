@@ -10,10 +10,10 @@
     "author": "brkelley",
     "license": "ISC",
     "devDependencies": {
-        "nodemon": "^1.19.0"
+        "nodemon": "^1.19.4"
     },
     "dependencies": {
-        "axios": "^0.19.0",
+        "axios": "^0.19.2",
         "body-parser": "^1.19.0",
         "cors": "^2.8.5",
         "express": "^4.17.0",
@@ -21,8 +21,8 @@
         "firebase": "^7.7.0",
         "jsonwebtoken": "^8.5.1",
         "lodash": "^4.17.15",
-        "passport": "^0.4.0",
+        "passport": "^0.4.1",
         "passport-local": "^1.0.0",
-        "uuid": "^3.3.3"
+        "uuid": "^3.4.0"
     }
 }

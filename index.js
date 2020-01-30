@@ -66,29 +66,30 @@ app.use('/api/v1', router);
 
 // a few functions to run at startup
 (async () => {
-    const leagueIds = LEAGUES.filter(league => ['LEC', 'LCS'].includes(league.name)).map(el => el.id);
+    const leagues = LEAGUES.filter(league => ['LEC', 'LCS'].includes(league.name));
     const headers = {
         'x-api-key': '0TvQnueqKa5mxJntVWt0w4LpLfEkrV1Ta8rQBb9Z'
     };
     let esportsUrl = 'https://esports-api.lolesports.com/persisted/gw/getTournamentsForLeague?hl=en-US';
 
-    let leagues;
+    let tournamentsByLeague;
     try {
-        const data = await axios.get(`${esportsUrl}&leagueId=${leagueIds}`, { headers });
-        leagues = data.data.data.leagues;
+        const data = await axios.get(`${esportsUrl}&leagueId=${leagues.map(el => el.id)}`, { headers });
+        tournamentsByLeague = data.data.data.leagues;
     } catch (error) {
         console.log('ERROR IN INIT FUNCTION');
         console.log(error)
     }
 
-    const currentTournamentIds = [];
+    const currentTournamentIds = {};
 
     // Algorithm right now is just to return the latest tournament for LCS & LEC
-    leagues.forEach(league => {
+    tournamentsByLeague.forEach((league, index) => {
         const tournamentsSortedByEndDate = league.tournaments.sort((first, second) => {
             return new Date(first.endDate).getTime() - new Date(second.endDate).getTime();
         });
-        currentTournamentIds.push(last(tournamentsSortedByEndDate.map(el => el.id)));
+        const leagueId = leagues[index].id;
+        currentTournamentIds[leagueId] = last(tournamentsSortedByEndDate).id;
     });
 
     cache.set('currentTournamentIds', currentTournamentIds);

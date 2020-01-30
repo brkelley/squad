@@ -10,36 +10,18 @@ const auth = jwt({
 });
 
 module.exports = function (app) {
-    // tournament predictions
-    // app.get('/tournament/:tournament/:year/predictions', tournamentV2.getTournamentPredictions);
-
-    // // teams endpoints
-    // app.get('/teams', teams.getTeamData);
-    // app.get('/teams/:name', teams.getTeamByName);
-
-    // // Match metadata endpoints
-    // app.get('/tournament/:tournament/:year', tournament.getMatchMetadata);
-    // app.post('/tournament/:tournament/:year', tournament.addMatchMetadata);
-    // app.put('/tournament/:tournament/:year', tournament.saveMatchMetadata);
-
     // Pro play metadata endpoints
     app.get('/pro-play/leagues', proPlayMetadata.getLeagues);
+    app.get('/pro-play/schedule', proPlayMetadata.getSchedule);
 
     // User Prediction endpoints
-    app.get('/predictions', predictions.getSchedule);
+    app.get('/predictions', predictions.getAllPredictions);
     app.post('/predictions', predictions.saveOrUpdatePrediction);
-    // app.post('/userPredictions/:tournament/:year/:userId', userPrediction.createUserPrediction);
-    // app.get('/userPredictions/:tournament/:year/:userId', userPrediction.getUserPrediction);
-    // app.patch('/userPredictions/:tournament/:year/:userId', userPrediction.updateUserPredictions);
-    // app.get('/userPredictions/currentStandings/:tournament/:year', userPrediction.getCurrentStandings);
-
-    // // Match result endpoints
-    // app.get('/matchResults/:tournament/:year', matchResults.getResults);
-    // app.post('/matchResults/:tournament/:year', matchResults.createResults);
-    // app.patch('/matchResults/:tournament/:year', matchResults.editResults);
+    app.get('/predictions/:userId', predictions.getPredictionsByUser);
 
     // user endpoints
     app.get('/user', user.getUserBySummonerName);
+    app.get('/users', user.getUsers);
     app.post('/user/register', user.register);
     app.post('/user/login', user.login);
     app.patch('/user/updatePassword', user.updatePassword);

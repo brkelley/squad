@@ -1,9 +1,15 @@
 import axios from 'axios';
 import {
+    SET_USERS_METADATA,
     SET_USER,
     SET_USER_TOKEN
 } from './user.constants.js';
 import Cookies from 'js-cookie';
+
+export const setUsersMetadata = usersMetadata => ({
+    type: SET_USERS_METADATA,
+    usersMetadata
+});
 
 export const setUser = user => ({
     type: SET_USER,
@@ -18,6 +24,21 @@ export const setUserToken = userToken => ({
 export const setUserObject = ({ username }) => dispatch => {
     dispatch(setUser({ username }));
 }
+
+export const getAllUsers = () => async (dispatch, getState) => {
+    const { userReducer: state } = getState();
+    let usersMetadata;
+    if (state.usersMetadata.length > 0) {
+        return;
+    }
+
+    try {
+        usersMetadata = await axios.get('/users');
+    } catch (error) {
+        console.log(error);
+    }
+    dispatch(setUsersMetadata(usersMetadata.data));
+};
 
 export const logout = () => dispatch => {
     Cookies.remove('userToken');

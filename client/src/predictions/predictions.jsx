@@ -1,26 +1,37 @@
 import './predictions.scss';
 import React, { useState, useEffect } from 'react';
+import { connect } from 'react-redux';
+
+import { retrievePredictions, updatePrediction } from '../store/predictions/predictions.actions.js';
+import { retrieveLeagues, retrieveSchedule } from '../store/pro-play-metadata/pro-play-metadata.actions.js';
 
 import PredictionMatch from './prediction-match/prediction-match.jsx';
 import PredictionFiltersContainer from './prediction-filters/prediction-filters.container.jsx';
 import LoadingIndicator from '../components/loading-indicator/loading-indicator.jsx';
+import get from 'lodash/get';
 import isEmpty from 'lodash/isEmpty';
+import keyBy from 'lodash/keyBy';
 import moment from 'moment';
 
-export default function Predictions (props) {
+const Predictions = (props) => {
     const [ predictionsLoading, setPredictionsLoading ] = useState(false);
 
     const retrievePredictions = async forceReload => {
-        setPredictionsLoading(true);
         if (!forceReload && !isEmpty(props.predictionMap)) return;
 
+        setPredictionsLoading(true);
         const leagueId = props.predictionFilters.leagueId;
-        await props.retrievePredictions({ forceReload, leagueId });
+        try {
+            await props.retrievePredictions({ forceReload, leagueId });
+            await props.retrieveSchedule();
+        } catch (error) {
+            console.log(error);
+        }
         setPredictionsLoading(false);
     };
 
     useEffect(() => {
-        retrievePredictions(true);
+        retrievePredictions();
     }, [props.predictionFilters]);
 
     const retrieveLeagues = async () => {
@@ -34,7 +45,7 @@ export default function Predictions (props) {
 
     init();
 
-    const groupPredictionsByDay = predictions => {
+    const groupScheduleByDay = predictions => {
         const predictionsByDay = predictions.reduce((grouped, prediction) => {
             const dateStamp = moment(prediction.startTime).format('MMMDD');
             if (grouped[dateStamp]) {
@@ -47,14 +58,15 @@ export default function Predictions (props) {
         return Object.values(predictionsByDay);
     };
 
-    const renderPrediction = match => {
+    const renderPrediction = (match, prediction) => {
         return (
             <div
-                className="prediction-se-wrapper"
+                className="prediction-set-wrapper"
                 key={match.match.id}>
                 <PredictionMatch
                     matchMetadata={match}
                     userId={props.userId}
+                    prediction={prediction}
                     leagueId={props.predictionFilters.leagueId}
                     updatePrediction={props.updatePrediction} />
             </div>
@@ -80,9 +92,13 @@ export default function Predictions (props) {
     const renderPredictionSets = () => {
         if (!props.predictionMap) return;
 
-        const uncompletedMatches = Object.values(props.predictionMap)
-            .filter(el => ['unstarted', 'inProgress'].includes(el.state));
-        const groupedMatches = groupPredictionsByDay(uncompletedMatches);
+        const userPredictions = get(props.predictionMap, `${props.predictionFilters.leagueId}.${props.userId}`, []);
+
+        const schedule = get(props.schedule, props.predictionFilters.leagueId, [])
+            // .filter(el => ['unstarted', 'inProgress'].includes(el.state));
+
+        const groupedMatches = groupScheduleByDay(schedule);
+        const groupedPredictions = keyBy(userPredictions, 'matchId');
         let blockName = '';
         let renderBlock = false;
 
@@ -93,14 +109,19 @@ export default function Predictions (props) {
             } else {
                 renderBlock = false;
             }
-
             return (
                 <div
                     className="prediction-day-wrapper"
                     key={moment(matches[0].startTime).format('MMMDD')}>
-                    {renderBlock && renderBlockName(matches[0])}
-                    {renderDatestamp(matches[0], !renderBlock)}
-                    { matches.map(match => renderPrediction(match)) }
+                    {
+                        renderBlock && renderBlockName(matches[0])
+                    }
+                    {
+                        renderDatestamp(matches[0], !renderBlock)
+                    }
+                    {
+                        matches.map(match => renderPrediction(match, groupedPredictions[match.match.id]))
+                    }
                 </div>
             );
             
@@ -132,3 +153,20 @@ export default function Predictions (props) {
         </div>
     );
 };
+
+const mapStateToProps = ({ userReducer, predictionReducer, proPlayMetadataReducer }) => ({
+    userId: userReducer.user.id,
+    predictionMap: predictionReducer.predictionMap,
+    predictionFilters: predictionReducer.predictionFilters,
+    leagues: proPlayMetadataReducer.leagues,
+    schedule: proPlayMetadataReducer.schedule
+});
+
+const mapDispatchToProps = dispatch => ({
+    retrievePredictions: options => dispatch(retrievePredictions(options)),
+    updatePrediction: prediction => dispatch(updatePrediction(prediction)),
+    retrieveLeagues: () => dispatch(retrieveLeagues()),
+    retrieveSchedule: () => dispatch(retrieveSchedule())
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Predictions);

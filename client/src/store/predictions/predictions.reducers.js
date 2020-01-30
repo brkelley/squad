@@ -1,5 +1,6 @@
 import { SET_PREDICTION_MAP, SET_PREDICTION, SET_PREDICTION_FILTER } from './predictions.constants.js';
 import cloneDeep from 'lodash/cloneDeep';
+import keyBy from 'lodash/keyBy';
 
 const initialState = {
     predictionMap: {},
@@ -13,12 +14,10 @@ export default function (state = initialState, action) {
         case SET_PREDICTION_MAP:
             return Object.assign({}, state, { predictionMap: action.predictionMap });
         case SET_PREDICTION:
-            const predictionMap = cloneDeep(state.predictionMap);
-
-            predictionMap[action.prediction.matchId].match.prediction = {
-                team: action.prediction.prediction,
-                id: action.prediction.id
-            };
+            let predictionMap = cloneDeep(state.predictionMap);
+            const mappedPredictions = keyBy(predictionMap[action.prediction.leagueId][action.prediction.userId], 'matchId');
+            mappedPredictions[action.prediction.matchId] = action.prediction;
+            predictionMap[action.prediction.leagueId][action.prediction.userId] = Object.values(mappedPredictions);
             return Object.assign({}, state, { predictionMap });
         case SET_PREDICTION_FILTER:
             const predictionFilters = {

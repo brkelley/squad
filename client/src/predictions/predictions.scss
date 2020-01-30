@@ -1,3 +1,5 @@
+@import '../style/variables.scss';
+
 .loading-indicator-wrapper {
     display: flex;
     justify-content: center;
@@ -5,6 +7,8 @@
 }
 
 .predictions-wrapper {
+    color: $font-color;
+
     .block-name-wrapper {
         width: 100%;
         font-size: 1.7rem;
