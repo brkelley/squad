@@ -1,0 +1,14 @@
+.error-indicator-wrapper {
+    color: #ed4337;
+    text-align: center;
+
+    .error-icon-wrapper {
+        font-size: 3rem;
+        padding-bottom: 8px;
+    }
+
+    .error-message-main {
+        font-size: 1.5rem;
+        padding-bottom: 4px;
+    }
+}

@@ -5,7 +5,6 @@ const get = require('lodash/get');
 const groupBy = require('lodash/groupBy');
 const entries = require('lodash/entries');
 const cache = require('../../cache/cache.js');
-const leagueMetadata = require('../../constants/leagues.json');
 
 const headers = {
     'x-api-key': '0TvQnueqKa5mxJntVWt0w4LpLfEkrV1Ta8rQBb9Z'

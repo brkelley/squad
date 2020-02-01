@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Router, Switch, Route } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
 
-import PrivateRoute from './components/private-route/private-route.container.jsx';
+import PrivateRoute from './components/private-route/private-route.jsx';
 import Homepage from './homepage/homepage.jsx';
 import PredictionsContainer from './predictions/predictions.jsx';
 import WelcomeContainer from './welcome/welcome.container.jsx';

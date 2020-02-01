@@ -8,6 +8,8 @@ import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import firebase from 'firebase/app';
+import FIREBASE_CONFIG from '../../database/firestore/firestore-config.json';
 import './style/app.scss';
 
 const token = Cookies.get('userToken');
@@ -23,6 +25,8 @@ axios.interceptors.request.use(config => {
 const composeParams = [
     applyMiddleware(thunk)
 ];
+
+firebase.initializeApp(FIREBASE_CONFIG);
 
 if (ENVIRONMENT === 'dev' && window.__REDUX_DEVTOOLS_EXTENSION__) {
     composeParams.push(window.__REDUX_DEVTOOLS_EXTENSION__());

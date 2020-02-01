@@ -1,6 +1,7 @@
 client/node_modules/
 node_modules/
 database/firestore/firestore-config.json
+database/firestore/firestore-config-service-account.json
 database/firestore/firestore-script.js
 
 client/dist/bundle.js

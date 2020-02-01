@@ -3,6 +3,7 @@ import {
     SET_USER,
     SET_USER_TOKEN
 } from './user.constants.js';
+import Cookie from 'js-cookie';
 
 const initialState = {
     usersMetadata: [],

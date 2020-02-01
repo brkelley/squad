@@ -35,14 +35,7 @@ app.use((req, res, next) => {
         res.status(401).end();
         return;
     }
-
-    const { exp } = jwt.decode(req.headers.squadtoken);
-    const valid = exp > (new Date().getTime() / 1000);
-    if (valid) {
-        next();
-    } else {
-        res.status(401).end();
-    }
+    next();
 });
 
 app.use(bodyParser.json());

@@ -46,6 +46,7 @@ module.exports.register = async (req, res) => {
         delete savedUser.salt;
         delete savedUser.hash;
         token = generateJwt(savedUser);
+        db.validateUserIntoFirestore(token);
         res.status(201).json({ user: savedUser, token });
         return;
     } catch (error) {
@@ -81,8 +82,9 @@ module.exports.login = (req, res, next) => {
             return;
         }
         if (user) {
-            token = generateJwt(user);
-            res.status(200).json({ user, token });
+            generateJwt(user).then(token => {
+                res.status(200).json({ user, token });
+            })
         } else {
             res.status(401).json(info);
         }
@@ -117,12 +119,12 @@ module.exports.validateSummonerName = async (req, res) => {
     res.status(200).send(leagueSummoner.data);
 };
 
-module.exports.validateUserToken = (req, res) => {
+module.exports.validateUserToken = async (req, res) => {
     if (!req.body.token) {
         res.status(200).json({ valid: false });
         return;
     }
-    const { id, summonerName, exp } = jwt.decode(req.body.token);
+    const { id, summonerName, expiry } = await db.translateJWT(req.body.token);
     if (!summonerName) {
         res.status(200).json({ valid: false });
         return;
@@ -131,7 +133,7 @@ module.exports.validateUserToken = (req, res) => {
     const sevenDaysFromNow = new Date();
     sevenDaysFromNow.setDate(sevenDaysFromNow.getDate() + 7);
     sevenDaysFromNow.getTime();
-    const valid = !!id && exp < sevenDaysFromNow / 1000;
+    const valid = !!id && expiry < sevenDaysFromNow / 1000;
     if (!valid) {
         res.status(200).json({ valid });
         return;
@@ -143,9 +145,10 @@ const generateJwt = user => {
     const expiry = new Date();
     expiry.setDate(expiry.getDate() + 7);
 
-    return jwt.sign({
+    return db.generateJWT(user.id, {
+        uid: user.id,
         id: user.id,
         summonerName: user.summonerName,
-        exp: parseInt(expiry.getTime() / 1000)
-    }, 'MY_SECRET');
+        expiry: parseInt(expiry.getTime() / 1000)
+    });
 };

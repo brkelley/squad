@@ -1,7 +1,7 @@
-const firebase = require('firebase');
+const firebase = require('firebase-admin');
 // Required for side-effects
 require('firebase/firestore');
-const firestoreConfig = require('./firestore-config.json');
+const firestoreConfig = require('./firestore-config-service-account.json');
 
 class Database {
     constructor () {
@@ -11,10 +11,24 @@ class Database {
 
     _connect () {
         // Initialize Cloud Firestore through Firebase
-        firebase.initializeApp(firestoreConfig);
+        firebase.initializeApp({
+            credential: firebase.credential.cert(firestoreConfig),
+            databaseURL: 'https://squad-265800.firebaseio.com'
+        });
         
         console.log('connecting to firebase...');
         this.db = firebase.firestore();
+    }
+
+    generateJWT (uid, data) {
+        return firebase.auth().createCustomToken(uid, data);
+    }
+
+    async translateJWT (token) {
+        console.log(token);
+        const x = await firebase.auth().verifyIdToken(token);
+        console.log(x);
+        return x;
     }
 
     async retrieveOne (key, value, table) {

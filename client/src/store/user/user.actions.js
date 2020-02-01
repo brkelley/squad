@@ -4,6 +4,7 @@ import {
     SET_USER,
     SET_USER_TOKEN
 } from './user.constants.js';
+import firebase from 'firebase';
 import Cookies from 'js-cookie';
 
 export const setUsersMetadata = usersMetadata => ({
@@ -40,8 +41,9 @@ export const getAllUsers = () => async (dispatch, getState) => {
     dispatch(setUsersMetadata(usersMetadata.data));
 };
 
-export const logout = () => dispatch => {
+export const logout = () => async dispatch => {
     Cookies.remove('userToken');
+    await firebase.auth().signOut();
     dispatch(setUserToken(null));
 };
 
@@ -64,18 +66,28 @@ export const resetPassword = body => dispatch => {
         });
 };
 
-export const login = (summonerName, password) => (dispatch, getState) => {
+export const login = (summonerName, password) => async (dispatch, getState) => {
     const { userReducer: state } = getState();
     if (state.userToken && !['', 'INVALID'].includes(state.userToken)) {
         return Promise.resolve();
     }
-    return axios.post('/user/login', { summonerName, password })
-        .then(({ data: results }) => {
-            dispatch(setUser(results.user));
-            dispatch(setUserToken(results.token));
-            Cookies.set('userToken', results.token);
-            axios.defaults.headers.common['squadToken'] = results.token;
-        });
+    
+    let token, user;
+    try {
+        const loginResults = await axios.post('/user/login', { summonerName, password });
+        token = loginResults.data.token;
+        user = loginResults.data.user;
+
+        await firebase.auth().signInWithCustomToken(token);
+    } catch (error) {
+        console.error(error);
+        return;
+    }
+
+    dispatch(setUser(user));
+    dispatch(setUserToken(token));
+    Cookies.set('userToken', token);
+    axios.defaults.headers.common['squadToken'] = token;
 };
 
 export const validateUserToken = () => async (dispatch, getState) => {
@@ -84,21 +96,27 @@ export const validateUserToken = () => async (dispatch, getState) => {
         return Promise.resolve(state.userValid);
     }
 
+
     let results;
     try {
-        const token = Cookies.get('userToken');
-        const data = await axios.post('/user/validateToken', { token });
-        results = data.data;
+        firebase.auth().onAuthStateChanged(async user => {
+            if (user) {
+                const idToken = await user.getIdToken();
+                const data = await axios.post('/user/validateToken', { token: idToken });
+                results = data.data;
+    
+                const { userToken, valid, summonerName, id } = results;
+            
+                if (!valid) {
+                    dispatch(setUserToken('INVALID'));
+                } else {
+                    dispatch(setUser({ id, summonerName }));
+                    dispatch(setUserToken(userToken));
+                }
+            }
+        });
     } catch (error) {
         console.log('ERROR: ', error);
-    }
-    const { userToken, valid, summonerName, id } = results;
-
-    if (!valid) {
-        dispatch(setUserToken('INVALID'));
-    } else {
-        dispatch(setUser({ id, summonerName }));
-        dispatch(setUserToken(userToken));
     }
 };
 

@@ -6,6 +6,7 @@ import './prediction-widget.scss';
 import { connect } from 'react-redux';
 import React, { useState } from 'react';
 import LoadingIndicator from '../../components/loading-indicator/loading-indicator.jsx';
+import ErrorIndicator from '../../components/error-indicator/error-indicator.jsx';
 import LEAGUES_METADATA from '../../../../constants/leagues.json';
 import moment from 'moment';
 import isEmpty from 'lodash/isEmpty';
@@ -14,9 +15,10 @@ import get from 'lodash/get';
 
 const PredictionWidget = props => {
     const [predictionsLoading, setPredictionsLoading] = useState(false);
+    const [predictionsError, setPredictionsError] = useState(false);
 
     const retrievePredictions = async () => {
-        if (!isEmpty(props.predictionMap) || predictionsLoading) return;
+        if (!isEmpty(props.predictionMap) || predictionsLoading || predictionsError) return;
 
         setPredictionsLoading(true);
         try {
@@ -25,6 +27,7 @@ const PredictionWidget = props => {
             await props.retrieveSchedule();
         } catch (error) {
             console.error(error);
+            setPredictionsError(true);
         }
 
         setPredictionsLoading(false);
@@ -144,6 +147,16 @@ const PredictionWidget = props => {
         )
     };
 
+    if (predictionsError) {
+        return (
+            <div className="prediction-widget-wrapper">
+                <div className="predictions-error-message">
+                    <ErrorIndicator />
+                </div>
+            </div>
+        );
+    };
+
     if (predictionsLoading) {
         return (
             <div className="prediction-widget-wrapper">
@@ -152,7 +165,7 @@ const PredictionWidget = props => {
                 </div>
             </div>
         );
-    }
+    };
 
     return (
         <div className="prediction-widget-wrapper">

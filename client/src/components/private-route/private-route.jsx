@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Redirect } from 'react-router-dom';
 import { Route } from 'react-router-dom';
-import LoadingIndicator from '../../components/loading-indicator/loading-indicator.jsx';
+import { connect } from 'react-redux';
+import { validateUserToken } from '../../store/user/user.actions.js';
 
-export default function PrivateRoute ({ component: Component, ...rest }) {
+const PrivateRoute = ({ component: Component, ...rest }) => {
     const [shouldRedirect, setShouldRedirect] = useState(false);
     const [loading, setLoading] = useState(true);
-
-    let { validateUserToken } = rest;
 
     useEffect(() => {
         setShouldRedirect(rest.userToken && rest.userToken === 'INVALID');
@@ -19,15 +18,19 @@ export default function PrivateRoute ({ component: Component, ...rest }) {
         setLoading(false);
     }, []);
 
-    return loading
-        ? (
-            <div className="loading-indicator-wrapper">
-                <LoadingIndicator />
-            </div>
-        )
-        : (
-            <Route {...rest} render={(props) => {
-                return shouldRedirect ? <Redirect to="/login" /> : <Component {...props} />
-            }} />
-        ) 
+    return (
+        <Route {...rest} render={(props) => {
+            return shouldRedirect ? <Redirect to="/login" /> : <Component {...props} />
+        }} />
+    );
 };
+
+const mapStateToProps = ({ userReducer }) => ({
+    userToken: userReducer.userToken
+});
+
+const mapDispatchToProps = dispatch => ({
+    validateUserToken: dispatch(validateUserToken())
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(PrivateRoute);
