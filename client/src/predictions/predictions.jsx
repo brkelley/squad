@@ -2,11 +2,8 @@ import './predictions.scss';
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 
-import { retrievePredictions, updatePrediction } from '../store/predictions/predictions.actions.js';
-import { retrieveLeagues, retrieveSchedule } from '../store/pro-play-metadata/pro-play-metadata.actions.js';
-
 import PredictionMatch from './prediction-match/prediction-match.jsx';
-import PredictionFiltersContainer from './prediction-filters/prediction-filters.container.jsx';
+import PredictionFilters from './prediction-filters/prediction-filters.jsx';
 import LoadingIndicator from '../components/loading-indicator/loading-indicator.jsx';
 import get from 'lodash/get';
 import isEmpty from 'lodash/isEmpty';
@@ -41,7 +38,7 @@ const Predictions = (props) => {
 
     const init = () => {
         retrieveLeagues();
-    }
+    };
 
     init();
 
@@ -71,7 +68,7 @@ const Predictions = (props) => {
                     updatePrediction={props.updatePrediction} />
             </div>
         );
-    }
+    };
 
     const renderBlockName = match => {
         return (
@@ -93,9 +90,10 @@ const Predictions = (props) => {
         if (!props.predictionMap) return;
 
         const userPredictions = get(props.predictionMap, `${props.predictionFilters.leagueId}.${props.userId}`, []);
+        const blockNameFilter = get(props.predictionFilters, 'blockName');
 
         const schedule = get(props.schedule, props.predictionFilters.leagueId, [])
-            // .filter(el => ['unstarted', 'inProgress'].includes(el.state));
+            .filter(el => el.blockName === blockNameFilter);
 
         const groupedMatches = groupScheduleByDay(schedule);
         const groupedPredictions = keyBy(userPredictions, 'matchId');
@@ -138,9 +136,11 @@ const Predictions = (props) => {
         } else {
             return (
                 <div className="predictions-content">
-                    <PredictionFiltersContainer
+                    <PredictionFilters
                         leagues={props.leagues.filter(el => ['LEC', 'LCS'].includes(el.name))}
-                        filters={props.predictionFilters} />
+                        schedule={props.schedule}
+                        filters={props.predictionFilters}
+                        showSaveButton={true} />
                     {renderPredictionSets()}
                 </div>
             );
@@ -153,6 +153,9 @@ const Predictions = (props) => {
         </div>
     );
 };
+
+import { retrievePredictions, updatePrediction } from '../store/predictions/predictions.actions.js';
+import { retrieveLeagues, retrieveSchedule } from '../store/pro-play-metadata/pro-play-metadata.actions.js';
 
 const mapStateToProps = ({ userReducer, predictionReducer, proPlayMetadataReducer }) => ({
     userId: userReducer.user.id,

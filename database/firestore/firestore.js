@@ -25,10 +25,7 @@ class Database {
     }
 
     async translateJWT (token) {
-        console.log(token);
-        const x = await firebase.auth().verifyIdToken(token);
-        console.log(x);
-        return x;
+        return await firebase.auth().verifyIdToken(token);
     }
 
     async retrieveOne (key, value, table) {

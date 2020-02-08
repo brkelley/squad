@@ -9,6 +9,7 @@ module.exports = {
         publicPath: '/',
         filename: 'bundle.js'
     },
+    devtool: 'source-map',
     module: {
         rules: [
             {
@@ -41,7 +42,10 @@ module.exports = {
         ]
     },
     resolve: {
-        extensions: ['*', '.js', '.jsx']
+        extensions: ['*', '.js', '.jsx'],
+        alias: {
+            '@': path.resolve(__dirname, ''),
+        }
     },
     plugins: [
         new webpack.HotModuleReplacementPlugin(),

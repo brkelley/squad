@@ -90,33 +90,19 @@ export const login = (summonerName, password) => async (dispatch, getState) => {
     axios.defaults.headers.common['squadToken'] = token;
 };
 
-export const validateUserToken = () => async (dispatch, getState) => {
-    const { userReducer: state } = getState();
-    if (state.userToken) {
-        return Promise.resolve(state.userValid);
-    }
+export const validateUserToken = idToken => async dispatch => {
+    const data = await axios.post('/user/validateToken', { token: idToken });
+    const results = data.data;
 
+    const { token, valid, summonerName, id } = results;
 
-    let results;
-    try {
-        firebase.auth().onAuthStateChanged(async user => {
-            if (user) {
-                const idToken = await user.getIdToken();
-                const data = await axios.post('/user/validateToken', { token: idToken });
-                results = data.data;
-    
-                const { userToken, valid, summonerName, id } = results;
-            
-                if (!valid) {
-                    dispatch(setUserToken('INVALID'));
-                } else {
-                    dispatch(setUser({ id, summonerName }));
-                    dispatch(setUserToken(userToken));
-                }
-            }
-        });
-    } catch (error) {
-        console.log('ERROR: ', error);
+    if (!valid) {
+        dispatch(setUserToken('INVALID'));
+    } else {
+        dispatch(setUser({ id, summonerName }));
+        dispatch(setUserToken(token));
+        Cookies.set('userToken', token);
+        axios.defaults.headers.common['squadToken'] = token;
     }
 };
 

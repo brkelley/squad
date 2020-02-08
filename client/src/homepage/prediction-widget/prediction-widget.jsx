@@ -4,7 +4,7 @@ import { retrieveSchedule } from '../../store/pro-play-metadata/pro-play-metadat
 
 import './prediction-widget.scss';
 import { connect } from 'react-redux';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import LoadingIndicator from '../../components/loading-indicator/loading-indicator.jsx';
 import ErrorIndicator from '../../components/error-indicator/error-indicator.jsx';
 import LEAGUES_METADATA from '../../../../constants/leagues.json';
@@ -15,25 +15,37 @@ import get from 'lodash/get';
 
 const PredictionWidget = props => {
     const [predictionsLoading, setPredictionsLoading] = useState(false);
+    const [scheduleLoading, setScheduleLoading] = useState(false);
+    const [usersLoading, setUsersLoading] = useState(false);
     const [predictionsError, setPredictionsError] = useState(false);
 
     const retrievePredictions = async () => {
-        if (!isEmpty(props.predictionMap) || predictionsLoading || predictionsError) return;
-
-        setPredictionsLoading(true);
         try {
-            await props.getAllUsers();
-            await props.retrievePredictions({ forceReload: false });
-            await props.retrieveSchedule();
+            if (isEmpty(props.predictionMap) && !predictionsLoading && !predictionsError) {
+                setPredictionsLoading(true);
+                await props.retrievePredictions({ forceReload: false });
+                setPredictionsLoading(false);
+            }
+            if (isEmpty(props.usersMetadata) && !usersLoading && !predictionsError) {
+                setUsersLoading(true);
+                await props.getAllUsers();
+                setUsersLoading(false);
+            }
+            if (isEmpty(props.schedule) && !scheduleLoading && !predictionsError) {
+                setScheduleLoading(true);
+                await props.retrieveSchedule();
+                setScheduleLoading(false);
+            }
         } catch (error) {
             console.error(error);
             setPredictionsError(true);
         }
-
-        setPredictionsLoading(false);
     };
 
-    retrievePredictions();
+    useEffect(() => {
+        console.log('about to retrieve predictions...');
+        retrievePredictions();
+    }, []);
 
     const retrieveCurrentMatches = () => {
         // For now, only load Week 1

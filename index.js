@@ -1,7 +1,6 @@
 const express    = require('express'),
       cors       = require('cors'),
       bodyParser = require('body-parser'),
-      jwt        = require('jsonwebtoken'),
       passport   = require('passport'),
       app        = express(),
       router     = express.Router(),
@@ -31,7 +30,7 @@ app.use((req, res, next) => {
         return;
     }
 
-    if (!req.headers.squadtoken) {
+    if (!req.headers.squadtoken || req.headers.squadtoken === 'undefined' || req.headers.squadtoken === 'null') {
         res.status(401).end();
         return;
     }

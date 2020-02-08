@@ -1,7 +1,11 @@
+import './private-route.scss';
 import React, { useState, useEffect } from 'react';
 import { Redirect } from 'react-router-dom';
 import { Route } from 'react-router-dom';
 import { connect } from 'react-redux';
+import LoadingIndicator from '../loading-indicator/loading-indicator.jsx';
+import { validateFirebaseUser } from './private-route.util.js';
+
 import { validateUserToken } from '../../store/user/user.actions.js';
 
 const PrivateRoute = ({ component: Component, ...rest }) => {
@@ -10,13 +14,27 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
 
     useEffect(() => {
         setShouldRedirect(rest.userToken && rest.userToken === 'INVALID');
+        setLoading(false);
     }, [rest.userToken]);
 
     useEffect(() => {
-        setLoading(true);
-        validateUserToken();
-        setLoading(false);
+        if (!rest.userToken) {
+            setLoading(true);
+            validateFirebaseUser()
+                .then(user => user.getIdToken())
+                .then(userResult => {
+                    rest.validateUserToken(userResult);
+                });
+        }
     }, []);
+
+    if (loading) {
+        return (
+            <div className="loading-wrapper">
+                <LoadingIndicator />
+            </div>
+        );
+    }
 
     return (
         <Route {...rest} render={(props) => {
@@ -30,7 +48,7 @@ const mapStateToProps = ({ userReducer }) => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-    validateUserToken: dispatch(validateUserToken())
+    validateUserToken: idToken => dispatch(validateUserToken(idToken))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(PrivateRoute);

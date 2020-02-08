@@ -1,7 +1,5 @@
-import { SET_PREDICTION_MAP, SET_PREDICTION,SET_PREDICTION_FILTER } from './predictions.constants.js';
-import keyBy from 'lodash/keyBy';
+import { SET_PREDICTION_MAP, SET_PREDICTION,SET_PREDICTION_FILTER, SET_UNSAVED_PREDICTIONS } from './predictions.constants.js';
 import isEmpty from 'lodash/isEmpty';
-import debounce from 'lodash/debounce';
 import axios from 'axios';
 
 export const setPredictionMap = predictionMap => ({
@@ -14,33 +12,39 @@ export const setPrediction = prediction => ({
     prediction
 });
 
+export const setUnsavedPredictions = prediction => ({
+    type: SET_UNSAVED_PREDICTIONS,
+    prediction
+});
+
+export const resetUnsavedPredictions = () => ({
+    type: 'RESET_UNSAVED_PREDICTIONS'
+})
+
 export const setPredictionFilter = predictionFilter => ({
     type: SET_PREDICTION_FILTER,
     key: predictionFilter.key,
     value: predictionFilter.value
 });
 
-let debouncedPredictions = {};
-const debouncedSavePrediction = debounce(async () => {
+export const savePredictions = () => async (dispatch, getState) => {
+    const predictionsToSave = Object.values(getState().predictionReducer.unsavedPredictions);
     try {
-        await axios.post('/predictions', Object.values(debouncedPredictions));
-        debouncedPredictions = {};
+        await axios.post('/predictions', Object.values(predictionsToSave));
     } catch (error) {
         throw new Error(error);
     }
-}, 1000);
-
-export const updatePrediction = prediction => async dispatch => {
-    debouncedSavePrediction.cancel();
-    debouncedPredictions[prediction.matchId] = prediction;
-    debouncedSavePrediction(prediction);
-    dispatch(setPrediction(prediction));
+    dispatch(resetUnsavedPredictions());
 };
 
-export const retrievePredictions = ({ forceReload }) => async (dispatch, state) => {
+export const updatePrediction = prediction => async dispatch => {
+    dispatch(setUnsavedPredictions(prediction));
+};
+
+export const retrievePredictions = ({ forceReload }) => async (dispatch, getState) => {
     let predictionData;
 
-    if (!forceReload && !isEmpty(state.predictionMap)) return;
+    if (!forceReload && !isEmpty(getState().predictionReducer.predictionMap)) return;
     try {
         const data = await axios.get('/predictions');
         predictionData = data.data;

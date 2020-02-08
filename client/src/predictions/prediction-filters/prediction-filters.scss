@@ -1,4 +1,24 @@
+@import '../../style/variables.scss';
+
 .prediction-filters-wrapper {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    height: 60px;
+    background-color: $primary;
     color: white;
-    padding: 12px 24px 8px 24px;
+    padding: 12px 24px;
+    transition: all .2s;
+    display: flex;
+    justify-content: space-between;
+
+    .prediction-dropdowns {
+        display: flex;
+
+        .prediction-filter-wrapper {
+            &:not(:first-child) {
+                padding-left: 24px;
+            }
+        }
+    }
 }
