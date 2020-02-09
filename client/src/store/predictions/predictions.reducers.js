@@ -1,4 +1,10 @@
-import { SET_PREDICTION_MAP, SET_PREDICTION, SET_PREDICTION_FILTER, SET_UNSAVED_PREDICTIONS } from './predictions.constants.js';
+import {
+    SET_PREDICTION_MAP,
+    SET_PREDICTION_FILTER,
+    SET_UNSAVED_PREDICTIONS,
+    RESET_UNSAVED_PREDICTIONS,
+    SET_FETCHING
+} from '../constants/constants.js';
 import cloneDeep from 'lodash/cloneDeep';
 import keyBy from 'lodash/keyBy';
 
@@ -8,7 +14,8 @@ const initialState = {
     predictionFilters: {
         leagueId: '98767991302996019',
         blockName: ''
-    }
+    },
+    fetching: false
 };
 
 export default function (state = initialState, action) {
@@ -25,7 +32,7 @@ export default function (state = initialState, action) {
             mappedPredictions[action.prediction.matchId] = action.prediction;
             predictionMap[action.prediction.leagueId][action.prediction.userId] = Object.values(mappedPredictions);
             return Object.assign({}, state, { unsavedPredictions, predictionMap });
-        case 'RESET_UNSAVED_PREDICTIONS':
+        case RESET_UNSAVED_PREDICTIONS:
             return Object.assign({}, state, { unsavedPredictions: {} });
         case SET_PREDICTION_FILTER:
             const predictionFilters = {
@@ -33,6 +40,8 @@ export default function (state = initialState, action) {
                 [action.key]: action.value
             };
             return Object.assign({}, state, { predictionFilters });
+        case SET_FETCHING:
+            return Object.assign({}, state, { fetching: action.fetching });
         default:
             return state;
     }

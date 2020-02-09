@@ -1,5 +1,10 @@
 @import '../style/variables.scss';
 
+.loading-wrapper {
+    display: flex;
+    justify-content: center;
+}
+
 .homepage-wrapper {
     width: 100%;
 

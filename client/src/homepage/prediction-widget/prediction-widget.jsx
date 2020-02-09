@@ -3,57 +3,22 @@ import { retrievePredictions } from '../../store/predictions/predictions.actions
 import { retrieveSchedule } from '../../store/pro-play-metadata/pro-play-metadata.actions.js';
 
 import './prediction-widget.scss';
-import { connect } from 'react-redux';
 import React, { useState, useEffect } from 'react';
 import LoadingIndicator from '../../components/loading-indicator/loading-indicator.jsx';
 import ErrorIndicator from '../../components/error-indicator/error-indicator.jsx';
 import LEAGUES_METADATA from '../../../../constants/leagues.json';
 import moment from 'moment';
-import isEmpty from 'lodash/isEmpty';
 import flatMap from 'lodash/flatMap';
 import get from 'lodash/get';
 
 const PredictionWidget = props => {
-    const [predictionsLoading, setPredictionsLoading] = useState(false);
-    const [scheduleLoading, setScheduleLoading] = useState(false);
-    const [usersLoading, setUsersLoading] = useState(false);
-    const [predictionsError, setPredictionsError] = useState(false);
-
-    const retrievePredictions = async () => {
-        try {
-            if (isEmpty(props.predictionMap) && !predictionsLoading && !predictionsError) {
-                setPredictionsLoading(true);
-                await props.retrievePredictions({ forceReload: false });
-                setPredictionsLoading(false);
-            }
-            if (isEmpty(props.usersMetadata) && !usersLoading && !predictionsError) {
-                setUsersLoading(true);
-                await props.getAllUsers();
-                setUsersLoading(false);
-            }
-            if (isEmpty(props.schedule) && !scheduleLoading && !predictionsError) {
-                setScheduleLoading(true);
-                await props.retrieveSchedule();
-                setScheduleLoading(false);
-            }
-        } catch (error) {
-            console.error(error);
-            setPredictionsError(true);
-        }
-    };
-
-    useEffect(() => {
-        console.log('about to retrieve predictions...');
-        retrievePredictions();
-    }, []);
-
     const retrieveCurrentMatches = () => {
-        // For now, only load Week 1
         return flatMap(Object.values(props.schedule)).filter(el => el.blockName === props.timespan).map(match => {
             return {
                 ...match.match,
                 league: LEAGUES_METADATA.find(league => league.name === match.league.name),
-                startTime: match.startTime
+                startTime: match.startTime,
+                state: match.state
             };
         });
     }
@@ -79,10 +44,12 @@ const PredictionWidget = props => {
         );
     };
 
-    const renderPredictionCell = (prediction, teams, matchTime) => {
+    const renderPredictionCell = (id, prediction, teams, matchTime, matchState) => {
         if (!prediction) {
             return (
-                <td className="prediction-table-cell image-cell">
+                <td
+                    className="prediction-table-cell image-cell"
+                    key={id}>
                     <div className="prediction-answer-logo"></div>
                 </td>
             );
@@ -98,9 +65,9 @@ const PredictionWidget = props => {
         const matchTimeAsEpoch = moment(matchTime).valueOf();
 
         const predictionOccurred = (getNow >= matchTimeAsEpoch);
-        if (!predictionOccurred) showCurrentUserTotals = false;
+        if (predictionOccurred) showCurrentUserTotals = true;
 
-        if (!prediction || !predictionOccurred) {}
+        if (!prediction || !predictionOccurred || matchState === 'inProgress') {}
         else if (get(predictedTeam, 'result.gameWins') === 1) {
             currentUserTotals++;
         } else {
@@ -115,7 +82,7 @@ const PredictionWidget = props => {
     };
 
     let currentUserTotals = 0;
-    let showCurrentUserTotals = true;
+    let showCurrentUserTotals = false;
     const renderPredictionBody = matches => {
         return (
             <tbody>
@@ -131,7 +98,7 @@ const PredictionWidget = props => {
                                     matches.map(match => {
                                         const { league } = match;
                                         const userPrediction = props.predictionMap[league.id][user.id].find(pred => pred.matchId === match.id);
-                                        return renderPredictionCell(userPrediction, match.teams, match.startTime);
+                                        return renderPredictionCell(match.id, userPrediction, match.teams, match.startTime, match.state);
                                     })
                                 }
                                 <td className="prediction-table-cell totals-cell">
@@ -159,17 +126,17 @@ const PredictionWidget = props => {
         )
     };
 
-    if (predictionsError) {
-        return (
-            <div className="prediction-widget-wrapper">
-                <div className="predictions-error-message">
-                    <ErrorIndicator />
-                </div>
-            </div>
-        );
-    };
+    // if (predictionsError) {
+    //     return (
+    //         <div className="prediction-widget-wrapper">
+    //             <div className="predictions-error-message">
+    //                 <ErrorIndicator />
+    //             </div>
+    //         </div>
+    //     );
+    // };
 
-    if (predictionsLoading) {
+    if (props.scheduleFetching) {
         return (
             <div className="prediction-widget-wrapper">
                 <div className="predictions-loading">
@@ -190,16 +157,4 @@ const PredictionWidget = props => {
 
 };
 
-const mapStateToProps = ({ userReducer, predictionReducer, proPlayMetadataReducer }) => ({
-    usersMetadata: userReducer.usersMetadata,
-    schedule: proPlayMetadataReducer.schedule,
-    predictionMap: predictionReducer.predictionMap,
-});
-
-const mapDispatchToProps = dispatch => ({
-    getAllUsers: () => dispatch(getAllUsers()),
-    retrievePredictions: props => dispatch(retrievePredictions(props)),
-    retrieveSchedule: () => dispatch(retrieveSchedule())
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(PredictionWidget);
+export default PredictionWidget;

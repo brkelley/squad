@@ -2,29 +2,15 @@ import axios from 'axios';
 import {
     SET_USERS_METADATA,
     SET_USER,
-    SET_USER_TOKEN
-} from './user.constants.js';
+    SET_USER_TOKEN,
+    SET_USER_FETCHING
+} from '../constants/constants.js';
 import firebase from 'firebase';
 import Cookies from 'js-cookie';
 
-export const setUsersMetadata = usersMetadata => ({
-    type: SET_USERS_METADATA,
-    usersMetadata
-});
-
-export const setUser = user => ({
-    type: SET_USER,
-    user
-});
-
-export const setUserToken = userToken => ({
-    type: SET_USER_TOKEN,
-    userToken
-});
-
 export const setUserObject = ({ username }) => dispatch => {
     dispatch(setUser({ username }));
-}
+};
 
 export const getAllUsers = () => async (dispatch, getState) => {
     const { userReducer: state } = getState();
@@ -33,12 +19,14 @@ export const getAllUsers = () => async (dispatch, getState) => {
         return;
     }
 
+    dispatch(setUserFetching(true));
     try {
         usersMetadata = await axios.get('/users');
+        dispatch(setUsersMetadata(usersMetadata.data));
     } catch (error) {
         console.log(error);
     }
-    dispatch(setUsersMetadata(usersMetadata.data));
+    dispatch(setUserFetching(false));
 };
 
 export const logout = () => async dispatch => {
@@ -113,3 +101,23 @@ export const validateSummonerName = summonerName => () => {
             return Promise.reject({ message: response.data.message })
         });
 };
+
+export const setUsersMetadata = usersMetadata => ({
+    type: SET_USERS_METADATA,
+    usersMetadata
+});
+
+export const setUser = user => ({
+    type: SET_USER,
+    user
+});
+
+export const setUserToken = userToken => ({
+    type: SET_USER_TOKEN,
+    userToken
+});
+
+export const setUserFetching = fetching => ({
+    type: SET_USER_FETCHING,
+    fetching
+});

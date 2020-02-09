@@ -1,43 +1,63 @@
-import { SET_LEAGUES, SET_SCHEDULE } from './pro-play-metadata.constants.js';
+import {
+    SET_LEAGUES,
+    SET_LEAGUES_FETCHING,
+    SET_SCHEDULE,
+    SET_SCHEDULE_FETCHING
+} from '../constants/constants.js';
 import axios from 'axios';
-import get from 'lodash/get';
 import isEmpty from 'lodash/isEmpty';
 
-export const setLeagues = leagues => ({
-    type: SET_LEAGUES,
-    leagues
-});
+export const retrieveSchedule = () => async (dispatch, getState) => {
+    let { schedule, scheduleFetching } = getState();
 
-export const setSchedule = schedule => ({
-    type: SET_SCHEDULE,
-    schedule
-});
+    if (!isEmpty(schedule) || scheduleFetching) return;
 
-export const retrieveSchedule = () => async (dispatch, state) => {
-    if (!isEmpty(state.schedule)) return;
-
-    let schedule;
+    dispatch(setScheduleFetching(true));
     try {
         const data = await axios.get('/pro-play/schedule');
         schedule = data.data;
+        dispatch(setScheduleFetching(false));
     } catch (error) {
         console.log(error);
+        dispatch(setScheduleFetching(false));
         throw new Error(error);
     }
     dispatch(setSchedule(schedule));
 };
 
-export const retrieveLeagues = () => async (dispatch, state) => {
-    if (get(state, 'leagues', []).length > 0) {
-        return;
-    }
+export const retrieveLeagues = () => async (dispatch, getState) => {
+    let { leagues, leaguesFetching } = getState();
+    if (!isEmpty(leagues) || leaguesFetching) return;
 
-    let leagues;
+    dispatch(setLeaguesFetching(true));
     try {
         const data = await axios.get('/pro-play/leagues');
         leagues = data.data;
+        dispatch(setLeaguesFetching(false));
     } catch (error) {
+        console.error(error);
+        dispatch(setLeaguesFetching(false));
         throw new Error(error);
     }
     dispatch(setLeagues(leagues));
 };
+
+const setLeagues = leagues => ({
+    type: SET_LEAGUES,
+    leagues
+});
+
+const setLeaguesFetching = fetching => ({
+    type: SET_LEAGUES_FETCHING,
+    fetching
+});
+
+const setSchedule = schedule => ({
+    type: SET_SCHEDULE,
+    schedule
+});
+
+const setScheduleFetching = fetching => ({
+    type: SET_SCHEDULE_FETCHING,
+    fetching
+});

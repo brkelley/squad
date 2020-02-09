@@ -1,28 +1,82 @@
 import './homepage.scss';
-
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import PredictionWidget from './prediction-widget/prediction-widget.jsx';
-import get from 'lodash/get';
 import moment from 'moment';
+import isEmpty from 'lodash/isEmpty';
+import uniq from 'lodash/uniq';
+import PredictionWidget from './prediction-widget/prediction-widget.jsx';
+import LoadingIndicator from '../components/loading-indicator/loading-indicator.jsx';
 
 const Homepage = props => {
+    const [blocksToDate, setBlocksToDate] = useState([]);
+
+    const findBlocksToDisplay = schedule => {
+        const currentDate = moment().valueOf();
+        let latestGameIndex = schedule.findIndex(match => {
+            const matchDate = moment(match.startTime).valueOf();
+            return currentDate <= matchDate;
+        });
+        if (schedule[latestGameIndex + 1]) latestGameIndex++;
+        let blocks = schedule.slice(0, latestGameIndex).map(el => el.blockName);
+        blocks = uniq(blocks).reverse();
+        return blocks;
+    };
+
+    useEffect(() => {
+        props.getAllUsers();
+        props.retrievePredictions({ forceReload: false });
+        props.retrieveSchedule();
+    }, []);
+
+    useEffect(() => {
+        if (props.schedule && !isEmpty(props.schedule)) {
+            setBlocksToDate(findBlocksToDisplay(Object.values(props.schedule)[0]));
+        }
+    }, [ props.schedule ]);
+
+    if (props.scheduleFetching || props.predictionFetching || props.userFetching) {
+        return (
+            <div className="loading-wrapper">
+                <LoadingIndicator />
+            </div>
+        );
+    }
+
     return (
         <div className="homepage-wrapper">
-            <PredictionWidget timespan="Week 4" />
-            <PredictionWidget timespan="Week 3" />
-            <PredictionWidget timespan="Week 2" />
-            <PredictionWidget timespan="Week 1" />
+            {
+                blocksToDate.map(block => {
+                    return (
+                        <PredictionWidget
+                            key={block}
+                            timespan={block}
+                            usersMetadata={props.usersMetadata}
+                            predictionMap={props.predictionMap}
+                            schedule={props.schedule}
+                            scheduleFetching={props.scheduleFetching} />
+                    );
+                })
+            }
         </div>
     );
 };
 
-const mapStateToProps = ({ predictionReducer, proPlayMetadataReducer }) => ({
+import { getAllUsers } from '../store/user/user.actions.js';
+import { retrievePredictions } from '../store/predictions/predictions.actions.js';
+import { retrieveSchedule } from '../store/pro-play-metadata/pro-play-metadata.actions.js';
+
+const mapStateToProps = ({ userReducer, predictionReducer, proPlayMetadataReducer }) => ({
+    usersMetadata: userReducer.usersMetadata,
     schedule: proPlayMetadataReducer.schedule,
-    predictionFilters: predictionReducer.predictionFilters
+    scheduleFetching: proPlayMetadataReducer.scheduleFetching,
+    predictionFilters: predictionReducer.predictionFilters,
+    predictionMap: predictionReducer.predictionMap,
+    predictionFetching: predictionReducer.fetching,
+    userFetching: userReducer.fetching
 });
 
-const mapDispatchToProps = () => ({
+const mapDispatchToProps = dispatch => ({
+    getAllUsers: () => dispatch(getAllUsers()),
     retrievePredictions: props => dispatch(retrievePredictions(props)),
     retrieveSchedule: () => dispatch(retrieveSchedule())
 });
