@@ -4,7 +4,8 @@ import {
     SET_PREDICTION_FILTER,
     SET_UNSAVED_PREDICTIONS,
     RESET_UNSAVED_PREDICTIONS,
-    SET_FETCHING
+    SET_FETCHING,
+    SET_OR_UPDATE_PREDICTION_SCORE
 } from '../constants/constants.js';
 import isEmpty from 'lodash/isEmpty';
 import axios from 'axios';
@@ -54,6 +55,10 @@ export const updatePredictionFilter = predictionFilter => dispatch => {
     dispatch(setPredictionFilter(predictionFilter));
 };
 
+export const updatePredictionScore = (userId, predictionAddition) => dispatch => {
+    dispatch(setPredictionScore(userId, predictionAddition));
+}
+
 export const setPredictionMap = predictionMap => ({
     type: SET_PREDICTION_MAP,
     predictionMap
@@ -76,4 +81,10 @@ export const resetUnsavedPredictions = () => ({
 export const setFetching = fetching => ({
     type: SET_FETCHING,
     fetching
+});
+
+export const setPredictionScore = (userId, predictionAddition) => ({
+    type: SET_OR_UPDATE_PREDICTION_SCORE,
+    userId,
+    predictionAddition
 });

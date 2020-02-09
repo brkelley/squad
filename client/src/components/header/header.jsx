@@ -1,15 +1,21 @@
 import React from 'react';
+import { withRouter } from 'react-router-dom';
 import './header.scss';
-import { connect } from 'react-redux';
+
+const ROUTE_HEADERS = {
+    '/predictions': 'Predictions',
+    '/': 'Dashboard'
+};
 
 const Header = props => {
+    const { pathname } = props.location;
     return (
         <div className="page-title-wrapper">
             <div className="page-title">
-                Predictions
+                {ROUTE_HEADERS[pathname]}
             </div>
         </div>
     );
 };
 
-export default Header;
+export default withRouter(Header);

@@ -1,9 +1,6 @@
-import { getAllUsers } from '../../store/user/user.actions.js';
-import { retrievePredictions } from '../../store/predictions/predictions.actions.js';
-import { retrieveSchedule } from '../../store/pro-play-metadata/pro-play-metadata.actions.js';
-
 import './prediction-widget.scss';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { connect } from 'react-redux';
 import LoadingIndicator from '../../components/loading-indicator/loading-indicator.jsx';
 import ErrorIndicator from '../../components/error-indicator/error-indicator.jsx';
 import LEAGUES_METADATA from '../../../../constants/leagues.json';
@@ -21,7 +18,12 @@ const PredictionWidget = props => {
                 state: match.state
             };
         });
-    }
+    };
+
+    const saveAndRenderScore = (userId, score) => {
+        props.updatePredictionScore(userId, score);
+        return <span>{score}</span>;
+    };
 
     const renderPredictionTableHeader = (matches) => {
         return (
@@ -44,7 +46,7 @@ const PredictionWidget = props => {
         );
     };
 
-    const renderPredictionCell = (id, prediction, teams, matchTime, matchState) => {
+    const renderPredictionCell = ({ id, userId, prediction, teams, matchTime, matchState }) => {
         if (!prediction) {
             return (
                 <td
@@ -69,7 +71,8 @@ const PredictionWidget = props => {
 
         if (!prediction || !predictionOccurred || matchState === 'inProgress') {}
         else if (get(predictedTeam, 'result.gameWins') === 1) {
-            currentUserTotals++;
+            if (!currentUserTotals[userId]) currentUserTotals[userId] = 0;
+            currentUserTotals[userId]++;
         } else {
             addClass = ' incorrect-prediction';
         }
@@ -81,14 +84,13 @@ const PredictionWidget = props => {
         );
     };
 
-    let currentUserTotals = 0;
+    let currentUserTotals = {};
     let showCurrentUserTotals = false;
     const renderPredictionBody = matches => {
         return (
             <tbody>
                 {
                     props.usersMetadata.map(user => {
-                        currentUserTotals = 0;
                         return (
                             <tr className="prediction-table-row" key={user.id}>
                                 <td className="prediction-table-cell row-header">
@@ -98,12 +100,19 @@ const PredictionWidget = props => {
                                     matches.map(match => {
                                         const { league } = match;
                                         const userPrediction = props.predictionMap[league.id][user.id].find(pred => pred.matchId === match.id);
-                                        return renderPredictionCell(match.id, userPrediction, match.teams, match.startTime, match.state);
+                                        return renderPredictionCell({
+                                            id: match.id,
+                                            userId: user.id,
+                                            prediction: userPrediction,
+                                            teams: match.teams,
+                                            matchTime: match.startTime,
+                                            matchState: match.state
+                                        });
                                     })
                                 }
                                 <td className="prediction-table-cell totals-cell">
                                     {
-                                        showCurrentUserTotals ? <span>{currentUserTotals}</span> : ''
+                                        showCurrentUserTotals ? saveAndRenderScore(user.id, currentUserTotals[user.id]) : ''
                                     }
                                 </td>
                             </tr>
@@ -157,4 +166,12 @@ const PredictionWidget = props => {
 
 };
 
-export default PredictionWidget;
+import { updatePredictionScore } from '../../store/predictions/predictions.actions.js';
+
+const mapStateToProps = () => ({});
+
+const mapDispatchToProps = dispatch => ({
+    updatePredictionScore: (userId, predictionAddition) => dispatch(updatePredictionScore(userId, predictionAddition))
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(PredictionWidget);

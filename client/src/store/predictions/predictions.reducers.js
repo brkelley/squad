@@ -3,10 +3,12 @@ import {
     SET_PREDICTION_FILTER,
     SET_UNSAVED_PREDICTIONS,
     RESET_UNSAVED_PREDICTIONS,
-    SET_FETCHING
+    SET_FETCHING,
+    SET_OR_UPDATE_PREDICTION_SCORE
 } from '../constants/constants.js';
 import cloneDeep from 'lodash/cloneDeep';
 import keyBy from 'lodash/keyBy';
+import isNumber from 'lodash/isNumber';
 
 const initialState = {
     predictionMap: {},
@@ -15,6 +17,7 @@ const initialState = {
         leagueId: '98767991302996019',
         blockName: ''
     },
+    predictionScoresByUser: {},
     fetching: false
 };
 
@@ -42,6 +45,15 @@ export default function (state = initialState, action) {
             return Object.assign({}, state, { predictionFilters });
         case SET_FETCHING:
             return Object.assign({}, state, { fetching: action.fetching });
+        case SET_OR_UPDATE_PREDICTION_SCORE:
+            const predictionScoresByUser = cloneDeep(state.predictionScoresByUser);
+            const currentUserTotal = predictionScoresByUser[action.userId];
+            if (isNumber(currentUserTotal)) {
+                predictionScoresByUser[action.userId] = currentUserTotal + action.predictionAddition;
+            } else {
+                predictionScoresByUser[action.userId] = action.predictionAddition;
+            }
+            return Object.assign({}, state, { predictionScoresByUser });
         default:
             return state;
     }

@@ -1,0 +1,34 @@
+@import '../../style/variables.scss';
+
+.prediction-leaderboard-wrapper {
+    margin: 24px;
+    padding: 24px;
+    background-color: $secondary;
+    border: solid 1px #848375;
+    color: $font-color;
+    font-size: 0.9rem;
+
+    .leaderboard-title {
+        font-size: 1.8rem;
+        color: $font-color;
+    }
+
+    .leaderboard-wrapper {
+        display: flex;
+        justify-content: center;
+        font-size: 1.1rem;
+
+        .leaderboard-table {
+            border-collapse: collapse;
+
+            .leaderboard-cell {
+                border: solid 1px $border-color;
+                padding: 4px 12px;
+
+                &.personal-cell {
+                    color: $tertiary;
+                }
+            }
+        }
+    }
+}

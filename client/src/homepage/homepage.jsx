@@ -5,6 +5,7 @@ import moment from 'moment';
 import isEmpty from 'lodash/isEmpty';
 import uniq from 'lodash/uniq';
 import PredictionWidget from './prediction-widget/prediction-widget.jsx';
+import PredictionLeaderboard from './prediction-leaderboard/prediction-leaderboard.jsx';
 import LoadingIndicator from '../components/loading-indicator/loading-indicator.jsx';
 
 const Homepage = props => {
@@ -44,6 +45,10 @@ const Homepage = props => {
 
     return (
         <div className="homepage-wrapper">
+            <PredictionLeaderboard
+                predictionScoresByUser={props.predictionScoresByUser}
+                users={props.usersMetadata}
+                user={props.user} />
             {
                 blocksToDate.map(block => {
                     return (
@@ -72,7 +77,9 @@ const mapStateToProps = ({ userReducer, predictionReducer, proPlayMetadataReduce
     predictionFilters: predictionReducer.predictionFilters,
     predictionMap: predictionReducer.predictionMap,
     predictionFetching: predictionReducer.fetching,
-    userFetching: userReducer.fetching
+    userFetching: userReducer.fetching,
+    predictionScoresByUser: predictionReducer.predictionScoresByUser,
+    user: userReducer.user
 });
 
 const mapDispatchToProps = dispatch => ({
