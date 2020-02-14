@@ -29,8 +29,24 @@ jobs: # a collection of steps
       - store_test_results: # for display in Test Summary: https://circleci.com/docs/2.0/collect-test-data/
           path: test-results.xml
       # See https://circleci.com/docs/2.0/deployment-integrations/ for deploy examples
-deployment:
-  production:
-    branch: master
-    commands:
-      - ~/google-cloud-sdk/bin/gcloud --quiet preview app deploy app.yaml --promote
+  deploy:
+    docker:
+      - image: google/cloud-sdk
+    steps:
+      - run: |
+          echo $GCLOUD_SERVICE_KEY | gcloud auth activate-service-account --key-file=-
+          gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
+          gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
+          gcloud app deploy --promote
+
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - build
+      - deploy-job:
+          requires:
+            - build # Only deploy once the build job has completed
+          filters:
+            branches:
+              only: master # Only deploy on the master branch
