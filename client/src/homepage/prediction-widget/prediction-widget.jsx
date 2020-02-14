@@ -34,9 +34,9 @@ const PredictionWidget = props => {
                         matches.map(match => {
                             return (
                                 <th className="prediction-table-cell header-cell" key={match.id}>
-                                    <div className="header-team-name">{match.teams[0].code}</div>
+                                    <div className="header-team-name">{match.teams ? match.teams[0].code : ''}</div>
                                     <div className="header-vs">vs</div>
-                                    <div className="header-team-name">{match.teams[1].code}</div>
+                                    <div className="header-team-name">{match.teams ? match.teams[1].code : ''}</div>
                                 </th>
                             );
                         })

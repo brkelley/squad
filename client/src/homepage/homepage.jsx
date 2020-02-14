@@ -51,6 +51,7 @@ const Homepage = props => {
                 user={props.user} />
             {
                 blocksToDate.map(block => {
+                    if (!block) return;
                     return (
                         <PredictionWidget
                             key={block}

@@ -1,7 +1,7 @@
+const dotenv = require('dotenv');
 const firebase = require('firebase-admin');
 // Required for side-effects
 require('firebase/firestore');
-const firestoreConfig = require('./firestore-config-service-account.json');
 
 class Database {
     constructor () {
@@ -10,9 +10,13 @@ class Database {
     }
 
     _connect () {
+        const envs = dotenv.config({ path: './config.env' }).parsed;
+
+        let buff = Buffer.from(envs.FIREBASE_CONFIG_SERVICE_ACCOUNT, 'base64');
+        let text = buff.toString('ascii');
         // Initialize Cloud Firestore through Firebase
         firebase.initializeApp({
-            credential: firebase.credential.cert(firestoreConfig),
+            credential: firebase.credential.cert(JSON.parse(text)),
             databaseURL: 'https://squad-265800.firebaseio.com'
         });
         

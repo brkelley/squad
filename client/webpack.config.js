@@ -1,6 +1,17 @@
 const webpack = require('webpack');
+const dotenv = require('dotenv');
 const path = require('path');
 const paths = require('./paths');
+
+const env = dotenv.config({ path: '../config.env' }).parsed;
+  
+// reduce it to a nice object, the same as before
+const envKeys = Object.keys(env).reduce((prev, key) => {
+    prev[`process.env.${key}`] = JSON.stringify(env[key]);
+    return prev;
+}, {});
+
+console.log(envKeys);
 
 module.exports = {
     entry: './src/index.jsx',
@@ -49,6 +60,7 @@ module.exports = {
     },
     plugins: [
         new webpack.HotModuleReplacementPlugin(),
+        new webpack.DefinePlugin(envKeys),
         new webpack.DefinePlugin({
             'SERVER_URL': '"http://localhost:4444"',
             'ENVIRONMENT': '"dev"'
