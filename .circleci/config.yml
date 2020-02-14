@@ -14,7 +14,7 @@ jobs: # a collection of steps
           key: dependency-cache-{{ checksum "package-lock.json" }}
       - run:
           name: install-npm-packages
-          command: npm install && cd ./client && npm install && cd ..
+          command: npm install && cd ./client && npm install && npm run bundle && cd ..
       - save_cache: # special step to save the dependency cache
           key: dependency-cache-{{ checksum "package-lock.json" }}
           paths:
@@ -29,3 +29,12 @@ jobs: # a collection of steps
       - store_test_results: # for display in Test Summary: https://circleci.com/docs/2.0/collect-test-data/
           path: test-results.xml
       # See https://circleci.com/docs/2.0/deployment-integrations/ for deploy examples
+  deploy:
+    docker:
+      - image: google/cloud-sdk
+    steps:
+      - run: |
+          echo $GCLOUD_SERVICE_KEY | gcloud auth activate-service-account --key-file=-
+          gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
+          gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
+          gcloud app deploy --promote
