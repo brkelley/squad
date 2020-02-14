@@ -9,7 +9,6 @@ import thunk from 'redux-thunk';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import firebase from 'firebase/app';
-import FIREBASE_CONFIG from '../../database/firestore/firestore-config.json';
 import './style/app.scss';
 
 const token = Cookies.get('userToken');
