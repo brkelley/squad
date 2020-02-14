@@ -44,7 +44,7 @@ workflows:
   build-deploy:
     jobs:
       - build
-      - deploy-job:
+      - deploy:
           requires:
             - build # Only deploy once the build job has completed
           filters:
