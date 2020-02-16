@@ -31,7 +31,7 @@ jobs: # a collection of steps
           gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
       - run:
           name: deploy-gcloud
-          command: 'sudo gcloud app deploy --promote'
+          command: 'gcloud app deploy --promote'
 
 workflows:
   version: 2
