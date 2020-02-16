@@ -3,7 +3,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import LoadingIndicator from '../../components/loading-indicator/loading-indicator.jsx';
 import ErrorIndicator from '../../components/error-indicator/error-indicator.jsx';
-import LEAGUES_METADATA from '../../../../constants/leagues.json';
+import LEAGUES_METADATA from '../../constants/leagues.json';
 import moment from 'moment';
 import flatMap from 'lodash/flatMap';
 import get from 'lodash/get';
