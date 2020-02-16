@@ -1,4 +1,4 @@
-import './prediction-leaderboard.scss';
+import './prediction-analytics.scss';
 import React, { useState, useEffect } from 'react';
 import toPairs from 'lodash/toPairs';
 import isEmpty from 'lodash/isEmpty';

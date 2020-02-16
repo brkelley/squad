@@ -11,8 +11,6 @@ const envKeys = Object.keys(env).reduce((prev, key) => {
     return prev;
 }, {});
 
-console.log(envKeys);
-
 module.exports = {
     entry: './src/index.jsx',
     output: {

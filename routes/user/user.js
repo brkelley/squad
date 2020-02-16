@@ -34,7 +34,7 @@ module.exports.getUsers = async (req, res) => {
         return user;
     });
     res.status(200).json(cleanUsers);
-}
+};
 
 module.exports.register = async (req, res) => {
     const user = { ...req.body };
