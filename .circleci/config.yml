@@ -20,7 +20,7 @@ jobs: # a collection of steps
           paths:
             - ./node_modules
       - persist_to_workspace:
-          root: /squad/client
+          root: client
           paths:
             - dist
       # See https://circleci.com/docs/2.0/deployment-integrations/ for deploy examples
