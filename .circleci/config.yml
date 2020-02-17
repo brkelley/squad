@@ -24,12 +24,6 @@ jobs: # a collection of steps
           paths:
             - index.html
             - bundle.js
-      # See https://circleci.com/docs/2.0/deployment-integrations/ for deploy examples
-  deploy:
-    working_directory: ~/squad # directory where steps will run
-    docker:
-      - image: google/cloud-sdk
-    steps:
       - run: |
           echo $GCLOUD_SERVICE_KEY | base64 --decode | gcloud auth activate-service-account --key-file=-
           gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
@@ -43,9 +37,3 @@ workflows:
   build-deploy:
     jobs:
       - build
-      - deploy:
-          requires:
-            - build # Only deploy once the build job has completed
-          filters:
-            branches:
-              only: master # Only deploy on the master branch
