@@ -14,7 +14,7 @@ jobs: # a collection of steps
           key: dependency-cache-{{ checksum "package-lock.json" }}
       - run:
           name: install-npm-packages
-          command: npm install && cd ./client && npm install && npm run bundle && cd ..
+          command: npm install && cd ./client && npm install && npm run bundle -- --env.FIREBASE_CONFIG_SERVICE_ACCOUNT=${FIREBASE_CONFIG_SERVICE_ACCOUNT} --env.FIREBASE_CONFIG=${FIREBASE_CONFIG} && cd ..
       - save_cache: # special step to save the dependency cache
           key: dependency-cache-{{ checksum "package-lock.json" }}
           paths:
