@@ -4,7 +4,7 @@ import './header.scss';
 
 const ROUTE_HEADERS = {
     '/predictions': 'Predictions',
-    '/': 'Dashboard'
+    '/': 'Dashboard BUTTS'
 };
 
 const Header = props => {
