@@ -2,10 +2,8 @@ import './navbar.scss';
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { connect } from 'react-redux';
 
-import { logout } from '../../store/user/user.actions.js';
-
+import SettingsPopover from './settings-popover/settings-popover.jsx';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faCog } from '@fortawesome/free-solid-svg-icons';
 
@@ -16,21 +14,6 @@ const Navbar = props => {
     props.history.listen(location => {
         setActiveNav(location.pathname.split('/')[1]);
     });
-
-    const startLogout = () => {
-        props.storeLogout();
-        props.history.push('/login');
-    };
-
-    const renderSettingsPopout = () => {
-        return (
-            <div className={`nav-popout${settingsPopoutActive ? ' popped-out' : ''}`}>
-                <div className="nav-item" onClick={startLogout}>
-                    Log Out
-                </div>
-            </div>
-        );
-    };
 
     return (
         <div className="navbar-wrapper">
@@ -49,14 +32,10 @@ const Navbar = props => {
                 <FontAwesomeIcon icon={faCog} className="nav-icon" />
                 Settings
             </div>
-            {renderSettingsPopout()}
+            <SettingsPopover
+                settingsPopoutActive={settingsPopoutActive} />
         </div>
     );
 };
 
-const mapStateToProps = () => ({});
-const mapDispatchToProps = dispatch => ({
-    storeLogout: () => dispatch(logout())
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(Navbar);
+export default Navbar;

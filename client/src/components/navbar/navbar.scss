@@ -77,39 +77,4 @@
             }
         }
     }
-
-    .nav-popout {
-        position: absolute;
-        display: flex;
-        flex-direction: column;
-        bottom: 55px;
-        left: $navbar-size;
-        width: 0;
-        background-color: white;
-        padding: 8px 0;
-        font-size: 1.3rem;
-        border-radius: 3px;
-        overflow: hidden;
-        transition: 0.2 all;
-
-        -webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
-        -moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
-        box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
-
-        &.popped-out {
-            width: 200px;
-            transition: 0.2 all;
-        }
-
-        .nav-item {
-            padding: 8px;
-            transition: 0.15s all;
-
-            &:hover {
-                background-color: darken(white, 10%);
-                cursor: pointer;
-                transition: 0.15s all;
-            }
-        }
-    }
 }

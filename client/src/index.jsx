@@ -25,7 +25,6 @@ const composeParams = [
     applyMiddleware(thunk)
 ];
 
-console.log(process.env.FIREBASE_CONFIG);
 firebase.initializeApp(JSON.parse(atob(process.env.FIREBASE_CONFIG)));
 
 if (ENVIRONMENT === 'dev' && window.__REDUX_DEVTOOLS_EXTENSION__) {

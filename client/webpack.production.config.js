@@ -1,12 +1,21 @@
 const webpack = require('webpack');
 const path = require('path');
 const paths = require('./paths');
+const dotenv = require('dotenv');
+
+const env = dotenv.config({ path: '../config.env' }).parsed;
+  
+// reduce it to a nice object, the same as before
+const envKeys = Object.keys(env).reduce((prev, key) => {
+    prev[`process.env.${key}`] = JSON.stringify(env[key]);
+    return prev;
+}, {});
 
 module.exports = env => {
-    const envKeys = Object.keys(env).reduce((prev, key) => {
-        prev[`process.env.${key}`] = JSON.stringify(env[key]);
-        return prev;
-    }, {});
+    // const envKeys = Object.keys(env).reduce((prev, key) => {
+    //     prev[`process.env.${key}`] = JSON.stringify(env[key]);
+    //     return prev;
+    // }, {});
     return {
         entry: './src/index.jsx',
         output: {

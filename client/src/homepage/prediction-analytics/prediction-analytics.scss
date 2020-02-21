@@ -7,15 +7,10 @@
     border: solid 1px #848375;
     color: $font-color;
     font-size: 0.9rem;
-
-    .leaderboard-title {
-        font-size: 1.8rem;
-        color: $font-color;
-    }
+    display: flex;
+    justify-content: space-around;
 
     .leaderboard-wrapper {
-        display: flex;
-        justify-content: center;
         font-size: 1.1rem;
 
         .leaderboard-table {
@@ -28,6 +23,34 @@
                 &.personal-cell {
                     color: $tertiary;
                 }
+            }
+        }
+    }
+
+    .statistic-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-size: 1.1rem;
+        
+        .statistic-title {
+            font-size: 1.5rem;
+        }
+
+        .separator {
+            width: 100%;
+        }
+
+        .statistic-team-logo {
+            height: 75px;
+            width: auto;
+        }
+        
+        .statistic-information {
+            padding-top: 8px;
+
+            &.team-name {
+                font-size: 1.3rem;
             }
         }
     }
