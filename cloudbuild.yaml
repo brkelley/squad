@@ -1,10 +1,13 @@
 steps:
-- name: node
+- name: node:10.15.1
   entrypoint: npm
-  args: ["install"]
+  args: ["run", "create-env"]
   env:
     - 'FIREBASE_CONFIG_SERVICE_ACCOUNT=${_FIREBASE_CONFIG_SERVICE_ACCOUNT}'
     - 'FIREBASE_CONFIG=${_FIREBASE_CONFIG}'
+- name: node
+  entrypoint: npm
+  args: ["install"]
 - name: node
   entrypoint: npm
   args: ["install", "--prefix", "client"]
