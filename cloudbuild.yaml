@@ -1,0 +1,15 @@
+steps:
+- name: node
+  entrypoint: npm
+  args: ["install"]
+  env:
+    - 'FIREBASE_CONFIG_SERVICE_ACCOUNT=${_FIREBASE_CONFIG_SERVICE_ACCOUNT}'
+    - 'FIREBASE_CONFIG=${_FIREBASE_CONFIG}'
+- name: node
+  entrypoint: npm
+  args: ["install", "--prefix", "client"]
+- name: node
+  entrypoint: npm
+  args: ["run", "client"]
+- name: "gcr.io/cloud-builders/gcloud"
+  args: ["app", "deploy", "--promote"]
