@@ -1,0 +1,36 @@
+{
+    "steps": [
+        {
+            "name": "node",
+            "entrypoint": "npm",
+            "args": [
+                "install"
+            ]
+        },
+        {
+            "name": "node",
+            "entrypoint": "npm",
+            "args": [
+                "install",
+                "--prefix",
+                "client"
+            ]
+        },
+        {
+            "name": "node",
+            "entrypoint": "npm",
+            "args": [
+                "run",
+                "client"
+            ]
+        },
+        {
+            "name": "gcr.io/cloud-builders/gcloud",
+            "args": [
+                "app",
+                "deploy",
+                "--promote"
+            ]
+        }
+    ]
+}
