@@ -1,21 +1,31 @@
-import React from 'react';
-import { withRouter } from 'react-router-dom';
 import './header.scss';
+import React from 'react';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
+import get from 'lodash/get';
 
-const ROUTE_HEADERS = {
-    '/predictions': 'Predictions',
-    '/': 'Dashboard BUTTS'
-};
+const Header = ({ location, user }) => {
+    const parseRouteHeaders = pathname => {
+        if (pathname === '/') return 'Dashboard';
+        if (pathname === '/predictions') return 'Predictions';
+        if (/users\/(.*)/.test(pathname)) return `${get(user, 'summonerName', '')}`;
+        return '';
+    };
 
-const Header = props => {
-    const { pathname } = props.location;
+    const { pathname } = location;
     return (
         <div className="page-title-wrapper">
             <div className="page-title">
-                {ROUTE_HEADERS[pathname]}
+                {parseRouteHeaders(pathname)}
             </div>
         </div>
     );
 };
 
-export default withRouter(Header);
+const mapStateToProps = ({ userReducer }) => ({
+    user: userReducer.user
+});
+
+const mapDispatchToProps = () => ({});
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Header));

@@ -1,6 +1,6 @@
 import './navbar.scss';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
 import SettingsPopover from './settings-popover/settings-popover.jsx';
@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faCog } from '@fortawesome/free-solid-svg-icons';
 
 const Navbar = props => {
+    const node = useRef();
     const [activeNav, setActiveNav] = useState(props.history.location.pathname.split('/')[1]);
     const [settingsPopoutActive, setSettingsPopoutActive] = useState(false);
 
@@ -28,12 +29,17 @@ const Navbar = props => {
                     Predictions
                 </Link>
             </div>
-            <div className="navbar-user" onClick={() => setSettingsPopoutActive(!settingsPopoutActive)}>
+            <div
+                className="navbar-user"
+                ref={node}
+                onClick={() => setSettingsPopoutActive(!settingsPopoutActive)}>
                 <FontAwesomeIcon icon={faCog} className="nav-icon" />
                 Settings
             </div>
             <SettingsPopover
-                settingsPopoutActive={settingsPopoutActive} />
+                toggleButton={node}
+                settingsPopoutActive={settingsPopoutActive}
+                collapseSettingsPopover={() => setSettingsPopoutActive(false)} />
         </div>
     );
 };

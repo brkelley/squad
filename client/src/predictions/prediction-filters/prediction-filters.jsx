@@ -79,11 +79,12 @@ const PredictionFilters = props => {
                 </div>
             </div>
             <div className="prediction-save-button">
-                <SquadButton
-                    buttonLabel={'SAVE'}
-                    showButton={props.hasUnsavedPredictions}
-                    loading={isSaving}
-                    click={saveChanges} />
+                {props.hasUnsavedPredictions &&
+                    (<SquadButton
+                        buttonLabel={'SAVE'}
+                        loading={isSaving}
+                        click={saveChanges} />)
+                }
             </div>
         </div>
     );

@@ -8,8 +8,65 @@ import {
 import firebase from 'firebase';
 import Cookies from 'js-cookie';
 
-export const setUserObject = ({ username }) => dispatch => {
-    dispatch(setUser({ username }));
+const setUpPendo = user => {
+    // in your authentication promise handler or callback
+    // eslint-disable-next-line no-undef
+    pendo.initialize({
+        visitor: {
+            id: user.id, // Required if user is logged in
+            summonerName: user.summonerName
+            // email:        // Recommended if using Pendo Feedback, or NPS Email
+            // full_name:    // Recommended if using Pendo Feedback
+            // role:         // Optional
+
+            // You can add any additional visitor level key-values here,
+            // as long as it's not one of the above reserved names.
+        },
+
+        account: {
+            id: 'SQUAD' // Highly recommended
+            // name:         // Optional
+            // is_paying:    // Recommended if using Pendo Feedback
+            // monthly_value:// Recommended if using Pendo Feedback
+            // planLevel:    // Optional
+            // planPrice:    // Optional
+            // creationDate: // Optional
+
+            // You can add any additional account level key-values here,
+            // as long as it's not one of the above reserved names.
+        }
+    });
+};
+
+export const setUsersMetadata = usersMetadata => ({
+    type: SET_USERS_METADATA,
+    usersMetadata
+});
+
+export const setUser = user => ({
+    type: SET_USER,
+    user
+});
+
+export const setUserToken = userToken => ({
+    type: SET_USER_TOKEN,
+    userToken
+});
+
+export const setUserFetching = fetching => ({
+    type: SET_USER_FETCHING,
+    fetching
+});
+
+export const updateUser = user => async dispatch => {
+    let updatedUser;
+    try {
+        updatedUser = await axios.post(`/users/${user.id}`, user);
+        updatedUser = updatedUser.data;
+        dispatch(setUser(updatedUser));
+    } catch (error) {
+        console.error('error');
+    }
 };
 
 export const getAllUsers = () => async (dispatch, getState) => {
@@ -37,11 +94,12 @@ export const logout = () => async dispatch => {
 
 export const registerNewUser = body => dispatch => {
     return axios.post('/user/register', body)
-        .then(({data: results}) => {
+        .then(({ data: results }) => {
             dispatch(setUser(results.user));
             dispatch(setUserToken(results.token));
+            setUpPendo(results.user);
             Cookies.set('userToken', results.token);
-            axios.defaults.headers.common['squadToken'] = results.token;
+            axios.defaults.headers.common.squadToken = results.token;
         });
 };
 
@@ -59,7 +117,7 @@ export const login = (summonerName, password) => async (dispatch, getState) => {
     if (state.userToken && !['', 'INVALID'].includes(state.userToken)) {
         return Promise.resolve();
     }
-    
+
     let token, user;
     try {
         const loginResults = await axios.post('/user/login', { summonerName, password });
@@ -74,21 +132,23 @@ export const login = (summonerName, password) => async (dispatch, getState) => {
 
     dispatch(setUser(user));
     dispatch(setUserToken(token));
+    setUpPendo(user);
     Cookies.set('userToken', token);
-    axios.defaults.headers.common['squadToken'] = token;
+    axios.defaults.headers.common.squadToken = token;
 };
 
 export const validateUserToken = idToken => async dispatch => {
     const data = await axios.post('/user/validateToken', { token: idToken });
     const results = data.data;
 
-    const { token, valid, summonerName, id } = results;
+    const { token, valid, user } = results;
 
     if (!valid) {
         dispatch(setUserToken('INVALID'));
     } else {
-        dispatch(setUser({ id, summonerName }));
+        dispatch(setUser(user));
         dispatch(setUserToken(token));
+        setUpPendo(user);
         Cookies.set('userToken', token);
         axios.defaults.headers.common['squadToken'] = token;
     }
@@ -102,22 +162,19 @@ export const validateSummonerName = summonerName => () => {
         });
 };
 
-export const setUsersMetadata = usersMetadata => ({
-    type: SET_USERS_METADATA,
-    usersMetadata
-});
+export const resyncSummonerName = (userId, summonerId) => async (dispatch, getState) => {
+    let updatedFields;
+    try {
+        const newSummonerName = await axios.patch(`/users/${userId}/syncSummonerName`, { id: summonerId });
+        updatedFields = newSummonerName.data;
+    } catch (error) {
+        console.error(error);
+        return;
+    }
 
-export const setUser = user => ({
-    type: SET_USER,
-    user
-});
-
-export const setUserToken = userToken => ({
-    type: SET_USER_TOKEN,
-    userToken
-});
-
-export const setUserFetching = fetching => ({
-    type: SET_USER_FETCHING,
-    fetching
-});
+    const { user } = getState().userReducer;
+    dispatch(setUser({
+        ...user,
+        ...updatedFields
+    }));
+};

@@ -1,12 +1,12 @@
 import './private-route.scss';
 import React, { useState, useEffect } from 'react';
-import { Redirect } from 'react-router-dom';
+import { Redirect, withRouter } from 'react-router-dom';
 import { Route } from 'react-router-dom';
 import { connect } from 'react-redux';
 import LoadingIndicator from '../loading-indicator/loading-indicator.jsx';
 import { validateFirebaseUser } from './private-route.util.js';
 
-import { validateUserToken } from '../../store/user/user.actions.js';
+import { validateUserToken, logout } from '../../store/user/user.actions.js';
 
 const PrivateRoute = ({ component: Component, ...rest }) => {
     const [shouldRedirect, setShouldRedirect] = useState(false);
@@ -22,8 +22,11 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
             setLoading(true);
             validateFirebaseUser()
                 .then(user => user.getIdToken())
-                .then(userResult => {
-                    rest.validateUserToken(userResult);
+                .then(userResult => rest.validateUserToken(userResult))
+                .catch(() => {
+                    rest.logout();
+                    setLoading(false);
+                    setShouldRedirect(true);
                 });
         }
     }, []);
@@ -48,7 +51,10 @@ const mapStateToProps = ({ userReducer }) => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-    validateUserToken: idToken => dispatch(validateUserToken(idToken))
+    validateUserToken: idToken => dispatch(validateUserToken(idToken)),
+    logout: () => logout()
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(PrivateRoute);
+export default withRouter(
+    connect(mapStateToProps, mapDispatchToProps)(PrivateRoute)
+);

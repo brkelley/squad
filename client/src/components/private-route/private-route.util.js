@@ -6,6 +6,8 @@ export const validateFirebaseUser = () => {
             if (user) {
                 unsubscribe();
                 resolve(user);
+            } else {
+                reject('user is not logged in!');
             }
         }, reject);
     });

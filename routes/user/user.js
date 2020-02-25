@@ -2,7 +2,8 @@ const db = require('../../database/firestore/firestore.js');
 const passport = require('passport');
 const axios = require('axios');
 const crypto = require('crypto');
-const jwt = require('jsonwebtoken');
+const toPairs = require('lodash/toPairs');
+const cloneDeep = require('lodash/cloneDeep');
 
 module.exports.getUserBySummonerName = async (req, res) => {
     try {
@@ -34,6 +35,49 @@ module.exports.getUsers = async (req, res) => {
         return user;
     });
     res.status(200).json(cleanUsers);
+};
+
+module.exports.updateUser = async (req, res) => {
+    const fieldsToUpdate = cloneDeep(req.body);
+    delete fieldsToUpdate.id;
+    const fields = toPairs(fieldsToUpdate).map(([key, value]) => ({ key, value }));
+
+    let updatedUser;
+    try {
+        await db.update(fields, { key: 'id', value: req.params.id }, 'users');
+        updatedUser = await db.retrieveOne('id', req.params.id, 'users');
+        updatedUser = {
+            ...updatedUser,
+            ...fieldsToUpdate
+        };
+    } catch (error) {
+        console.error(error);
+        res.status(400).message('database error!');
+    }
+
+    res.status(201).json(updatedUser);
+};
+
+module.exports.syncSummonerName = async (req, res) => {
+    const headers = {
+        'X-Riot-Token': 'RGAPI-45b394c8-0ac5-42e3-9398-230cc12a637f'
+    };
+
+    let leagueSummoner;
+    try {
+        leagueSummoner = await axios.get(`https://na1.api.riotgames.com/lol/summoner/v4/summoners/${req.body.id}`, { headers });
+
+        // only update summoner name (for now)
+        const fields = [{ key: 'summonerName', value: leagueSummoner.data.name }];
+        const comparator = { key: 'id', value: req.params.id };
+
+        db.update(fields, comparator, 'users');
+        res.status(201).json({ id: req.params.id, summonerName: leagueSummoner.data.name });
+    } catch (err) {
+        console.log(err);
+        res.status(404).json({ message: 'invalid summoner ID' });
+        return;
+    }
 };
 
 module.exports.register = async (req, res) => {
@@ -96,7 +140,7 @@ module.exports.validateSummonerName = async (req, res) => {
         'X-Riot-Token': 'RGAPI-45b394c8-0ac5-42e3-9398-230cc12a637f'
     };
     const { summonerName } = req.query;
-    let leagueSummoner, users;
+    let leagueSummoner;
     
     try {
         leagueSummoner = await axios.get(`https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-name/${summonerName}`, { headers });
@@ -107,7 +151,7 @@ module.exports.validateSummonerName = async (req, res) => {
 
     try {
         const users = await db.retrieveAll('users');
-        const existingSummonerNames = users.map(el => el.summoner_name);
+        const existingSummonerNames = users.map(el => el.summonerName);
         if (existingSummonerNames.includes(summonerName)) {
             res.status(400).json({ message: 'user already exists' });
             return;
@@ -138,7 +182,8 @@ module.exports.validateUserToken = async (req, res) => {
         res.status(200).json({ valid });
         return;
     }
-    res.status(200).json({ valid, id, summonerName, token: req.body.token });
+    const user = await db.retrieveOne('id', id, 'users');
+    res.status(200).json({ valid, user, token: req.body.token });
 };
 
 const generateJwt = user => {

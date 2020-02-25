@@ -1,0 +1,50 @@
+@import '../style/variables.scss';
+
+.user-details-wrapper {
+    .user-information-wrapper {
+        width: 55%;
+        margin: 16px;
+        padding: 16px;
+        background-color: $secondary;
+        border: solid 1px $border-color;
+        color: $font-color;
+
+        .user-field {
+            display: flex;
+            justify-content: center;
+            align-items: baseline;
+            height: 32px;
+
+            &:not(:first-child) {
+                padding-top: 16px;
+            }
+
+            .user-label {
+                flex: 1 1 30%;
+                font-size: 1.1rem;
+                color: white;
+            }
+
+            .user-value {
+                flex: 1 1 70%;
+                height: 32px;
+
+                &.value-with-button {
+                    display: flex;
+                    justify-content: space-between;
+                }
+
+                .user-value-text {
+                    padding: 6px;
+                }
+            }
+        }
+
+        .user-details-actions {
+            width: 100%;
+            padding: 16px;
+            display: flex;
+            justify-content: center;
+        }
+    }
+}
