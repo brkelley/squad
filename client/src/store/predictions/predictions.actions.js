@@ -1,14 +1,46 @@
 import {
     SET_PREDICTION_MAP,
+    SET_PREDICTION_AT_KEY,
     SET_PREDICTION,
     SET_PREDICTION_FILTER,
     SET_UNSAVED_PREDICTIONS,
     RESET_UNSAVED_PREDICTIONS,
-    SET_FETCHING,
-    SET_OR_UPDATE_PREDICTION_SCORE
+    SET_FETCHING
 } from '../constants/constants.js';
 import isEmpty from 'lodash/isEmpty';
+import cloneDeep from 'lodash/cloneDeep';
 import axios from 'axios';
+
+export const setPredictionMap = predictionMap => ({
+    type: SET_PREDICTION_MAP,
+    predictionMap
+});
+
+export const setPredictionAtKey = (userId, leagueId, updatedPredictions) => ({
+    type: SET_PREDICTION_AT_KEY,
+    userId,
+    leagueId,
+    updatedPredictions
+});
+
+export const setPrediction = prediction => ({
+    type: SET_PREDICTION,
+    prediction
+});
+
+export const setUnsavedPredictions = prediction => ({
+    type: SET_UNSAVED_PREDICTIONS,
+    prediction
+});
+
+export const resetUnsavedPredictions = () => ({
+    type: RESET_UNSAVED_PREDICTIONS
+});
+
+export const setFetching = fetching => ({
+    type: SET_FETCHING,
+    fetching
+});
 
 export const setPredictionFilter = predictionFilter => ({
     type: SET_PREDICTION_FILTER,
@@ -20,7 +52,17 @@ export const savePredictions = () => async (dispatch, getState) => {
     const predictionsToSave = Object.values(getState().predictionReducer.unsavedPredictions);
     dispatch(setFetching(true));
     try {
-        await axios.post('/predictions', Object.values(predictionsToSave));
+        let updatedPredictions = await axios.post('/predictions', Object.values(predictionsToSave));
+        updatedPredictions = updatedPredictions.data;
+        const updatedPredictionsIds = updatedPredictions.map(el => el.matchId);
+        const clonedMap = cloneDeep(getState().predictionReducer.predictionMap);
+        const leagueFilter = getState().predictionReducer.predictionFilters.leagueId;
+        const userId = getState().userReducer.user.id;
+        clonedMap[leagueFilter][userId] = [
+            ...clonedMap[leagueFilter][userId].filter(el => !updatedPredictionsIds.includes(el.id)),
+            ...updatedPredictions
+        ];
+        dispatch(setPredictionMap(clonedMap));
     } catch (error) {
         throw new Error(error);
     }
@@ -54,37 +96,3 @@ export const retrievePredictions = ({ forceReload }) => async (dispatch, getStat
 export const updatePredictionFilter = predictionFilter => dispatch => {
     dispatch(setPredictionFilter(predictionFilter));
 };
-
-export const updatePredictionScore = (userId, predictionAddition) => dispatch => {
-    dispatch(setPredictionScore(userId, predictionAddition));
-}
-
-export const setPredictionMap = predictionMap => ({
-    type: SET_PREDICTION_MAP,
-    predictionMap
-});
-
-export const setPrediction = prediction => ({
-    type: SET_PREDICTION,
-    prediction
-});
-
-export const setUnsavedPredictions = prediction => ({
-    type: SET_UNSAVED_PREDICTIONS,
-    prediction
-});
-
-export const resetUnsavedPredictions = () => ({
-    type: RESET_UNSAVED_PREDICTIONS
-});
-
-export const setFetching = fetching => ({
-    type: SET_FETCHING,
-    fetching
-});
-
-export const setPredictionScore = (userId, predictionAddition) => ({
-    type: SET_OR_UPDATE_PREDICTION_SCORE,
-    userId,
-    predictionAddition
-});

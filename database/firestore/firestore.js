@@ -107,7 +107,7 @@ class Database {
         let updateDoc;
         try {
             updateDoc = await this.db.collection(table).doc(comparator.value);
-            updateDoc.update(fieldsAsObject);
+            await updateDoc.update(fieldsAsObject);
         } catch (error) {
             console.log(error);
             return error;

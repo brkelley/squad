@@ -118,7 +118,7 @@ module.exports.saveOrUpdatePrediction = async (req, res) => {
     const predictions = req.body;
     const finalPredictions = [];
     const currentDate = Date.now();
-    
+
     if (predictions.matchTime) {
         const matchTimeEpoch = new Date(predictions.matchTime).getTime();
         if (currentDate >= matchTimeEpoch) {
@@ -127,14 +127,16 @@ module.exports.saveOrUpdatePrediction = async (req, res) => {
         }
     }
 
-    predictions.forEach(async prediction => {
+    for (let i = 0; i < predictions.length; i++) {
+        const prediction = predictions[i];
         let returnedPrediction;
         try {
             if (prediction.id) {
                 // only want to update the prediction field
                 const fields = [{ key: 'prediction', value: prediction.prediction }];
                 const comparator = { key: 'id', value: prediction.id };
-                returnedPrediction = await db.update(fields, comparator, 'predictions');
+                await db.update(fields, comparator, 'predictions');
+                returnedPrediction = prediction;
             } else {
                 returnedPrediction = await db.insert(prediction, 'predictions');
             }
@@ -143,6 +145,6 @@ module.exports.saveOrUpdatePrediction = async (req, res) => {
             return;
         }
         finalPredictions.push(returnedPrediction);
-    });
+    }
     res.status(201).json(finalPredictions);
 };

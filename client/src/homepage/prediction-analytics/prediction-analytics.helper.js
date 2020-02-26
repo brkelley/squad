@@ -1,7 +1,39 @@
 import flatMap from 'lodash/flatMap';
 import keyBy from 'lodash/keyBy';
 
-export const calculateScores = ({ users, schedule, predictionMap, userId }) => {
+const calculateMostWins = predictedTeamTotals => {
+    let mostWins = { winLoss: { win: -1 } };
+    Object.values(predictedTeamTotals).forEach(team => {
+        if (mostWins.winLoss.win < team.winLoss.win) {
+            mostWins = team;
+        }
+    });
+    return mostWins;
+};
+
+const calculateMostLosses = predictedTeamTotals => {
+    let mostLosses = { winLoss: { loss: -1 } };
+    Object.values(predictedTeamTotals).forEach(team => {
+        if (mostLosses.winLoss.loss < team.winLoss.loss) {
+            mostLosses = team;
+        }
+    });
+    return mostLosses;
+};
+
+const calculateMostPredicted = predictedTeamTotals => {
+    let mostPredicted = { count: -1 };
+
+    Object.values(predictedTeamTotals).forEach(team => {
+        if (mostPredicted.count < team.count) {
+            mostPredicted = team;
+        }
+    });
+
+    return mostPredicted;
+};
+
+const calculateScores = ({ users, schedule, predictionMap, userId }) => {
     const totalsByUser = {};
 
     users.forEach(user => {
@@ -50,7 +82,7 @@ export const calculateScores = ({ users, schedule, predictionMap, userId }) => {
     const sortedTotals = Object.values(totalsByUser)
         .map(el => ({ id: el.id, name: el.name, score: el.score }))
         .sort((val1, val2) => val2.score - val1.score);
-    
+
     return {
         leaderboard: sortedTotals,
         mostPredicted: calculateMostPredicted(totalsByUser[userId].mostPredicted),
@@ -59,34 +91,4 @@ export const calculateScores = ({ users, schedule, predictionMap, userId }) => {
     };
 };
 
-const calculateMostWins = predictedTeamTotals => {
-    let mostWins = { winLoss: { win: -1 } };
-    Object.values(predictedTeamTotals).forEach(team => {
-        if (mostWins.winLoss.win < team.winLoss.win) {
-            mostWins = team;
-        }
-    });
-    return mostWins;
-};
-
-const calculateMostLosses = predictedTeamTotals => {
-    let mostLosses = { winLoss: { loss: -1 } };
-    Object.values(predictedTeamTotals).forEach(team => {
-        if (mostLosses.winLoss.loss < team.winLoss.loss) {
-            mostLosses = team;
-        }
-    });
-    return mostLosses;
-};
-
-const calculateMostPredicted = predictedTeamTotals => {
-    let mostPredicted = { count: -1 };
-
-    Object.values(predictedTeamTotals).forEach(team => {
-        if (mostPredicted.count < team.count) {
-            mostPredicted = team;
-        }
-    });
-
-    return mostPredicted;
-};
+export default calculateScores;

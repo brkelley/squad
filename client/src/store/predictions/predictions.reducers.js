@@ -1,5 +1,6 @@
 import {
     SET_PREDICTION_MAP,
+    SET_PREDICTION_AT_KEY,
     SET_PREDICTION_FILTER,
     SET_UNSAVED_PREDICTIONS,
     RESET_UNSAVED_PREDICTIONS,
@@ -25,12 +26,20 @@ export default function (state = initialState, action) {
     switch (action.type) {
         case SET_PREDICTION_MAP:
             return Object.assign({}, state, { predictionMap: action.predictionMap });
+        case SET_PREDICTION_AT_KEY:
+            const clonedMap = cloneDeep(state.predictionMap);
+            const updatedPredictionMap = keyBy(action.updatedPredictions, 'matchId');
+            clonedMap[action.leagueId][action.userId] = {
+                ...clonedMap[action.leagueId][action.userId],
+                ...updatedPredictionMap
+            };
+            return Object.assign({}, state, { predictionMap: clonedMap });
         case SET_UNSAVED_PREDICTIONS:
             const unsavedPredictions = {
                 ...state.unsavedPredictions,
                 [action.prediction.matchId]: action.prediction
             };
-            let predictionMap = cloneDeep(state.predictionMap);
+            const predictionMap = cloneDeep(state.predictionMap);
             const mappedPredictions = keyBy(predictionMap[action.prediction.leagueId][action.prediction.userId], 'matchId');
             mappedPredictions[action.prediction.matchId] = action.prediction;
             predictionMap[action.prediction.leagueId][action.prediction.userId] = Object.values(mappedPredictions);
@@ -57,4 +66,4 @@ export default function (state = initialState, action) {
         default:
             return state;
     }
-};
+}
