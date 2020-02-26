@@ -21,7 +21,6 @@ const PredictionWidget = props => {
     };
 
     const saveAndRenderScore = (userId, score) => {
-        props.updatePredictionScore(userId, score);
         return <span>{score}</span>;
     };
 
@@ -166,12 +165,8 @@ const PredictionWidget = props => {
 
 };
 
-import { updatePredictionScore } from '../../store/predictions/predictions.actions.js';
-
 const mapStateToProps = () => ({});
 
-const mapDispatchToProps = dispatch => ({
-    updatePredictionScore: (userId, predictionAddition) => dispatch(updatePredictionScore(userId, predictionAddition))
-});
+const mapDispatchToProps = dispatch => ({});
 
 export default connect(mapStateToProps, mapDispatchToProps)(PredictionWidget);
