@@ -34,9 +34,7 @@ const setUpPendo = user => {
 
             // You can add any additional account level key-values here,
             // as long as it's not one of the above reserved names.
-        },
-
-        apiKey: '5a6321cf-9dc7-4e22-5e04-1b9efeb83778'
+        }
     });
 };
 
