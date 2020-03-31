@@ -2,11 +2,15 @@ import './homepage.scss';
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import moment from 'moment';
-import isEmpty from 'lodash/isEmpty';
+import isEmpty from 'lodash/isEmpty'; 
 import uniq from 'lodash/uniq';
 import PredictionWidget from './prediction-widget/prediction-widget.jsx';
 import PredictionAnalytics from './prediction-analytics/prediction-analytics.jsx';
 import LoadingIndicator from '../components/loading-indicator/loading-indicator.jsx';
+
+import { getAllUsers } from '../store/user/user.actions.js';
+import { retrievePredictions } from '../store/predictions/predictions.actions.js';
+import { retrieveSchedule } from '../store/pro-play-metadata/pro-play-metadata.actions.js';
 
 const Homepage = props => {
     const [blocksToDate, setBlocksToDate] = useState([]);
@@ -17,6 +21,10 @@ const Homepage = props => {
             const matchDate = moment(match.startTime).valueOf();
             return currentDate <= matchDate;
         });
+
+        if (latestGameIndex === -1) {
+            latestGameIndex = 90;
+        }
         if (schedule[latestGameIndex + 1]) latestGameIndex++;
         let blocks = schedule.slice(0, latestGameIndex).map(el => el.blockName);
         blocks = uniq(blocks).reverse();
@@ -33,7 +41,7 @@ const Homepage = props => {
         if (props.schedule && !isEmpty(props.schedule)) {
             setBlocksToDate(findBlocksToDisplay(Object.values(props.schedule)[0]));
         }
-    }, [ props.schedule ]);
+    }, [props.schedule]);
 
     if (props.scheduleFetching || props.predictionFetching || props.userFetching) {
         return (
@@ -49,7 +57,8 @@ const Homepage = props => {
                 predictionMap={props.predictionMap}
                 users={props.usersMetadata}
                 user={props.user}
-                schedule={props.schedule} />
+                schedule={props.schedule}
+            />
             {
                 blocksToDate.map(block => {
                     if (!block) return;
@@ -60,17 +69,14 @@ const Homepage = props => {
                             usersMetadata={props.usersMetadata}
                             predictionMap={props.predictionMap}
                             schedule={props.schedule}
-                            scheduleFetching={props.scheduleFetching} />
+                            scheduleFetching={props.scheduleFetching}
+                        />
                     );
                 })
             }
         </div>
     );
 };
-
-import { getAllUsers } from '../store/user/user.actions.js';
-import { retrievePredictions } from '../store/predictions/predictions.actions.js';
-import { retrieveSchedule } from '../store/pro-play-metadata/pro-play-metadata.actions.js';
 
 const mapStateToProps = ({ userReducer, predictionReducer, proPlayMetadataReducer }) => ({
     usersMetadata: userReducer.usersMetadata,

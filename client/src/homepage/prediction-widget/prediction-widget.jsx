@@ -10,7 +10,7 @@ import get from 'lodash/get';
 
 const PredictionWidget = props => {
     const retrieveCurrentMatches = () => {
-        return flatMap(Object.values(props.schedule)).filter(el => el.blockName === props.timespan).map(match => {
+        return flatMap(Object.values(props.schedule)).filter(el => el.blockName === props.timespan && get(el.match, 'type') !== 'tiebreaker').map(match => {
             return {
                 ...match.match,
                 league: LEAGUES_METADATA.find(league => league.name === match.league.name),
@@ -19,6 +19,10 @@ const PredictionWidget = props => {
             };
         });
     };
+
+    if (props.timespan === 'Week 9') {
+        console.log(props.schedule);
+    }
 
     const saveAndRenderScore = (userId, score) => {
         return <span>{score}</span>;
