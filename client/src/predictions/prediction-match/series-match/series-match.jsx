@@ -19,10 +19,14 @@ export default function SeriesMatch ({
 
     const setPredictionAtIndex = (prediction, index) => {
         predictionResults[index] = prediction;
+        const winnerIndex = findTeamSeriesFinalIndex();
+        if (winnerIndex <= 4) {
+            predictionResults.length = winnerIndex + 1;
+        }
         saveOrUpdatePrediction(predictionResults.join(','));
     };
 
-    const findTeamSeriesWinner = () => {
+    const findTeamSeriesFinalIndex = () => {
         const stats = {
             [redSide.name]: 0,
             [blueSide.name]: 0
@@ -43,11 +47,12 @@ export default function SeriesMatch ({
         const getNow = Date.now();
         const matchTime = moment(matchMetadata.startTime).valueOf();
         const predictionPassed = getNow >= matchTime;
-        const gameNumbers = findTeamSeriesWinner();
-        const allowClick = !predictionPassed && gameNumbers >= index;
-        const teamClassName = predictionResults[index] && (predictionResults[index] !== team.name)
-            ? 'not-predicted'
-            : '';
+        const gameNumbers = findTeamSeriesFinalIndex();
+        const isExtraMatch = index > gameNumbers;
+        const predicted = predictionResults[index] === team.name;
+
+        const allowClick = !predictionPassed && !isExtraMatch;
+        const teamClassName = (predictionResults[index] && !predicted) || isExtraMatch ? 'not-predicted' : '';
 
         const clickFcn = !allowClick ? () => {} : () => setPredictionAtIndex(team.name, index);
 

@@ -10,7 +10,14 @@ import get from 'lodash/get';
 import isEmpty from 'lodash/isEmpty';
 import uniq from 'lodash/uniq';
 
-const PredictionFilters = ({ filters, schedule, hasUnsavedPredictions, leagues = [], savePredictions, updatePredictionFilter }) => {
+const PredictionFilters = ({
+    filters,
+    schedule,
+    hasUnsavedPredictions,
+    leagues = [],
+    savePredictions,
+    updatePredictionFilter
+}) => {
     const [leagueDropdown, setLeagueDropdown] = useState(get(filters, 'leagueId'));
     const [blockDropdown, setBlockDropdown] = useState(get(filters, 'blockName'));
     const [isSaving, setIsSaving] = useState(false);
@@ -40,11 +47,12 @@ const PredictionFilters = ({ filters, schedule, hasUnsavedPredictions, leagues =
             console.error(error);
         }
         setIsSaving(false);
-    }
+    };
 
-    const updateCurrentActiveBlock = () => {
+    const updateCurrentActiveBlock = leagueValue => {
         const currentDate = moment().valueOf();
-        const leagueSchedule = get(schedule, leagueDropdown, []);
+        const chosenValue = leagueValue || leagueDropdown;
+        const leagueSchedule = get(schedule, chosenValue, []);
         const nextBlock = leagueSchedule.find(match => {
             const matchEpoch = moment(match.startTime).valueOf();
             return currentDate < matchEpoch;
@@ -59,7 +67,7 @@ const PredictionFilters = ({ filters, schedule, hasUnsavedPredictions, leagues =
         dropdownMap[dropdown](change);
         updatePredictionFilter({ key: dropdown, value: change });
 
-        if (dropdown === 'leagueId') updateCurrentActiveBlock();
+        if (dropdown === 'leagueId') updateCurrentActiveBlock(change);
     };
 
     if (!blockDropdown) updateCurrentActiveBlock();
@@ -71,24 +79,28 @@ const PredictionFilters = ({ filters, schedule, hasUnsavedPredictions, leagues =
                     <Dropdown
                         value={leagueDropdown}
                         options={getLeagueOptions()}
-                        onChange={e => handleChange(e.target.value, 'leagueId')} />
+                        onChange={e => handleChange(e.target.value, 'leagueId')}
+                    />
                 </div>
                 <div className="prediction-filter-wrapper">
                     <Dropdown
                         value={blockDropdown}
                         options={getBlockOptions()}
-                        onChange={e => handleChange(e.target.value, 'blockName')} />
+                        onChange={e => handleChange(e.target.value, 'blockName')}
+                    />
                 </div>
             </div>
             <div className="prediction-save-button">
-                {hasUnsavedPredictions
-                    && (
-                        <SquadButton
-                            buttonLabel="SAVE"
-                            loading={isSaving}
-                            click={saveChanges}
-                        />
-                    )
+                {
+                    hasUnsavedPredictions
+                        && (
+                            <SquadButton
+                                buttonLabel="SAVE"
+                                loading={isSaving}
+                                click={saveChanges}
+                            />
+                        )
+
                 }
             </div>
         </div>

@@ -97,4 +97,4 @@ export default function PredictionMatch ({
             <div className="prediction-block" />
         </div>
     );
-};
+}
