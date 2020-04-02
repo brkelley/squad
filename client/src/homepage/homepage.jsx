@@ -61,7 +61,7 @@ const Homepage = props => {
             />
             {
                 blocksToDate.map(block => {
-                    if (!block) return;
+                    if (!block || !block.includes('Week')) return;
                     return (
                         <PredictionWidget
                             key={block}

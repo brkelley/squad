@@ -10,9 +10,9 @@ import get from 'lodash/get';
 import isEmpty from 'lodash/isEmpty';
 import uniq from 'lodash/uniq';
 
-const PredictionFilters = props => {
-    const [leagueDropdown, setLeagueDropdown] = useState(get(props.filters, 'leagueId'));
-    const [blockDropdown, setBlockDropdown] = useState(get(props.filters, 'blockName'));
+const PredictionFilters = ({ filters, schedule, hasUnsavedPredictions, leagues = [], savePredictions, updatePredictionFilter }) => {
+    const [leagueDropdown, setLeagueDropdown] = useState(get(filters, 'leagueId'));
+    const [blockDropdown, setBlockDropdown] = useState(get(filters, 'blockName'));
     const [isSaving, setIsSaving] = useState(false);
 
     const dropdownMap = {
@@ -20,19 +20,13 @@ const PredictionFilters = props => {
         blockName: setBlockDropdown
     };
 
-    const handleChange = async (change, dropdown) => {
-        props.updatePredictionFilter({ key: dropdown, value: change });
-        dropdownMap[dropdown](change);
-
-        if (dropdown === 'leagueId') updateCurrentActiveBlock();
-    };
-
     const getLeagueOptions = () => {
-        return get(props, 'leagues', []).map(league => ({ value: league.id, label: league.name }));
+        return leagues.map(league => ({ value: league.id, label: league.name }));
     };
 
     const getBlockOptions = () => {
-        return uniq(get(props, `schedule.${leagueDropdown}`, []).map(el => el.blockName)).map(el => ({
+        const leagueSchedule = get(schedule, leagueDropdown, []);
+        return uniq(leagueSchedule.map(el => el.blockName)).map(el => ({
             label: el,
             value: el
         }));
@@ -41,7 +35,7 @@ const PredictionFilters = props => {
     const saveChanges = async () => {
         setIsSaving(true);
         try {
-            await props.savePredictions();
+            await savePredictions();
         } catch (error) {
             console.error(error);
         }
@@ -50,14 +44,22 @@ const PredictionFilters = props => {
 
     const updateCurrentActiveBlock = () => {
         const currentDate = moment().valueOf();
-        const nextBlock = get(props, `schedule.${leagueDropdown}`, []).find(match => {
+        const leagueSchedule = get(schedule, leagueDropdown, []);
+        const nextBlock = leagueSchedule.find(match => {
             const matchEpoch = moment(match.startTime).valueOf();
             return currentDate < matchEpoch;
         });
         if (nextBlock) {
             setBlockDropdown(nextBlock.blockName);
-            props.updatePredictionFilter({ key: 'blockName', value: nextBlock.blockName });
+            updatePredictionFilter({ key: 'blockName', value: nextBlock.blockName });
         }
+    };
+
+    const handleChange = async (change, dropdown) => {
+        dropdownMap[dropdown](change);
+        updatePredictionFilter({ key: dropdown, value: change });
+
+        if (dropdown === 'leagueId') updateCurrentActiveBlock();
     };
 
     if (!blockDropdown) updateCurrentActiveBlock();
@@ -79,11 +81,14 @@ const PredictionFilters = props => {
                 </div>
             </div>
             <div className="prediction-save-button">
-                {props.hasUnsavedPredictions &&
-                    (<SquadButton
-                        buttonLabel={'SAVE'}
-                        loading={isSaving}
-                        click={saveChanges} />)
+                {hasUnsavedPredictions
+                    && (
+                        <SquadButton
+                            buttonLabel="SAVE"
+                            loading={isSaving}
+                            click={saveChanges}
+                        />
+                    )
                 }
             </div>
         </div>

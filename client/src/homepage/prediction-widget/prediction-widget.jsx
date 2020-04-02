@@ -20,10 +20,6 @@ const PredictionWidget = props => {
         });
     };
 
-    if (props.timespan === 'Week 9') {
-        console.log(props.schedule);
-    }
-
     const saveAndRenderScore = (userId, score) => {
         return <span>{score}</span>;
     };

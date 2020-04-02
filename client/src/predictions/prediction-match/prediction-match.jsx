@@ -4,42 +4,52 @@ import React from 'react';
 import get from 'lodash/get';
 import moment from 'moment';
 
-export default function PredictionMatch (props) {
-    const [blueSide, redSide] = props.matchMetadata.match.teams;
+import SeriesMatch from './series-match/series-match.jsx';
 
-    const predictionMetadata = get(props, 'prediction');
+export default function PredictionMatch ({
+    matchMetadata,
+    prediction,
+    userId,
+    leagueId,
+    updatePrediction
+}) {
+    const [blueSide, redSide] = matchMetadata.match.teams;
+
+    const predictionMetadata = prediction;
+    const bestOfCount = get(matchMetadata, 'match.strategy.count');
     const predictionId = get(predictionMetadata, 'id');
     const predictedTeam = get(predictionMetadata, 'prediction');
 
-    const renderPredicted = (teamName) => {
+    const renderPredicted = teamName => {
         if (predictedTeam && teamName !== predictedTeam) {
             return 'not-predicted';
         }
+        return '';
     };
 
     const saveOrUpdatePrediction = async team => {
         if (predictedTeam === team) return;
 
         const getNow = Date.now();
-        const matchTime = moment(props.matchMetadata.startTime).valueOf();
+        const matchTime = moment(matchMetadata.startTime).valueOf();
 
         if (getNow >= matchTime) return;
 
         const body = {
             ...predictionId && { id: predictionId },
-            userId: props.userId,
-            matchId: props.matchMetadata.match.id,
+            userId,
+            matchId: matchMetadata.match.id,
             prediction: team,
-            leagueId: props.leagueId,
-            matchTime: props.matchMetadata.startTime
+            leagueId,
+            matchTime: matchMetadata.startTime
         };
 
-        props.updatePrediction(body);
+        updatePrediction(body);
     };
 
     const renderTeamBlock = team => {
         const getNow = Date.now();
-        const matchTime = moment(props.matchMetadata.startTime).valueOf();
+        const matchTime = moment(matchMetadata.startTime).valueOf();
         const predictionPassed = getNow >= matchTime;
 
         const clickFcn = predictionPassed ? () => {} : () => saveOrUpdatePrediction(team.name);
@@ -54,11 +64,20 @@ export default function PredictionMatch (props) {
         );
     };
 
-    return (
-        <div className="prediction-match-wrapper">
-            <div className="prediction-block">
-                {moment(props.matchMetadata.startTime).format('h:mm A')}
-            </div>
+    const renderSeriesBlock = () => {
+        return (
+            <SeriesMatch
+                redSide={redSide}
+                blueSide={blueSide}
+                matchMetadata={matchMetadata}
+                predictionMetadata={prediction}
+                saveOrUpdatePrediction={saveOrUpdatePrediction}
+            />
+        );
+    };
+
+    const renderSingleGameBlock = () => {
+        return (
             <div className="prediction-content">
                 {renderTeamBlock(blueSide)}
                 <div className="prediction-team-separator">
@@ -66,7 +85,16 @@ export default function PredictionMatch (props) {
                 </div>
                 {renderTeamBlock(redSide)}
             </div>
-            <div className="prediction-block"></div>
+        );
+    };
+
+    return (
+        <div className="prediction-match-wrapper">
+            <div className="prediction-block">
+                {moment(matchMetadata.startTime).format('h:mm A')}
+            </div>
+            {bestOfCount === 1 ? renderSingleGameBlock() : renderSeriesBlock()}
+            <div className="prediction-block" />
         </div>
     );
 };
