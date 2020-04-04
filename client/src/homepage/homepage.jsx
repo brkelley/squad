@@ -2,7 +2,7 @@ import './homepage.scss';
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import moment from 'moment';
-import isEmpty from 'lodash/isEmpty'; 
+import isEmpty from 'lodash/isEmpty';
 import uniq from 'lodash/uniq';
 import PredictionWidget from './prediction-widget/prediction-widget.jsx';
 import PredictionAnalytics from './prediction-analytics/prediction-analytics.jsx';
@@ -61,7 +61,6 @@ const Homepage = props => {
             />
             {
                 blocksToDate.map(block => {
-                    if (!block || !block.includes('Week')) return;
                     return (
                         <PredictionWidget
                             key={block}

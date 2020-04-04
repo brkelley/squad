@@ -25,6 +25,8 @@
         "jsx-a11y/click-events-have-key-events": [0],
         "jsx-a11y/no-static-element-interactions": [0],
         "jsx-a11y/alt-text": [0],
+        "jsx-a11y/control-has-associated-label": [0],
+        "no-param-reassign": [0],
         "one-var": [0],
         "one-var-declaration-per-line": [0],
         "no-plusplus": [0],

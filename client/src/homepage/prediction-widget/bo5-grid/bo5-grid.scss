@@ -1,0 +1,53 @@
+.bo5-grid-wrapper {
+    width: 100%;
+
+    .bo5-table {
+        .bo5-table-row {
+            .bo5-table-cell {
+                width: 65px;
+                text-align: center;
+
+                &.header-cell {
+                    text-align: center;
+
+                    .header-team-name {
+                        font-weight: bold;
+                    }
+
+                    .header-vs {
+                        font-size: 0.8rem;
+                    }
+                }
+
+                &.row-header {
+                    width: 100px;
+                    font-size: 1rem;
+                    text-align: right;
+                    padding-right: 4px;
+                }
+
+                &.image-cell {
+                    padding: 8px 12px;
+
+                    .prediction-logo {
+                        height: 32px;
+                        width: auto;
+
+                        &.incorrect-prediction {
+                            opacity: 0.2;
+                        }
+                    }
+
+                    .bo5-image-score {
+                        display: flex;
+                        align-items: center;
+
+                        .series-score {
+                            padding-left: 8px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

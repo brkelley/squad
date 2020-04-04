@@ -49,6 +49,7 @@ const calculateScores = ({ users, schedule, predictionMap, userId }) => {
         const completedGames = flatMap(Object.values(schedule)).filter(el => el.state === 'completed');
 
         completedGames.forEach(game => {
+            if (!game.blockName.includes('Week ')) return;
             const associatedPrediction = userPredictions[game.match.id];
             if (!associatedPrediction) return;
 
