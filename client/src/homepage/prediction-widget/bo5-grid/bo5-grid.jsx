@@ -73,14 +73,18 @@ const Bo5Grid = ({ matches, usersMetadata, predictionMap }) => {
         prediction,
         teams
     }) => {
+        console.log(prediction);
         if (!prediction) {
-            return (
-                <td
-                    className="prediction-table-cell image-cell"
-                    key={id}>
-                    <div className="prediction-answer-logo" />
-                </td>
-            );
+            return {
+                score: 0,
+                template: (
+                    <td
+                        className="prediction-table-cell image-cell"
+                        key={id}>
+                        <div className="prediction-answer-logo" />
+                    </td>
+                )
+            };
         }
 
         const scoreObj = {
@@ -102,9 +106,8 @@ const Bo5Grid = ({ matches, usersMetadata, predictionMap }) => {
 
         const winningTeam = teams.find(el => el.name === winner.teamName);
 
-        return {
-            score: 0,
-            template: (
+        const template = winningTeam
+            ? (
                 <td
                     className="bo5-table-cell image-cell"
                     key={prediction.id}>
@@ -119,7 +122,9 @@ const Bo5Grid = ({ matches, usersMetadata, predictionMap }) => {
                     </div>
                 </td>
             )
-        };
+            : <td />;
+
+        return { score: 0, template };
     };
 
     return (
