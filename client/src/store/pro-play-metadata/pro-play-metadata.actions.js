@@ -22,10 +22,15 @@ export const retrieveSchedule = () => async (dispatch, getState) => {
         dispatch(setScheduleFetching(false));
         throw new Error(error);
     }
-    schedule['98767991302996019'] = schedule['98767991302996019'].map(el => ({
-        ...el,
-        blockName: el.blockName.replace('Playoffs - ', '')
-    }));
+    schedule['98767991302996019'] = schedule['98767991302996019']
+        .filter(el => el.type !== 'show')
+        .map(el => {
+            if (!el.blockName) debugger;
+            return {
+                ...el,
+                blockName: el.blockName.replace('Playoffs - ', '')
+            };
+        });
     dispatch(setSchedule(schedule));
 };
 

@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 
 import PredictionMatch from './prediction-match/prediction-match.jsx';
+import PredictionBracket from './prediction-bracket/prediction-bracket.jsx';
 import PredictionFilters from './prediction-filters/prediction-filters.jsx';
 import LoadingIndicator from '../components/loading-indicator/loading-indicator.jsx';
 import get from 'lodash/get';
@@ -43,7 +44,11 @@ const Predictions = (props) => {
     init();
 
     const groupScheduleByDay = predictions => {
+        console.log(predictions);
         const predictionsByDay = predictions.reduce((grouped, prediction) => {
+            if (prediction.blockName.includes('Round ')) {
+                console.log('PLAYOFFS');
+            }
             const dateStamp = moment(prediction.startTime).format('MMMDD');
             if (grouped[dateStamp]) {
                 grouped[dateStamp].push(prediction);
@@ -56,6 +61,16 @@ const Predictions = (props) => {
     };
 
     const renderPrediction = (match, prediction) => {
+        if (match.blockName.includes('Round ')) {
+            return (
+                <div
+                    className="prediction-set-wrapper"
+                    key={match.match.id}>
+                    <PredictionBracket />
+                </div>
+            );
+        }
+
         return (
             <div
                 className="prediction-set-wrapper"
@@ -87,7 +102,7 @@ const Predictions = (props) => {
     };
 
     const renderPredictionSets = () => {
-        if (!props.predictionMap) return;
+        if (!props.predictionMap) return null;
 
         const userPredictions = get(props.predictionMap, `${props.predictionFilters.leagueId}.${props.userId}`, []);
         const blockNameFilter = get(props.predictionFilters, 'blockName');
@@ -97,16 +112,12 @@ const Predictions = (props) => {
 
         const groupedMatches = groupScheduleByDay(schedule);
         const groupedPredictions = keyBy(userPredictions, 'matchId');
-        let blockName = '';
+        const blockName = '';
         let renderBlock = false;
 
         return groupedMatches.map(matches => {
-            if (blockName !== matches[0].blockName) {
-                renderBlock = true;
-                blockName = matches[0].blockName;
-            } else {
-                renderBlock = false;
-            }
+            renderBlock = blockName !== matches[0].blockName;
+
             return (
                 <div
                     className="prediction-day-wrapper"
@@ -122,7 +133,6 @@ const Predictions = (props) => {
                     }
                 </div>
             );
-            
         });
     };
 

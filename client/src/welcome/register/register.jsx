@@ -92,8 +92,8 @@ export default function Register (props) {
         setPasswordConfirm('');
         setPassword('');
         try {
-            await props.registerNewUser({ summonerName, summonerId, password, email, firstName, lastName, role: 3 });
-            props.onRedirect('/');
+            // await props.registerNewUser({ summonerName, summonerId, password, email, firstName, lastName, role: 3 });
+            // props.onRedirect('/');
         } catch (error) {
             setError('cannot create new user, please try again later');
         }

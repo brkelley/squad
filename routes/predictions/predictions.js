@@ -11,7 +11,7 @@ const headers = {
 };
 
 module.exports.getSchedule = async (req, res) => {
-    let scheduleMetadata, userPredictions, usersMetadata;
+    let scheduleMetadata, userPredictions;
     const { id } = jwt.decode(req.headers.squadtoken);
     const getAllData = req.query.all === 'true';
     const filters = [
@@ -63,13 +63,11 @@ module.exports.getSchedule = async (req, res) => {
 
         if (prediction && getAllData) {
             if (!metadata.match.prediction) metadata.match.prediction = [];
-            metadata.match.prediction = prediction.map(el => {
-                return {
-                    team: el.prediction,
-                    id: el.id,
-                    userId: el.userId
-                }
-            });
+            metadata.match.prediction = prediction.map(el => ({
+                team: el.prediction,
+                id: el.id,
+                userId: el.userId
+            }));
         } else if (prediction) {
             metadata.match.prediction = [{
                 team: prediction.prediction,
@@ -141,7 +139,7 @@ module.exports.saveOrUpdatePrediction = async (req, res) => {
                 returnedPrediction = await db.insert(prediction, 'predictions');
             }
         } catch (error) {
-            res.status(400).send({ message: '' + error });
+            res.status(400).send({ message: `${error}` });
             return;
         }
         finalPredictions.push(returnedPrediction);
