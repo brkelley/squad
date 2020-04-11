@@ -25,7 +25,6 @@ export const retrieveSchedule = () => async (dispatch, getState) => {
     schedule['98767991302996019'] = schedule['98767991302996019']
         .filter(el => el.type !== 'show')
         .map(el => {
-            if (!el.blockName) debugger;
             return {
                 ...el,
                 blockName: el.blockName.replace('Playoffs - ', '')

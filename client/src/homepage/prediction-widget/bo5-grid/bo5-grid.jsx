@@ -73,7 +73,6 @@ const Bo5Grid = ({ matches, usersMetadata, predictionMap }) => {
         prediction,
         teams
     }) => {
-        console.log(prediction);
         if (!prediction) {
             return {
                 score: 0,

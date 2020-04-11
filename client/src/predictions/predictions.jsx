@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 
 import PredictionMatch from './prediction-match/prediction-match.jsx';
-import PredictionBracket from './prediction-bracket/prediction-bracket.jsx';
 import PredictionFilters from './prediction-filters/prediction-filters.jsx';
 import LoadingIndicator from '../components/loading-indicator/loading-indicator.jsx';
 import get from 'lodash/get';
@@ -44,11 +43,7 @@ const Predictions = (props) => {
     init();
 
     const groupScheduleByDay = predictions => {
-        console.log(predictions);
         const predictionsByDay = predictions.reduce((grouped, prediction) => {
-            if (prediction.blockName.includes('Round ')) {
-                console.log('PLAYOFFS');
-            }
             const dateStamp = moment(prediction.startTime).format('MMMDD');
             if (grouped[dateStamp]) {
                 grouped[dateStamp].push(prediction);
@@ -61,16 +56,6 @@ const Predictions = (props) => {
     };
 
     const renderPrediction = (match, prediction) => {
-        if (match.blockName.includes('Round ')) {
-            return (
-                <div
-                    className="prediction-set-wrapper"
-                    key={match.match.id}>
-                    <PredictionBracket />
-                </div>
-            );
-        }
-
         return (
             <div
                 className="prediction-set-wrapper"

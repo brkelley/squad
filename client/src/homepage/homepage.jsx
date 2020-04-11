@@ -26,7 +26,7 @@ const Homepage = props => {
             latestGameIndex = 90;
         }
         if (schedule[latestGameIndex + 1]) latestGameIndex++;
-        let blocks = schedule.slice(0, latestGameIndex).map(el => el.blockName);
+        let blocks = schedule.map(el => el.blockName);
         blocks = uniq(blocks).reverse();
         return blocks;
     };
@@ -39,7 +39,7 @@ const Homepage = props => {
 
     useEffect(() => {
         if (props.schedule && !isEmpty(props.schedule)) {
-            setBlocksToDate(findBlocksToDisplay(Object.values(props.schedule)[0]));
+            setBlocksToDate(findBlocksToDisplay(Object.values(props.schedule)[1]));
         }
     }, [props.schedule]);
 
