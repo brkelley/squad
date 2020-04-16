@@ -1,5 +1,7 @@
 import flatMap from 'lodash/flatMap';
 import keyBy from 'lodash/keyBy';
+import isEqual from 'lodash/isEqual';
+import toPairs from 'lodash/toPairs';
 
 const calculateMostWins = predictedTeamTotals => {
     let mostWins = { winLoss: { win: -1 } };
@@ -49,33 +51,56 @@ const calculateScores = ({ users, schedule, predictionMap, userId }) => {
         const completedGames = flatMap(Object.values(schedule)).filter(el => el.state === 'completed');
 
         completedGames.forEach(game => {
-            if (!game.blockName.includes('Week ')) return;
             const associatedPrediction = userPredictions[game.match.id];
             if (!associatedPrediction) return;
 
-            if (associatedPrediction.prediction === 'Hundred Thieves') {
-                associatedPrediction.prediction = '100 Thieves';
-            }
+            const isBestOf1 = game.match.strategy.count === 1;
 
             const predictedGame = game.match.teams.find(el => el.name === associatedPrediction.prediction);
 
-            if (!totalsByUser[user.id].mostPredicted[predictedGame.name]) {
+            if (isBestOf1 && !totalsByUser[user.id].mostPredicted[predictedGame.name]) {
                 totalsByUser[user.id].mostPredicted[predictedGame.name] = {
                     count: 1,
                     teamMetadata: predictedGame,
                     winLoss: { win: 0, loss: 0 }
                 };
-            } else {
+            } else if (isBestOf1) {
                 totalsByUser[user.id].mostPredicted[predictedGame.name].count++;
             }
 
-            const gameWinner = game.match.teams.find(el => el.result.gameWins === 1);
+            const gameWinner = game.match.teams.find(el => el.result.gameWins === (isBestOf1 ? 1 : 3));
 
-            if (gameWinner.name === associatedPrediction.prediction) {
-                totalsByUser[user.id].score++;
-                totalsByUser[user.id].mostPredicted[predictedGame.name].winLoss.win++;
+            if (isBestOf1) {
+                if (gameWinner.name === associatedPrediction.prediction) {
+                    totalsByUser[user.id].score++;
+                    totalsByUser[user.id].mostPredicted[predictedGame.name].winLoss.win++;
+                } else {
+                    totalsByUser[user.id].mostPredicted[predictedGame.name].winLoss.loss++;
+                }
             } else {
-                totalsByUser[user.id].mostPredicted[predictedGame.name].winLoss.loss++;
+                const { teams } = game.match;
+
+                const scoreObj = {
+                    [teams[0].name]: 0,
+                    [teams[1].name]: 0
+                };
+
+                const predictionArray = associatedPrediction.prediction.split(',');
+
+                for (let i = 0; i < predictionArray.length; i++) {
+                    scoreObj[predictionArray[i]]++;
+                }
+                const sortedPredictedScore = Object.values(scoreObj).sort();
+                const predictedWinnerName = toPairs(scoreObj).find(([teamName, score]) => score === 3)[0];
+                const predictedWinner = teams.find(el => el.name === predictedWinnerName);
+
+                const actualScore = teams.map(el => el.result.gameWins).sort();
+                const actualWinner = teams.find(el => el.result.gameWins === 3);
+
+                const guessedWinner = actualWinner === predictedWinner;
+
+                totalsByUser[user.id].score += guessedWinner ? 3 : 0;
+                totalsByUser[user.id].score += guessedWinner && isEqual(sortedPredictedScore, actualScore) ? 2 : 0;
             }
         });
     });
