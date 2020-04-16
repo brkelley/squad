@@ -1,3 +1,4 @@
+timeout: 1000s
 steps:
 - name: node:10.15.1
   entrypoint: npm
@@ -7,10 +8,10 @@ steps:
     - 'FIREBASE_CONFIG=${_FIREBASE_CONFIG}'
 - name: node
   entrypoint: npm
-  args: ["install"]
+  args: ["ci"]
 - name: node
   entrypoint: npm
-  args: ["install", "--prefix", "client"]
+  args: ["ci", "--prefix", "client"]
 - name: node
   entrypoint: npm
   args: ["run", "client"]
