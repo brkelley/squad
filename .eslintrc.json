@@ -34,6 +34,13 @@
         "no-case-declarations": [0],
         "react/prop-types": [0],
         "react/jsx-indent-props": [2, 4],
+        "jsx-closing-bracket-location": [
+            1,
+            {
+                "nonEmpty": "after-props",
+                "selfClosing": "after-props"
+            }
+        ],
         "object-curly-newline": [0],
         "space-before-function-paren": ["error", "always"],
         "semi": ["error", "always"],

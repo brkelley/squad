@@ -1,6 +1,9 @@
 client/node_modules/
 node_modules/
+
 config.env
+.vscode/
+
 database/firestore/firestore-config.json
 database/firestore/firestore-config-service-account.json
 database/firestore/firestore-script.js
