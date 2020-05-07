@@ -1,13 +1,16 @@
 import './login.scss';
+import * as React from 'react';
 
-import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faLock } from '@fortawesome/free-solid-svg-icons';
+import { RouteComponentProps } from 'react-router-dom';
+
+interface Props extends RouteComponentProps<{}> {};
 
 export default function Login (props) {
-    const [summonerName, setSummonerName] = useState('');
-    const [password, setPassword] = useState('');
-    const [loginError, setLoginError] = useState('');
+    const [summonerName, setSummonerName] = React.useState('');
+    const [password, setPassword] = React.useState('');
+    const [loginError, setLoginError] = React.useState('');
 
     const onLoginClick = () => {
         props.login(summonerName, password)

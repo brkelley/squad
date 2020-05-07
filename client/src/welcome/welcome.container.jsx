@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import Welcome from './welcome.jsx';
+import Welcome from './welcome.tsx';
 
 const mapStateToProps = () => ({});
 

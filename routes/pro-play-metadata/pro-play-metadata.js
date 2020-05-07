@@ -14,7 +14,7 @@ const GET_COMPLETED_GAMES_URL = 'https://esports-api.lolesports.com/persisted/gw
 module.exports.getLeagues = async (req, res) => {
     let leagues;
     try {
-        const data = await axios.get(`https://esports-api.lolesports.com/persisted/gw/getLeagues?hl=en-US`, { headers });
+        const data = await axios.get('https://esports-api.lolesports.com/persisted/gw/getLeagues?hl=en-US', { headers });
         leagues = data.data.data.leagues; // lol.
     } catch (error) {
         res.status(500).json({ message: 'Database error' });
@@ -24,7 +24,7 @@ module.exports.getLeagues = async (req, res) => {
 };
 
 module.exports.getSchedule = async (req, res) => {
-    let scheduleFilters = get(req, 'query.leagueId')
+    const scheduleFilters = get(req, 'query.leagueId')
         ? `&leagueId=${req.query.leagueId}`
         : '&leagueId=98767991302996019,98767991299243165';
     let scheduleData;
@@ -71,10 +71,10 @@ module.exports.getSchedule = async (req, res) => {
     let scheduleGroupedByRegion = groupBy(scheduleData, 'league.name');
     const scheduleGroupedByRegionId = {};
 
-    scheduleGroupedByRegion = entries(scheduleGroupedByRegion).map(([key, value]) => {
+    entries(scheduleGroupedByRegion).map(([key, value]) => {
         const league = leagueMetadata.find(el => el.name === key);
         scheduleGroupedByRegionId[league.id] = value;
     });
 
     res.status(200).json(scheduleGroupedByRegionId);
-}
+};

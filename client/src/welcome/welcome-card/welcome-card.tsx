@@ -1,14 +1,14 @@
 import './welcome-card.scss';
+import * as React from 'react';
 
-import React, { useState, useEffect } from 'react';
 import LoginContainer from '../login/login.container.jsx';
 import RegisterContainer from '../register/register.container.jsx';
 import ResetPasswordContainer from '../reset-password/reset-password.container.jsx';
 
 export default function WelcomeCard (props) {
-    const [activeTab, setActiveTab] = useState('login');
+    const [activeTab, setActiveTab] = React.useState('login');
 
-    useEffect(() => {
+    React.useEffect(() => {
         setActiveTab(props.activeTab);
     });
 

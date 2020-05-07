@@ -4,7 +4,7 @@ const path = require('path');
 const paths = require('./paths');
 
 const env = dotenv.config({ path: '../config.env' }).parsed;
-  
+
 // reduce it to a nice object, the same as before
 const envKeys = Object.keys(env).reduce((prev, key) => {
     prev[`process.env.${key}`] = JSON.stringify(env[key]);
@@ -22,9 +22,17 @@ module.exports = {
     module: {
         rules: [
             {
-                test: /\.(js|jsx)$/,
+                test: /\.(t|j)sx?$/,
+                use: {
+                    loader: 'ts-loader'
+                },
+                exclude: /node_modules/
+            },
+            {
+                enforce: 'pre',
+                test: /\.js$/,
                 exclude: /node_modules/,
-                use: ['babel-loader']
+                loader: 'source-map-loader'
             },
             {
                 test: /\.(png|svg|jpg|gif)$/,

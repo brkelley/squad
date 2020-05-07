@@ -1,19 +1,20 @@
+import * as React from 'react';
 import './welcome.scss';
 
-import React from 'react';
-import WelcomeCard from './welcome-card/welcome-card.jsx';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMicrophone } from '@fortawesome/free-solid-svg-icons';
+import WelcomeCard from './welcome-card/welcome-card.tsx';
+import { RouteComponentProps } from 'react-router-dom';
 
-export default function Welcome (props) {
-    let activeTab = props.location.pathname.split('/')[1];
+interface Props extends RouteComponentProps<{}> {};
 
-    props.history.listen(location => {
+export default function Welcome ({ location, history }: Props) {
+    let activeTab = location.pathname.split('/')[1];
+
+    history.listen(location => {
         activeTab = location.pathname.split('/')[1];
     });
 
     const redirect = redirectUrl => {
-        props.history.push(redirectUrl);
+        history.push(redirectUrl);
     };
 
     return (

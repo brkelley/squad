@@ -4,6 +4,7 @@
     "description": "Server for squad",
     "main": "index.js",
     "scripts": {
+        "prestart": "tsc -p tsconfig.json",
         "start": "node index.js",
         "start-server:dev": "nodemon --ignore client/",
         "start-client:dev": "npm run start-dev --prefix client",
