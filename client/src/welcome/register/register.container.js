@@ -1,5 +1,4 @@
 import { connect } from 'react-redux';
-import Register from './register.jsx';
 import { validateSummonerName, registerNewUser } from '../../store/user/user.actions.js';
 
 const mapStateToProps = () => ({});
@@ -9,4 +8,4 @@ const mapDispatchToProps = dispatch => ({
     registerNewUser: registerBody => dispatch(registerNewUser(registerBody))
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Register);
+export default connect(mapStateToProps, mapDispatchToProps);

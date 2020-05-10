@@ -1,8 +1,11 @@
 import './register.scss';
+import * as React from 'react';
+import connectRegister from './register.container.js';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
+    faCode,
     faCircle,
     faCheck,
     faUser,
@@ -12,7 +15,11 @@ import {
     faAt
 } from '@fortawesome/free-solid-svg-icons';
 
-export default function Register (props) {
+const Register = (props) => {
+    // input box for registration code
+    const [registrationCode, setRegistrationCode] = useState('');
+    const [invalidRegistrationCode, setInvalidRegistrationCode] = useState(false);
+
     // summoner name fields
     const [summonerName, setSummonerName] = useState('');
     const [summonerId, setSummonerId] = useState('');
@@ -31,10 +38,13 @@ export default function Register (props) {
     const [email, setEmail] = useState('');
 
     // errors
-    const [error, setError] = useState(null);
+    const [error, setError] = useState('');
 
     const onInputChange = (e, inputType) => {
         switch (inputType) {
+            case 'registrationCode':
+                setRegistrationCode(e.target.value);
+                break;
             case 'summonerName':
                 setSummonerName(e.target.value);
                 break;
@@ -56,6 +66,10 @@ export default function Register (props) {
         }
     };
 
+    const validateRegistrationCode = () => {
+        setInvalidRegistrationCode(!!registrationCode && registrationCode !== 'golden shower power hour');
+    }
+
     const validateSummonerName = async summonerName => {
         if (!summonerName) return;
         setValidatingSummonerName(true);
@@ -65,11 +79,11 @@ export default function Register (props) {
 
         try {
             verifiedSummonerName = await props.verifySummonerName(summonerName);
-            setError(null);
+            setError('');
         } catch (err) {
             setInvalidSummonerName(true);
             setValidatingSummonerName(false);
-            setError(err.message + '!');
+            setError(`${err.message}!`);
             return;
         }
 
@@ -84,7 +98,7 @@ export default function Register (props) {
             setError('passwords must match!');
         } else {
             setMismatchedPasswords(false);
-            setError(null);
+            setError('');
         }
     }
 
@@ -92,8 +106,8 @@ export default function Register (props) {
         setPasswordConfirm('');
         setPassword('');
         try {
-            // await props.registerNewUser({ summonerName, summonerId, password, email, firstName, lastName, role: 3 });
-            // props.onRedirect('/');
+            await props.registerNewUser({ summonerName, summonerId, password, email, firstName, lastName, role: 3 });
+            props.onRedirect('/');
         } catch (error) {
             setError('cannot create new user, please try again later');
         }
@@ -135,9 +149,20 @@ export default function Register (props) {
     }
 
     const renderRegister = () => {
-        const buttonDisabled = mismatchedPasswords || invalidSummonerName || !summonerName || !password || !passwordConfirm;
+        const buttonDisabled = invalidRegistrationCode || mismatchedPasswords || invalidSummonerName || !summonerName || !password || !passwordConfirm;
         return (
             <div className="login-action-wrapper">
+                <div className="login-textbox-wrapper">
+                    <input
+                        type="text"
+                        className={`login-input ${invalidRegistrationCode && 'input-error'}`}
+                        placeholder="registration code"
+                        onBlur={e => validateRegistrationCode()}
+                        onChange={e => onInputChange(e, 'registrationCode')} />
+                    <FontAwesomeIcon
+                        icon={faCode}
+                        className={`input-icon ${invalidRegistrationCode && 'error-icon icon-error'}`} />
+                </div>
                 <div className="login-textbox-wrapper">
                     <input
                         type="text"
@@ -214,3 +239,5 @@ export default function Register (props) {
 
     return renderRegister();
 }
+
+export default connectRegister(Register);

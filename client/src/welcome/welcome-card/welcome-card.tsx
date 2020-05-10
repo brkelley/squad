@@ -1,8 +1,8 @@
 import './welcome-card.scss';
 import * as React from 'react';
 
-import LoginContainer from '../login/login.container.jsx';
-import RegisterContainer from '../register/register.container.jsx';
+import Login from '../login/login.tsx';
+import Register from '../register/register.tsx';
 import ResetPasswordContainer from '../reset-password/reset-password.container.jsx';
 
 export default function WelcomeCard (props) {
@@ -47,9 +47,9 @@ export default function WelcomeCard (props) {
     const renderWelcomeCardContent = () => {
         switch (activeTab) {
             case 'login':
-                return <LoginContainer onRedirect={onRedirect} />;
+                return <Login onRedirect={onRedirect} />;
             case 'register':
-                return <RegisterContainer onRedirect={onRedirect} />;
+                return <Register onRedirect={onRedirect} />;
             case 'reset-password':
                 return <ResetPasswordContainer onRedirect={onRedirect} />;
         }

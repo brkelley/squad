@@ -11,6 +11,7 @@ import LoadingIndicator from '../components/loading-indicator/loading-indicator.
 import { getAllUsers } from '../store/user/user.actions.js';
 import { retrievePredictions } from '../store/predictions/predictions.actions.js';
 import { retrieveSchedule } from '../store/pro-play-metadata/pro-play-metadata.actions.js';
+import PredictionPlacementWidget from './prediction-placement-widget/prediction-placement-widget.tsx';
 
 const Homepage = props => {
     const [blocksToDate, setBlocksToDate] = useState([]);
@@ -43,38 +44,43 @@ const Homepage = props => {
         }
     }, [props.schedule]);
 
-    if (props.scheduleFetching || props.predictionFetching || props.userFetching) {
+    const renderMainHomePage = () => {
+        if (props.scheduleFetching || props.predictionFetching || props.userFetching) {
+            return (
+                <div className="loading-wrapper">
+                    <LoadingIndicator />
+                </div>
+            );
+        }
+    
         return (
-            <div className="loading-wrapper">
-                <LoadingIndicator />
+            <div className="homepage-wrapper">
+                <PredictionPlacementWidget />
+                <PredictionAnalytics
+                    predictionMap={props.predictionMap}
+                    users={props.usersMetadata}
+                    user={props.user}
+                    schedule={props.schedule}
+                />
+                {
+                    blocksToDate.map(block => {
+                        return (
+                            <PredictionWidget
+                                key={block}
+                                timespan={block}
+                                usersMetadata={props.usersMetadata}
+                                predictionMap={props.predictionMap}
+                                schedule={props.schedule}
+                                scheduleFetching={props.scheduleFetching}
+                            />
+                        );
+                    })
+                }
             </div>
         );
-    }
+    };
 
-    return (
-        <div className="homepage-wrapper">
-            <PredictionAnalytics
-                predictionMap={props.predictionMap}
-                users={props.usersMetadata}
-                user={props.user}
-                schedule={props.schedule}
-            />
-            {
-                blocksToDate.map(block => {
-                    return (
-                        <PredictionWidget
-                            key={block}
-                            timespan={block}
-                            usersMetadata={props.usersMetadata}
-                            predictionMap={props.predictionMap}
-                            schedule={props.schedule}
-                            scheduleFetching={props.scheduleFetching}
-                        />
-                    );
-                })
-            }
-        </div>
-    );
+    return renderMainHomePage();
 };
 
 const mapStateToProps = ({ userReducer, predictionReducer, proPlayMetadataReducer }) => ({

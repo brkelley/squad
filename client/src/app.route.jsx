@@ -6,7 +6,7 @@ import PrivateRoute from './components/private-route/private-route.jsx';
 import Homepage from './homepage/homepage.jsx';
 import PredictionsContainer from './predictions/predictions.jsx';
 import UserDetails from './user-details/user-details.jsx';
-import WelcomeContainer from './welcome/welcome.container.jsx';
+import Welcome from './welcome/welcome.tsx';
 import Navbar from './components/navbar/navbar.jsx';
 import Header from './components/header/header.jsx';
 
@@ -51,23 +51,23 @@ export default function AppRoute () {
                     <Route
                         path="/welcome"
                         exact
-                        component={WelcomeContainer} />
+                        component={Welcome} />
                     <Route
                         path="/login"
                         exact
-                        component={WelcomeContainer} />
+                        component={Welcome} />
                     <Route
                         path="/register"
                         exact
-                        component={WelcomeContainer} />
+                        component={Welcome} />
                     <Route
                         path="/spectate"
                         exact
-                        component={WelcomeContainer} />
+                        component={Welcome} />
                     <Route
                         path="/reset-password"
                         exact
-                        component={WelcomeContainer} />
+                        component={Welcome} />
                     <PrivateRoute
                         path="/predictions"
                         exact

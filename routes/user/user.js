@@ -82,6 +82,8 @@ module.exports.syncSummonerName = async (req, res) => {
 
 module.exports.register = async (req, res) => {
     const user = { ...req.body };
+    // register random shit
+    user.placings = {};
     user.salt = crypto.randomBytes(16).toString('hex');
     user.hash = crypto.pbkdf2Sync(req.body.password, user.salt, 1000, 64, 'sha512').toString('hex');
     delete user.password;
@@ -89,8 +91,8 @@ module.exports.register = async (req, res) => {
         const savedUser = await db.insert(user, 'users');
         delete savedUser.salt;
         delete savedUser.hash;
-        token = generateJwt(savedUser);
-        db.validateUserIntoFirestore(token);
+        token = await generateJwt(savedUser);
+        // db.validateUserIntoFirestore(token);
         res.status(201).json({ user: savedUser, token });
         return;
     } catch (error) {

@@ -1,19 +1,20 @@
 import * as React from 'react';
 import './welcome.scss';
+import connectWelcome from './welcome.container.js';
 
 import WelcomeCard from './welcome-card/welcome-card.tsx';
 import { RouteComponentProps } from 'react-router-dom';
 
 interface Props extends RouteComponentProps<{}> {};
 
-export default function Welcome ({ location, history }: Props) {
+const Welcome = ({ location, history }: Props) => {
     let activeTab = location.pathname.split('/')[1];
 
-    history.listen(location => {
+    history.listen((location) => {
         activeTab = location.pathname.split('/')[1];
     });
 
-    const redirect = redirectUrl => {
+    const redirect = (redirectUrl) => {
         history.push(redirectUrl);
     };
 
@@ -32,3 +33,5 @@ export default function Welcome ({ location, history }: Props) {
         </div>
     );
 };
+
+export default connectWelcome(Welcome);
