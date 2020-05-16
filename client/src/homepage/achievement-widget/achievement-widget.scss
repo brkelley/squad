@@ -1,0 +1,32 @@
+@import '../../style/variables.scss';
+
+.achievement-widget {
+    margin: 24px;
+    padding: 24px;
+    background-color: lighten($secondary, 7%);
+    border: solid 2px #848375;
+    border-radius: 15px;
+    color: $font-color;
+    font-size: 0.9rem;
+
+    .achievement-widget-title {
+        font-size: 1.8rem;
+    }
+
+    .split-placings-wrapper {
+        padding: 24px;
+        font-size: 1.2rem;
+        width: 33%;
+
+        .split-placing {
+            display: flex;
+
+            .split-name {
+
+            }
+            .split-placement {
+                padding-left: 12px;
+            }
+        }
+    }
+}

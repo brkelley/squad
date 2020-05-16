@@ -1,0 +1,23 @@
+.split-achievement-widget {
+    width: 150px;
+    display: grid;
+    grid-template-columns: 50% 50%;
+    grid-template-rows: auto auto auto auto auto;
+
+    .split-title {
+        font-size: 1.1rem;
+        grid-column-start: 1;
+        grid-column-end: 3;
+    }
+
+    .split-stat {
+
+        .split-stat-key {
+
+        }
+
+        .split-stat-value {
+
+        }
+    }
+}

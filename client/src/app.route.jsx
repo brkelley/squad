@@ -3,7 +3,7 @@ import { Router, Switch, Route } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
 
 import PrivateRoute from './components/private-route/private-route.jsx';
-import Homepage from './homepage/homepage.jsx';
+import Homepage from './homepage/homepage.tsx';
 import PredictionsContainer from './predictions/predictions.jsx';
 import UserDetails from './user-details/user-details.jsx';
 import Welcome from './welcome/welcome.tsx';
