@@ -24,32 +24,40 @@ module.exports = env => {
             filename: 'bundle.js'
         },
         module: {
-            rules: [
+            rules:[
                 {
-                    test: /\.(js|jsx)$/,
+                    test: /\.(t|j)sx?$/,
+                    use: {
+                        loader: 'ts-loader'
+                    },
+                    exclude: /node_modules/
+                },
+                {
+                    enforce: 'pre',
+                    test: /\.js$/,
                     exclude: /node_modules/,
-                    use: [ 'babel-loader' ]
+                    loader: 'source-map-loader'
                 },
                 {
                     test: /\.(png|svg|jpg|gif)$/,
-                    use: [ 'file-loader' ]
+                    use: ['file-loader']
                 },
                 {
                     test: /\.(css|scss)$/,
                     include: [path.resolve(paths.appSrc)],
                     use: [
                         {
-                            loader: "style-loader"
+                            loader: 'style-loader'
                         },
                         {
-                            loader: "css-loader"
+                            loader: 'css-loader'
                         },
                         {
                             loader: 'sass-loader',
                             options: {
                                 implementation: require('sass')
-                            },
-                        },
+                            }
+                        }
                     ]
                 }
             ]
@@ -58,7 +66,7 @@ module.exports = env => {
             serverUrl: ''
         },
         resolve: {
-            extensions: ['*', '.js', '.jsx'],
+            extensions: ['*', '.js', '.jsx', '.tsx'],
             alias: {
                 '@': path.resolve(__dirname, ''),
             }
