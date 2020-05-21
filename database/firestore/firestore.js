@@ -70,7 +70,7 @@ class Database {
 
         // snapshot has id and data
         const data = [];
-        snapshot.forEach(doc => {
+        snapshot.forEach((doc) => {
             const item = doc.data();
             item.id = doc.id;
             data.push(item);

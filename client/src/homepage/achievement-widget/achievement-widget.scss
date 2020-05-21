@@ -9,10 +9,6 @@
     color: $font-color;
     font-size: 0.9rem;
 
-    .achievement-widget-title {
-        font-size: 1.8rem;
-    }
-
     .split-placings-wrapper {
         padding: 24px;
         font-size: 1.2rem;
@@ -20,13 +16,6 @@
 
         .split-placing {
             display: flex;
-
-            .split-name {
-
-            }
-            .split-placement {
-                padding-left: 12px;
-            }
         }
     }
 }

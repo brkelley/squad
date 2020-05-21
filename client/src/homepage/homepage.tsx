@@ -3,8 +3,8 @@ import * as React from 'react';
 import { useEffect } from 'react';
 import connectHomepage from './homepage.connector.js';
 
-import LoadingIndicator from '../components/loading-indicator/loading-indicator.jsx';
-import AchievementWidget from './achievement-widget/achievement-widget.tsx';
+import LoadingIndicator from '../components/loading-indicator/loading-indicator';
+import AchievementWidget from './achievement-widget/achievement-widget';
 
 const Homepage = ({ getAllUsers, userFetching, user}) => {
     useEffect(() => {

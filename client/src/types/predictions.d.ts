@@ -1,15 +1,17 @@
 export interface Team {
     abbr: string,
     name: string,
-    logo: string
+    image: string
 }
 
 export interface SplitStats {
     blindspot: Team,
-    finalScore: Number,
-    placement: Number,
+    finalScore: number,
+    placement: number,
     mostPredicted: Team,
-    mostWon: Team
+    mostWon: Team,
+    score: number,
+    mostGuessedSeriesScore: string
 }
 
 export interface UserSplitAchievement {
