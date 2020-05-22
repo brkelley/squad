@@ -7,7 +7,7 @@
     .navbar-wrapper {
         width: $navbar-size;
         height: 100%;
-        background-color: #a92f41;
+        background-color: #18246E;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -40,7 +40,7 @@
                 &:hover {
                     cursor: pointer;
                     transition: all .2s;
-                    background-color: darken(#a92f41, 5%);
+                    background-color: darken(#008080, 5%);
                 }
 
                 &.active {
@@ -68,7 +68,7 @@
             &:hover {
                 cursor: pointer;
                 transition: all .2s;
-                background-color: darken(#a92f41, 3%);
+                background-color: darken(#008080, 3%);
             }
 
             .nav-icon {
