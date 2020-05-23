@@ -6,6 +6,7 @@ import connectHomepage from './homepage.connector.js';
 import LoadingIndicator from '../components/loading-indicator/loading-indicator';
 import AchievementWidget from './achievement-widget/achievement-widget';
 import ActiveSplitWidget from './active-split-widget/active-split-widget';
+import PredictionWidget from './prediction-widget/prediction-widget';
 
 const Homepage = ({
     user,
@@ -33,16 +34,27 @@ const Homepage = ({
     
         return (
             <div className="homepage-wrapper">
-                <div className="widget-wrapper">
-                    <ActiveSplitWidget
-                        users={users}
-                        user={user}
-                        predictionMap={predictionMap}
-                        schedule={schedule} />
+                <div className="homepage-row">
+                    <div className="widget-wrapper">
+                        <ActiveSplitWidget
+                            users={users}
+                            user={user}
+                            predictionMap={predictionMap}
+                            schedule={schedule} />
+                    </div>
+                    <div className="widget-wrapper">
+                        <AchievementWidget
+                            user={user} />
+                    </div>
                 </div>
-                <div className="widget-wrapper">
-                    <AchievementWidget
-                        user={user} />
+                <div className="homepage-row">
+                    <div className="widget-wrapper">
+                        <PredictionWidget
+                            schedule={schedule}
+                            timespan="Week 1"
+                            usersMetadata={users}
+                            predictionMap={predictionMap} />
+                    </div>
                 </div>
             </div>
         );

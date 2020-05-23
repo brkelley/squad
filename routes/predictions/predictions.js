@@ -1,10 +1,14 @@
 const axios = require('axios');
 const db = require('../../database/firestore/firestore.js');
 const jwt = require('jsonwebtoken');
+const chain = require('lodash/chain');
+const entries = require('lodash/entries');
 const get = require('lodash/get');
 const groupBy = require('lodash/groupBy');
-const entries = require('lodash/entries');
+const map = require('lodash/map');
+const some = require('lodash/some');
 const cache = require('../../cache/cache.js');
+const lodash = require('lodash');
 
 const headers = {
     'x-api-key': '0TvQnueqKa5mxJntVWt0w4LpLfEkrV1Ta8rQBb9Z'
@@ -89,11 +93,11 @@ module.exports.getAllPredictions = async (req, res) => {
         res.status(400).json(error);
         return;
     }
-    userPredictions = groupBy(userPredictions, 'leagueId');
+    userPredictions = groupBy(userPredictions, 'userId');
     const groupedUserPredictions = {};
 
     entries(userPredictions).forEach(([key, value]) => {
-        groupedUserPredictions[key] = groupBy(value, 'userId');
+        groupedUserPredictions[key] = groupBy(value, 'leagueId');
     });
 
     res.status(200).send(groupedUserPredictions);

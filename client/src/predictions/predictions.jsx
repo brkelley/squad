@@ -89,7 +89,7 @@ const Predictions = (props) => {
     const renderPredictionSets = () => {
         if (!props.predictionMap) return null;
 
-        const userPredictions = get(props.predictionMap, `${props.predictionFilters.leagueId}.${props.userId}`, []);
+        const userPredictions = get(props.predictionMap, `${props.userId}.${props.predictionFilters.leagueId}`, []);
         const blockNameFilter = get(props.predictionFilters, 'blockName');
 
         const schedule = get(props.schedule, props.predictionFilters.leagueId, [])

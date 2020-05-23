@@ -36,9 +36,17 @@
         .secondary-split-stat {
             text-align: center;
 
+            &:not(:first-child) {
+                padding-top: 8px;
+            }
+
             .stat-logo {
                 height: 44px;
                 width: auto;
+
+                .missing-team-icon {
+                    font-size: 1.8rem;
+                }
             }
 
             .stat-label {

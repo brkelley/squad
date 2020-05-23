@@ -6,14 +6,17 @@
 }
 
 .homepage-wrapper {
-    display: flex;
     margin: 12px;
 
-    .widget-wrapper {
-        width: 100%;
-        margin: 12px;
-        background-color: $secondary;
-        border: solid 2px $border-color;
-        border-radius: 15px;
+    .homepage-row {
+        display: flex;
+
+        .widget-wrapper {
+            width: 100%;
+            margin: 12px;
+            background-color: $secondary;
+            border: solid 2px $border-color;
+            border-radius: 15px;
+        }
     }
 }

@@ -1,17 +1,55 @@
 import './active-split-widget.scss';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { Team } from '../../types/predictions';
+
 import { calculateUserSplitStatistics } from './active-split-widget.helper.js';
 import { convertNumberToCardinal } from '../../utils/common.util';
+import isEmpty from 'lodash/isEmpty';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUserNinja } from '@fortawesome/free-solid-svg-icons';
+
+interface LeaderboardEntry {
+    id: string,
+    name: string,
+    score: number
+};
 
 const ActiveSplitWidget = ({ users, user, predictionMap, schedule }) => {
-    const {
-        score,
-        placement,
-        mostPredicted,
-        mostWon,
-        blindspot,
-        leaderboard
-    } = calculateUserSplitStatistics({ users, schedule, predictionMap });
+    const [score, setScore] = useState<number>(0);
+    const [placement, setPlacement] = useState<number>(-1);
+    const [mostPredicted, setMostPredicted] = useState<Team>();
+    const [mostWon, setMostWon] = useState<Team>();
+    const [blindspot, setBlindspot] = useState<Team>();
+    const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
+
+    useEffect(() => {
+        if (isEmpty(users) || isEmpty(schedule) || isEmpty(predictionMap)) return;
+        const stats = calculateUserSplitStatistics({ userId: user.id, users, schedule, predictionMap });
+
+        setScore(stats.score);
+        setPlacement(stats.placement);
+        setMostPredicted(stats.mostPredicted);
+        setMostWon(stats.mostWon);
+        setBlindspot(stats.blindspot);
+        setLeaderboard(stats.leaderboard);
+    }, [users, schedule, predictionMap]);
+
+    const renderTeamIcon = (team) => {
+        if (!team) {
+            return (
+                <div className="stat-logo">
+                    <FontAwesomeIcon
+                        className="missing-team-icon"
+                        icon={faUserNinja} />
+                </div>
+            );
+        }
+
+        return <img
+            className="stat-logo"
+            src={team.image} />;
+    };
+
     const renderLeaderboard = () => {
         return (
             <div className="leaderboard-wrapper">
@@ -46,25 +84,19 @@ const ActiveSplitWidget = ({ users, user, predictionMap, schedule }) => {
             </div>
             <div className="secondary-split-stats">
                 <div className="secondary-split-stat image-stat">
-                    <img
-                        className="stat-logo"
-                        src={mostPredicted.image} />
+                    {renderTeamIcon(mostPredicted)}
                     <div className="stat-label">
                         most predicted
                     </div>
                 </div>
                 <div className="secondary-split-stat image-stat">
-                    <img
-                        className="stat-logo"
-                        src={mostWon.image} />
+                    {renderTeamIcon(mostWon)}
                     <div className="stat-label">
                         most won
                     </div>
                 </div>
                 <div className="secondary-split-stat image-stat">
-                    <img
-                        className="stat-logo"
-                        src={blindspot.image} />
+                    {renderTeamIcon(blindspot)}
                     <div className="stat-label">
                         blindspot
                     </div>
@@ -74,116 +106,6 @@ const ActiveSplitWidget = ({ users, user, predictionMap, schedule }) => {
             {renderLeaderboard()}
         </div>
     );
-    // const [loading, setLoading] = useState(true);
-    // const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
-    // const [mostPredicted, setMostPredicted] = useState<TeamStat>();
-    // const [mostWins, setMostWins] = useState({});
-    // const [mostLosses, setMostLosses] = useState({});
-
-    // useEffect(() => {
-    //     setLoading(true);
-    //     if (!isEmpty(users) && !isEmpty(predictionMap) && !isEmpty(schedule)) {
-    //         // const { leaderboard, mostPredicted, mostWins, mostLosses } = calculateScores({
-    //         //     users,
-    //         //     schedule,
-    //         //     predictionMap,
-    //         //     userId: user.id
-    //         // });
-    //         // setLeaderboard(leaderboard);
-    //         // setMostPredicted(mostPredicted);
-    //         // setMostWins(mostWins);
-    //         // setMostLosses(mostLosses);
-    //         // setLoading(false);
-    //     }
-    // }, [users, predictionMap, schedule]);
-
-    // const renderLoading = () => (
-    //     <div className="loading-indicator">
-    //         <LoadingIndicator />
-    //     </div>
-    // );
-
-    // const renderLeaderboard = () => (
-    //     <div className="leaderboard-wrapper">
-    //         <table className="leaderboard-table">
-    //             <tbody>
-    //                 {
-    //                     leaderboard.map(score => {
-    //                         const primaryCellClass = user.id === score.id
-    //                             ? 'personal-cell' : '';
-    //                         return (
-    //                             <tr className="leaderboard-row" key={score.id}>
-    //                                 <td className={`leaderboard-cell name-cell ${primaryCellClass}`}>
-    //                                     {score.name}
-    //                                 </td>
-    //                                 <td className={`leaderboard-cell score-cell ${primaryCellClass}`}>
-    //                                     {score.score}
-    //                                 </td>
-    //                             </tr>
-    //                         );
-    //                     })
-    //                 }
-    //             </tbody>
-    //         </table>
-    //     </div>
-    // );
-
-    // const renderMostPredicted = () => (
-    //     <div className="statistic-wrapper most-predicted-wrapper">
-    //         <div className="statistic-title">
-    //             Most Predicted
-    //         </div>
-    //         <hr className="separator" />
-    //         <img className="statistic-team-logo" src={mostPredicted.teamMetadata.image} />
-    //         <div className="statistic-information team-name">
-    //             {mostPredicted.teamMetadata.name}
-    //         </div>
-    //         <div className="statistic-information statistic">
-    //             {`${mostPredicted.count} picks`}
-    //         </div>
-    //     </div>
-    // );
-
-    // const renderMostWins = () => (
-    //     <div className="statistic-wrapper most-predicted-wrapper">
-    //         <div className="statistic-title">
-    //             Most Wins
-    //         </div>
-    //         <hr className="separator" />
-    //         <img className="statistic-team-logo" src={mostWins.teamMetadata.image} />
-    //         <div className="statistic-information team-name">
-    //             {mostWins.teamMetadata.name}
-    //         </div>
-    //         <div className="statistic-information statistic">
-    //             {`${mostWins.winLoss.win} wins`}
-    //         </div>
-    //     </div>
-    // );
-
-    // const renderMostLosses = () => (
-    //     <div className="statistic-wrapper most-predicted-wrapper">
-    //         <div className="statistic-title">
-    //             Most Losses
-    //         </div>
-    //         <hr className="separator" />
-    //         <img className="statistic-team-logo" src={mostLosses.teamMetadata.image} />
-    //         <div className="statistic-information team-name">
-    //             {mostLosses.teamMetadata.name}
-    //         </div>
-    //         <div className="statistic-information statistic">
-    //             {`${mostLosses.winLoss.loss} losses`}
-    //         </div>
-    //     </div>
-    // );
-
-    // return (
-    //     <div className="prediction-leaderboard-wrapper">
-    //         {loading ? renderLoading() : renderLeaderboard()}
-    //         {loading ? '' : renderMostPredicted()}
-    //         {loading ? '' : renderMostWins()}
-    //         {loading ? '' : renderMostLosses()}
-    //     </div>
-    // );
 };
 
 export default ActiveSplitWidget;
