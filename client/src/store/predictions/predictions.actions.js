@@ -74,7 +74,7 @@ export const updatePrediction = prediction => async dispatch => {
     dispatch(setUnsavedPredictions(prediction));
 };
 
-export const retrievePredictions = ({ forceReload }) => async (dispatch, getState) => {
+export const loadAllPredictions = ({ forceReload } = {}) => async (dispatch, getState) => {
     let predictionData;
     const { predictionMap, fetching } = getState().predictionReducer;
     const dataExists = (!forceReload && !isEmpty(predictionMap));

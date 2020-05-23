@@ -7,7 +7,7 @@ import {
 import axios from 'axios';
 import isEmpty from 'lodash/isEmpty';
 
-export const retrieveSchedule = () => async (dispatch, getState) => {
+export const loadAllSchedule = () => async (dispatch, getState) => {
     let { schedule, scheduleFetching } = getState();
 
     if (!isEmpty(schedule) || scheduleFetching) return;

@@ -1,18 +1,13 @@
 @import '../../style/variables.scss';
 
 .achievement-widget {
-    margin: 24px;
-    padding: 24px;
-    background-color: lighten($secondary, 7%);
-    border: solid 2px #848375;
-    border-radius: 15px;
+    width: 100%;
     color: $font-color;
     font-size: 0.9rem;
 
     .split-placings-wrapper {
-        padding: 24px;
+        padding: 16px;
         font-size: 1.2rem;
-        width: 33%;
 
         .split-placing {
             display: flex;

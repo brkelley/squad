@@ -149,8 +149,8 @@ const Predictions = (props) => {
     );
 };
 
-import { retrievePredictions, updatePrediction } from '../store/predictions/predictions.actions.js';
-import { retrieveLeagues, retrieveSchedule } from '../store/pro-play-metadata/pro-play-metadata.actions.js';
+import { loadAllPredictions, updatePrediction } from '../store/predictions/predictions.actions.js';
+import { retrieveLeagues, loadAllSchedule } from '../store/pro-play-metadata/pro-play-metadata.actions.js';
 
 const mapStateToProps = ({ userReducer, predictionReducer, proPlayMetadataReducer }) => ({
     userId: userReducer.user.id,
@@ -161,10 +161,10 @@ const mapStateToProps = ({ userReducer, predictionReducer, proPlayMetadataReduce
 });
 
 const mapDispatchToProps = dispatch => ({
-    retrievePredictions: options => dispatch(retrievePredictions(options)),
+    retrievePredictions: options => dispatch(loadAllPredictions(options)),
     updatePrediction: prediction => dispatch(updatePrediction(prediction)),
     retrieveLeagues: () => dispatch(retrieveLeagues()),
-    retrieveSchedule: () => dispatch(retrieveSchedule())
+    retrieveSchedule: () => dispatch(loadAllSchedule())
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Predictions);

@@ -9,6 +9,7 @@ import toPairs from 'lodash/toPairs';
 const AchievementWidget = ({ user }) => {
     const renderAwards = () => {
         const userPlacings = get(user, 'splitStats', {});
+
         return toPairs(userPlacings).map(([splitName, splitStats]: [string, SplitStats]) => {
             return (
                 <div

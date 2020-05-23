@@ -71,7 +71,7 @@ export const updateUser = user => async dispatch => {
     }
 };
 
-export const getAllUsers = () => async (dispatch, getState) => {
+export const loadAllUsers = () => async (dispatch, getState) => {
     const { userReducer: state } = getState();
     let usersMetadata;
     if (state.usersMetadata.length > 0) {

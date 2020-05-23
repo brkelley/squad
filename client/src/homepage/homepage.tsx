@@ -5,12 +5,23 @@ import connectHomepage from './homepage.connector.js';
 
 import LoadingIndicator from '../components/loading-indicator/loading-indicator';
 import AchievementWidget from './achievement-widget/achievement-widget';
+import ActiveSplitWidget from './active-split-widget/active-split-widget';
 
-const Homepage = ({ getAllUsers, userFetching, user}) => {
+const Homepage = ({
+    user,
+    users,
+    userFetching,
+    predictionMap,
+    schedule,
+    loadAllUsers,
+    loadAllPredictions,
+    loadAllSchedule
+}) => {
     useEffect(() => {
-        getAllUsers();
+        loadAllUsers();
+        loadAllPredictions();
+        loadAllSchedule();
     }, []);
-
     const renderMainHomePage = () => {
         if (userFetching) {
             return (
@@ -22,8 +33,17 @@ const Homepage = ({ getAllUsers, userFetching, user}) => {
     
         return (
             <div className="homepage-wrapper">
-                <AchievementWidget
-                    user={user} />
+                <div className="widget-wrapper">
+                    <ActiveSplitWidget
+                        users={users}
+                        user={user}
+                        predictionMap={predictionMap}
+                        schedule={schedule} />
+                </div>
+                <div className="widget-wrapper">
+                    <AchievementWidget
+                        user={user} />
+                </div>
             </div>
         );
     };

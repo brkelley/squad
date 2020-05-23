@@ -2,54 +2,14 @@ import './split-achievements.scss';
 import React from 'react';
 
 import { UserSplitAchievement } from '../../../types/predictions';
+import { convertNumberToCardinal } from '../../../utils/common.util';
 
 const splitTitleMap = {
     spring2020: 'Spring 2020'
 };
 
-const splitKeyMap = {
-    blindspot: {
-        title: 'blind spot',
-        order: 5
-    },
-    finalScore: {
-        title: 'final score',
-        order: 2
-    },
-    mostPredicted: {
-        title: 'most predicted',
-        order: 3
-    },
-    mostWon: {
-        title: 'most won',
-        order: 4
-    },
-    placement: {
-        title: 'placement',
-        order: 1
-    }
-};
-
-const convertNumberToCardinal = (num: number) => {
-    const j = num % 10;
-    const k = num % 100;
-    if (j == 1 && k != 11) {
-        return num + 'st';
-    }
-    if (j == 2 && k != 12) {
-        return num + 'nd';
-    }
-    if (j == 3 && k != 13) {
-        return num + 'rd';
-    }
-
-    return num + 'th';
-};
-
 export default function SplitAchievements ({ splitData }: { splitData: UserSplitAchievement }) {
     const { splitName, splitStats } = splitData;
-
-    console.log('splitStats:', splitStats);
 
     const renderMainSplitStats = () => {
         return (
@@ -123,8 +83,10 @@ export default function SplitAchievements ({ splitData }: { splitData: UserSplit
     return (
         <div className="split-achievement-widget">
             {renderMainSplitStats()}
-            {renderSecondarySplitStats(0)}
-            {renderSecondarySplitStats(1)}
+            <div className="secondary-split-stats-wrapper">
+                {renderSecondarySplitStats(0)}
+                {renderSecondarySplitStats(1)}
+            </div>
         </div>
     );
 };

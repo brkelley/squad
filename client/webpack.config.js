@@ -30,7 +30,7 @@ module.exports = {
             },
             {
                 enforce: 'pre',
-                test: /\.js$/,
+                test: /\.(t|j)s$/,
                 exclude: /node_modules/,
                 loader: 'source-map-loader'
             },
@@ -59,7 +59,7 @@ module.exports = {
         ]
     },
     resolve: {
-        extensions: ['*', '.js', '.jsx', '.tsx'],
+        extensions: ['*', '.js', '.ts', '.jsx', '.tsx'],
         alias: {
             '@': path.resolve(__dirname, ''),
         }

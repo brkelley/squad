@@ -6,13 +6,14 @@
 }
 
 .homepage-wrapper {
-    width: 100%;
+    display: flex;
+    margin: 12px;
 
-    .homepage-header {
-        text-align: center;
-        color: $lightest-gray;
-        font-size: 4rem;
-        font-weight: bold;
-        padding: 48px;
+    .widget-wrapper {
+        width: 100%;
+        margin: 12px;
+        background-color: $secondary;
+        border: solid 2px $border-color;
+        border-radius: 15px;
     }
 }

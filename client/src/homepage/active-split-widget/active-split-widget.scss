@@ -1,0 +1,78 @@
+@import '../../style/variables.scss';
+
+.active-split-widget-wrapper {
+    color: $font-color;
+    padding: 16px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+
+    .primary-split-stats {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        .primary-split-stat {
+            &.split-title {
+                font-size: 1.8rem;
+            }
+
+            &.split-placement {
+                font-size: 1.8rem;
+            }
+
+            &.split-score {
+                font-size: 1.2rem;
+            }
+
+            &:not(:first-child) {
+                padding-top: 24px;
+            }
+        }
+    }
+
+    .secondary-split-stats {
+        .secondary-split-stat {
+            text-align: center;
+
+            .stat-logo {
+                height: 44px;
+                width: auto;
+            }
+
+            .stat-label {
+                font-size: 0.9rem;
+                opacity: 0.8;
+            }
+        }
+    }
+
+    .leaderboard-border {
+        height: 150px;
+        border-left: solid 1px $border-color;
+    }
+
+    .leaderboard-wrapper {
+        font-size: 1rem;
+        width: 30%;
+        padding-left: 12px;
+
+        .board-entry {
+            display: flex;
+            justify-content: space-between;
+
+            &.active-user {
+                color: #2BB7FC;
+            }
+
+            .board-score {
+                width: 15%;
+            }
+
+            &:not(:first-child) {
+                padding-top: 8px;
+            }
+        }
+    }
+}

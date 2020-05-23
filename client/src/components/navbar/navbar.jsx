@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 
 import SettingsPopover from './settings-popover/settings-popover.jsx';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faCog } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faCog, faHeadphonesAlt } from '@fortawesome/free-solid-svg-icons';
 
 const Navbar = props => {
     const node = useRef();
@@ -21,7 +21,9 @@ const Navbar = props => {
             <Link
                 to="/"
                 className="navbar-app-title">
-                SQUAD
+                <FontAwesomeIcon
+                    icon={faHeadphonesAlt}
+                    className="nav-icon" />
             </Link>
             <div className="navbar-links">
                 <Link to="/predictions" className={`navbar-link${ activeNav === 'predictions' ? ' active' : '' }`}>
