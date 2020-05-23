@@ -127,6 +127,7 @@ module.exports.saveOrUpdatePrediction = async (req, res) => {
 
     for (let i = 0; i < predictions.length; i++) {
         const prediction = predictions[i];
+        prediction.timestamp = Date.now();
         let returnedPrediction;
         try {
             if (prediction.id) {

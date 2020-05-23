@@ -58,6 +58,7 @@ export const savePredictions = () => async (dispatch, getState) => {
         const clonedMap = cloneDeep(getState().predictionReducer.predictionMap);
         const leagueFilter = getState().predictionReducer.predictionFilters.leagueId;
         const userId = getState().userReducer.user.id;
+
         clonedMap[leagueFilter][userId] = [
             ...clonedMap[leagueFilter][userId].filter(el => !updatedPredictionsIds.includes(el.id)),
             ...updatedPredictions
