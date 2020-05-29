@@ -43,7 +43,8 @@ const Bo1Grid = ({ matches, usersMetadata, predictionMap }) => {
                             {
                                 matches.map(match => {
                                     const { league } = match;
-                                    const userPrediction = predictionMap[league.id][user.id]
+                                    const userPredictions = get(predictionMap, `${user.id}.${league.id}`, []);
+                                    const userPrediction = userPredictions
                                         .find(pred => pred.matchId === match.id);
                                     
                                     const { score, template } = renderPredictionCell({
@@ -77,13 +78,16 @@ const Bo1Grid = ({ matches, usersMetadata, predictionMap }) => {
     }) => {
         let score = 0;
         if (!prediction) {
-            return (
-                <td
-                    className="prediction-table-cell image-cell"
-                    key={id}>
-                    <div className="prediction-answer-logo" />
-                </td>
-            );
+            return {
+                score: 0,
+                template: (
+                    <td
+                        className="prediction-table-cell image-cell"
+                        key={id}>
+                        <div className="prediction-answer-logo" />
+                    </td>
+                )
+            };
         }
 
         let addClass = '';

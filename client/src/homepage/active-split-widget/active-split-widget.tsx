@@ -1,29 +1,54 @@
 import './active-split-widget.scss';
 import React, { useState, useEffect } from 'react';
+import { Team } from '../../types/predictions';
 
 import { calculateUserSplitStatistics } from './active-split-widget.helper.js';
 import { convertNumberToCardinal } from '../../utils/common.util';
-import { Team, LeaderboardEntry } from '../../types/predictions';
-import get from 'lodash/get';
+import isEmpty from 'lodash/isEmpty';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUserNinja } from '@fortawesome/free-solid-svg-icons';
+
+interface LeaderboardEntry {
+    id: string,
+    name: string,
+    score: number
+};
 
 const ActiveSplitWidget = ({ users, user, predictionMap, schedule }) => {
-    const [score, setScore] = useState(0);
-    const [placement, setPlacement] = useState(0);
+    const [score, setScore] = useState<number>(0);
+    const [placement, setPlacement] = useState<number>(-1);
     const [mostPredicted, setMostPredicted] = useState<Team>();
     const [mostWon, setMostWon] = useState<Team>();
     const [blindspot, setBlindspot] = useState<Team>();
     const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
 
     useEffect(() => {
-        const userStatistics = calculateUserSplitStatistics({ users, schedule, predictionMap });
+        if (isEmpty(users) || isEmpty(schedule) || isEmpty(predictionMap)) return;
+        const stats = calculateUserSplitStatistics({ userId: user.id, users, schedule, predictionMap });
 
-        setScore(userStatistics.score);
-        setPlacement(userStatistics.placement);
-        setMostPredicted(userStatistics.mostPredicted);
-        setMostWon(userStatistics.mostWon);
-        setBlindspot(userStatistics.blindspot);
-        setLeaderboard(userStatistics.leaderboard);
+        setScore(stats.score);
+        setPlacement(stats.placement);
+        setMostPredicted(stats.mostPredicted);
+        setMostWon(stats.mostWon);
+        setBlindspot(stats.blindspot);
+        setLeaderboard(stats.leaderboard);
     }, [users, schedule, predictionMap]);
+
+    const renderTeamIcon = (team) => {
+        if (!team) {
+            return (
+                <div className="stat-logo">
+                    <FontAwesomeIcon
+                        className="missing-team-icon"
+                        icon={faUserNinja} />
+                </div>
+            );
+        }
+
+        return <img
+            className="stat-logo"
+            src={team.image} />;
+    };
 
     const renderLeaderboard = () => {
         return (
@@ -59,25 +84,19 @@ const ActiveSplitWidget = ({ users, user, predictionMap, schedule }) => {
             </div>
             <div className="secondary-split-stats">
                 <div className="secondary-split-stat image-stat">
-                    <img
-                        className="stat-logo"
-                        src={get(mostPredicted, 'image', '')} />
+                    {renderTeamIcon(mostPredicted)}
                     <div className="stat-label">
                         most predicted
                     </div>
                 </div>
                 <div className="secondary-split-stat image-stat">
-                    <img
-                        className="stat-logo"
-                        src={get(mostWon, 'image', '')} />
+                    {renderTeamIcon(mostWon)}
                     <div className="stat-label">
                         most won
                     </div>
                 </div>
                 <div className="secondary-split-stat image-stat">
-                    <img
-                        className="stat-logo"
-                        src={get(blindspot, 'image', '')} />
+                    {renderTeamIcon(blindspot)}
                     <div className="stat-label">
                         blindspot
                     </div>

@@ -41,7 +41,7 @@ const PredictionWidget = ({
                     />
                 );
             default:
-                return <div>Butts!</div>;
+                return <div></div>;
         }
     };
 

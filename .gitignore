@@ -8,3 +8,4 @@ database/firestore/firestore-config.json
 database/firestore/firestore-config-service-account.json
 
 client/dist/bundle.js
+client/src/.DS_Store
