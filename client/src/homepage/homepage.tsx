@@ -1,6 +1,5 @@
 import './homepage.scss';
-import * as React from 'react';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import connectHomepage from './homepage.connector.js';
 
 import LoadingIndicator from '../components/loading-indicator/loading-indicator';

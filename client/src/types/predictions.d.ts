@@ -18,3 +18,9 @@ export interface UserSplitAchievement {
     splitName: string,
     splitStats: SplitStats
 }
+
+export interface LeaderboardEntry {
+    id: string,
+    name: string,
+    score: number
+}

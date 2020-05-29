@@ -32,10 +32,7 @@
         "react-router-dom": "^5.0.0",
         "redux": "^4.0.4",
         "sass-loader": "^7.1.0",
-        "style-loader": "^0.23.1",
-        "webpack": "^4.39.1",
-        "webpack-cli": "^3.3.0",
-        "webpack-dev-server": "^3.3.1"
+        "style-loader": "^0.23.1"
     },
     "devDependencies": {
         "@babel/plugin-transform-runtime": "^7.6.2",
@@ -60,12 +57,16 @@
         "sass": "^1.24.0",
         "source-map-loader": "^0.2.4",
         "ts-loader": "^7.0.2",
-        "typescript": "^3.8.3"
+        "typescript": "^3.8.3",
+        "webpack": "^4.43.0",
+        "webpack-cli": "^3.3.11",
+        "webpack-dev-server": "^3.11.0",
+        "webpack-merge": "^4.2.2"
     },
     "scripts": {
-        "start": "webpack --mode=production --config webpack.production.config.js",
-        "start-dev": "webpack-dev-server --config ./webpack.config.js --mode=development --port 5555",
-        "bundle": "webpack --mode=production --config webpack.production.config.js",
+        "start": "webpack --mode=production --config webpack.production.js",
+        "start-dev": "webpack-dev-server --config ./webpack.dev.js --mode=development --port 5555",
+        "bundle": "webpack --mode=production --config webpack.production.js",
         "lint": "eslint src --ext .js --ext .jsx"
     }
 }

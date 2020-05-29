@@ -7,6 +7,7 @@ import {
 } from '../constants/constants.js';
 import firebase from 'firebase';
 import Cookies from 'js-cookie';
+import crypto from 'crypto';
 
 const setUpPendo = user => {
     // in your authentication promise handler or callback
@@ -95,6 +96,11 @@ export const logout = () => async dispatch => {
 };
 
 export const registerNewUser = body => dispatch => {
+    const registrationSalt = 'fdfb1ee61c7ab750bff0a1d8a0f8f563';
+    const registrationHash = crypto.pbkdf2Sync(body.registrationCode, registrationSalt, 1000, 64, 'sha512').toString('hex');
+    delete body.registrationCode;
+    body.registrationHash = registrationHash;
+
     return axios.post('/user/register', body)
         .then(({ data: results }) => {
             dispatch(setUser(results.user));

@@ -87,6 +87,15 @@ module.exports.register = async (req, res) => {
     user.salt = crypto.randomBytes(16).toString('hex');
     user.hash = crypto.pbkdf2Sync(req.body.password, user.salt, 1000, 64, 'sha512').toString('hex');
     delete user.password;
+
+    const registrationSalt = 'fdfb1ee61c7ab750bff0a1d8a0f8f563';
+    const registrationHash = crypto.pbkdf2Sync('GoldenShowerPowerHour', registrationSalt, 1000, 64, 'sha512').toString('hex');
+
+    if (registrationHash !== user.registrationHash) {
+        res.status(400).send({ message: 'Invalid registration code!' });
+        return;
+    }
+
     try {
         const savedUser = await db.insert(user, 'users');
         delete savedUser.salt;

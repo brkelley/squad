@@ -67,7 +67,7 @@ const Register = (props) => {
     };
 
     const validateRegistrationCode = () => {
-        setInvalidRegistrationCode(!!registrationCode && registrationCode !== 'golden shower power hour');
+        setInvalidRegistrationCode(!!registrationCode && registrationCode !== 'GoldenShowerPowerHour');
     }
 
     const validateSummonerName = async summonerName => {
@@ -106,7 +106,7 @@ const Register = (props) => {
         setPasswordConfirm('');
         setPassword('');
         try {
-            await props.registerNewUser({ summonerName, summonerId, password, email, firstName, lastName, role: 3 });
+            await props.registerNewUser({ summonerName, summonerId, password, email, firstName, lastName, registrationCode, role: 3 });
             props.onRedirect('/');
         } catch (error) {
             setError('cannot create new user, please try again later');
