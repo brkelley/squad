@@ -28,15 +28,15 @@ const setPredictionAtKey = (state, action) => {
     const clonedMap = cloneDeep(state.predictionMap);
     const updatedPredictionMap = keyBy(action.updatedPredictions, 'matchId');
 
-    if (!clonedMap[action.leagueId]) {
-        clonedMap[action.leagueId] = {};
+    if (!clonedMap[action.userId]) {
+        clonedMap[action.userId] = {};
     }
-    if (!clonedMap[action.leagueId][action.userId]) {
-        clonedMap[action.leagueId][action.user] = {};
+    if (!clonedMap[action.userId][action.leagueId]) {
+        clonedMap[action.userId][action.leagueId] = {};
     }
 
-    clonedMap[action.leagueId][action.userId] = {
-        ...clonedMap[action.leagueId][action.userId],
+    clonedMap[action.userId][action.leagueId] = {
+        ...clonedMap[action.userId][action.leagueId],
         ...updatedPredictionMap
     };
 
@@ -51,16 +51,16 @@ const setUnsavedPredictions = (state, action) => {
         [action.prediction.matchId]: action.prediction
     };    
 
-    if (!predictionMap[leagueId]) {
-        predictionMap[leagueId] = {};
+    if (!predictionMap[userId]) {
+        predictionMap[userId] = {};
     }
-    if (!predictionMap[leagueId][userId]) {
-        predictionMap[leagueId][userId] = {};
+    if (!predictionMap[userId][leagueId]) {
+        predictionMap[userId][leagueId] = {};
     }
 
-    const mappedPredictions = keyBy(predictionMap[leagueId][userId], 'matchId');
+    const mappedPredictions = keyBy(predictionMap[userId][leagueId], 'matchId');
     mappedPredictions[matchId] = action.prediction;
-    predictionMap[leagueId][userId] = Object.values(mappedPredictions);
+    predictionMap[userId][leagueId] = Object.values(mappedPredictions);
 
     return Object.assign({}, state, { unsavedPredictions, predictionMap });
 };
