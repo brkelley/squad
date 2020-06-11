@@ -5,7 +5,7 @@ import { loadAllSchedule } from '../store/pro-play-metadata/pro-play-metadata.ac
 import { loadAllUsers } from '../store/user/user.actions.js';
 
 const mapStateToProps = ({ predictionReducer, proPlayMetadataReducer, userReducer }) => ({
-    users: userReducer.usersMetadata,
+    users: userReducer.usersMetadata.filter((user) => user.flags.hasPredictions),
     user: userReducer.user,
     userFetching: userReducer.userFetching,
     predictionMap: predictionReducer.predictionMap,

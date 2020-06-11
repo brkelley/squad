@@ -22,6 +22,7 @@ const Homepage = ({
         loadAllPredictions();
         loadAllSchedule();
     }, []);
+
     const renderMainHomePage = () => {
         if (userFetching) {
             return (

@@ -10,7 +10,7 @@ const initialState = {
     user: {},
     userToken: '',
     fetching: false
-}
+};
 
 export default function (state = initialState, action) {
     switch (action.type) {
@@ -25,4 +25,4 @@ export default function (state = initialState, action) {
         default:
             return state;
     }
-}
+};

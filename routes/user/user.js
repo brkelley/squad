@@ -2,8 +2,9 @@ const db = require('../../database/firestore/firestore.js');
 const passport = require('passport');
 const axios = require('axios');
 const crypto = require('crypto');
-const toPairs = require('lodash/toPairs');
 const cloneDeep = require('lodash/cloneDeep');
+const toPairs = require('lodash/toPairs');
+const uniq = require('lodash/uniq');
 
 module.exports.getUserBySummonerName = async (req, res) => {
     try {
@@ -23,15 +24,22 @@ module.exports.getUserBySummonerName = async (req, res) => {
 
 module.exports.getUsers = async (req, res) => {
     let users;
+    let predictions;
     try {
         users = await db.retrieveAll('users');
+        predictions = await db.retrieveAll('predictions');
     } catch (error) {
         console.log(error);
     }
 
-    const cleanUsers = users.map(user => {
+    const usersWithPredictions = uniq(predictions.map((prediction) => prediction.userId));
+
+    const cleanUsers = users.map((user) => {
         delete user.salt;
         delete user.hash;
+        user.flags = {
+            hasPredictions: usersWithPredictions.includes(user.id)
+        };
         return user;
     });
     res.status(200).json(cleanUsers);
