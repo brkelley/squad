@@ -24,7 +24,7 @@ export const calculateUserSplitStatistics = ({ userId, users, schedule, predicti
                     }
                 });
                 
-                if (!actualMatchResults || actualMatchResults.state === 'unstarted') {
+                if (!actualMatchResults || actualMatchResults.state === 'unstarted' || actualMatchResults.state === 'inProgress') {
                     return stats;
                 }
 
