@@ -15,7 +15,8 @@ export const calculateUserSplitStatistics = ({ userId, users, schedule, predicti
         const userPredictionMap = get(predictionMap, user.id, {});
 
         let userStat = toPairs(userPredictionMap).reduce((stats, [leagueId, leaguePredictions]) => {
-            leaguePredictions.forEach((prediction) => {
+            for (let i = 0; i < leaguePredictions.length; i++) {
+                const prediction = leaguePredictions[i];
                 const actualMatchResults = get(scheduleByMatchId, `${leagueId}.${prediction.matchId}[0]`, {});
 
                 actualMatchResults.match.teams.forEach((team) => {
@@ -24,24 +25,28 @@ export const calculateUserSplitStatistics = ({ userId, users, schedule, predicti
                     }
                 });
                 
-                if (!actualMatchResults || actualMatchResults.state === 'unstarted' || actualMatchResults.state === 'inProgress') {
+                if (!actualMatchResults || actualMatchResults.state !== 'completed') {
                     return stats;
                 }
 
-                const winner = actualMatchResults.match.teams.find(el => el.result.outcome === 'win');
+                // this is because the API actually calls unstarted & completed games separately
+                // lol honestly IDK why I should check that out
+                const winner = actualMatchResults.match.teams.find(el => el.result.gameWins === 1);
 
                 if (!stats.perTeamStats[prediction.prediction]) {
                     stats.perTeamStats[prediction.prediction] = { correct: 0, incorrect: 0 };
                 }
 
-                if (winner.name === prediciton.prediction) {
+                if (winner.name === prediction.prediction) {
                     stats.correct++;
                     stats.perTeamStats[prediction.prediction].correct++;
                 } else {
                     stats.incorrect++;
                     stats.perTeamStats[prediction.prediction].incorrect++;
                 }
-            });
+
+                return stats;
+            }
         }, {
             correct: 0,
             incorrect: 0,
@@ -97,6 +102,8 @@ export const calculateUserSplitStatistics = ({ userId, users, schedule, predicti
 
     const userIndex = allUserStats.findIndex(el => el.id === userId);
     const user = allUserStats[userIndex];
+
+    console.log(allUserStats);
 
     return {
         score: user.score,
