@@ -15,7 +15,7 @@ const AchievementWidget = ({ user }) => {
                 <div
                     className="split-placing"
                     key={name}>
-                    <SplitAchievements splitData={{ splitName, splitStats }} />
+                    splitStats && <SplitAchievements splitData={{ splitName, splitStats }} />
                 </div>
             )
         })

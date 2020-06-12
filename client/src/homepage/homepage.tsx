@@ -7,6 +7,8 @@ import AchievementWidget from './achievement-widget/achievement-widget';
 import ActiveSplitWidget from './active-split-widget/active-split-widget';
 import PredictionWidget from './prediction-widget/prediction-widget';
 
+import get from 'lodash/get';
+
 const Homepage = ({
     user,
     users,
@@ -36,11 +38,13 @@ const Homepage = ({
             <div className="homepage-wrapper">
                 <div className="homepage-row">
                     <div className="widget-wrapper">
+                        {get(users.find(el => el.id === user.id), 'flags.hasPredictions', false) && 
                         <ActiveSplitWidget
                             users={users}
                             user={user}
                             predictionMap={predictionMap}
                             schedule={schedule} />
+                        }
                     </div>
                     <div className="widget-wrapper">
                         <AchievementWidget
