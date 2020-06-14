@@ -1,7 +1,7 @@
 const firebase = require('firebase-admin');
 const dotenv = require('dotenv');
 require('firebase/firestore');
-const lodash = require('lodash');
+const _ = require('lodash');
 const fs = require('fs');
 const axios = require('axios');
 const headers = {
@@ -20,6 +20,39 @@ firebase.initializeApp({
 const db = firebase.firestore();
 
 const predictions = [];
+const predictionMap = {};
+const duplicatePredictions = {};
+
+db.collection('predictions').get().then((snapshot) => {
+    snapshot.forEach(doc => {
+        predictions.push({
+            ...doc.data(),
+            id: doc.id
+        });
+    })
+})
+.then(() => {
+    Object.entries(_.groupBy(predictions, 'userId'))
+        .forEach(([userId, predictions]) => {
+            console.log(userId, predictions.length);
+        })
+    // predictions
+    //     .filter(el => el.userId === 'YUfP0x1C913WIdkaEtYR')
+    //     .forEach((prediction) => {
+    //         if (!predictionMap[prediction.matchId]) {
+    //             predictionMap[prediction.matchId] = [prediction];
+    //         } else {
+    //             predictionMap[prediction.matchId].push(prediction);
+    //             duplicatePredictions[prediction.matchId] = predictionMap[prediction.matchId];
+    //         }
+    //         Object.values(duplicatePredictions).forEach((duplicates) => {
+    //             if (duplicates.length > 1) {
+    //                 const dupe = duplicates.sort((a, b) => a.timestamp - b.timestamp)[0];
+    //                 db.collection('predictions').doc(dupe.id).delete();
+    //             }
+    //         });
+    //     });
+})
 
 // db.collection('predictions').get().then(snapshot => {
 //     snapshot.forEach(doc => {
@@ -228,4 +261,4 @@ const getEndOfSplitAnalytics = async () => {
             }, { merge: true });
     });
 };
-getEndOfSplitAnalytics();
+// getEndOfSplitAnalytics();

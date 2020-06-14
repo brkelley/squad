@@ -23,6 +23,10 @@ module.exports.getLeagues = async (req, res) => {
     res.status(200).json(leagues);
 };
 
+module.exports.getTeams = async (req, res) => {
+    res.status(200).json(cache.get('currentTeams'));
+}
+
 module.exports.getSchedule = async (req, res) => {
     const scheduleFilters = get(req, 'query.leagueId')
         ? `&leagueId=${req.query.leagueId}`

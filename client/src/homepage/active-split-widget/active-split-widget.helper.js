@@ -4,7 +4,8 @@ import toPairs from 'lodash/toPairs';
 
 export const calculateUserSplitStatistics = ({ userId, users, schedule, predictionMap }) => {
     const scheduleByMatchId = toPairs(schedule).reduce((acc, [leagueId, matches]) => {
-        acc[leagueId] = groupBy(matches, (obj) => obj.match.id);
+        // filter is because sometimes the match object isn't on the metadata?
+        acc[leagueId] = groupBy(matches.filter(el => el.match), (obj) => obj.match.id);
 
         return acc;
     }, {});
@@ -19,6 +20,7 @@ export const calculateUserSplitStatistics = ({ userId, users, schedule, predicti
                 const prediction = leaguePredictions[i];
                 const actualMatchResults = get(scheduleByMatchId, `${leagueId}.${prediction.matchId}[0]`, {});
 
+                // add team to team map (so we can pull the metadata later)
                 actualMatchResults.match.teams.forEach((team) => {
                     if (!teamMap[team.name]) {
                         teamMap[team.name] = team;
@@ -26,12 +28,15 @@ export const calculateUserSplitStatistics = ({ userId, users, schedule, predicti
                 });
                 
                 if (!actualMatchResults || actualMatchResults.state !== 'completed') {
-                    return stats;
+                    continue;
                 }
 
                 // this is because the API actually calls unstarted & completed games separately
                 // lol honestly IDK why I should check that out
                 const winner = actualMatchResults.match.teams.find(el => el.result.gameWins === 1);
+
+                // when a game immediately ends, sometimes the state is "completed" but no winner is marked
+                if (!winner) return stats;
 
                 if (!stats.perTeamStats[prediction.prediction]) {
                     stats.perTeamStats[prediction.prediction] = { correct: 0, incorrect: 0 };
@@ -44,9 +49,9 @@ export const calculateUserSplitStatistics = ({ userId, users, schedule, predicti
                     stats.incorrect++;
                     stats.perTeamStats[prediction.prediction].incorrect++;
                 }
-
-                return stats;
             }
+
+            return stats;
         }, {
             correct: 0,
             incorrect: 0,
@@ -56,6 +61,8 @@ export const calculateUserSplitStatistics = ({ userId, users, schedule, predicti
         if (!userStat) {
             userStat = { correct: 0, incorrect: 0, perTeamStats: {} }
         }
+
+        console.log(user.summonerName, userStat);
 
         const { mostPredicted, mostWon, blindspot } = toPairs(userStat.perTeamStats).reduce((teamAcc, [teamName, teamStat]) => {
             const { correct, incorrect } = teamStat;
@@ -103,8 +110,6 @@ export const calculateUserSplitStatistics = ({ userId, users, schedule, predicti
     const userIndex = allUserStats.findIndex(el => el.id === userId);
     const user = allUserStats[userIndex];
 
-    console.log(allUserStats);
-
     return {
         score: user.score,
         placement: (userIndex + 1),
@@ -113,6 +118,6 @@ export const calculateUserSplitStatistics = ({ userId, users, schedule, predicti
         blindspot: user.blindspot,
         leaderboard: allUserStats
             .map((el) => ({ id: el.id, name: el.name, score: el.score }))
-            .sort((userA, userB) => userB.score = userA.score)
+            .sort((userA, userB) => userB.score - userA.score)
     };
 };

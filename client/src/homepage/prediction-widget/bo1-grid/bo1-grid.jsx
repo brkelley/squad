@@ -1,6 +1,8 @@
 import React from 'react';
 import './bo1-grid.scss';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import moment from 'moment';
 import get from 'lodash/get';
 
@@ -78,13 +80,21 @@ const Bo1Grid = ({ matches, usersMetadata, predictionMap }) => {
     }) => {
         let score = 0;
         if (!prediction) {
+            const noPrediction = (
+                <FontAwesomeIcon
+                    className="missing-prediction-icon"
+                    icon={faTimes} />
+            );
+
             return {
                 score: 0,
                 template: (
                     <td
-                        className="prediction-table-cell image-cell"
+                        className="bo1-table-cell image-cell"
                         key={id}>
-                        <div className="prediction-answer-logo" />
+                        <div className="prediction-answer-logo">
+                            {matchState === 'completed' ? noPrediction : ''}
+                        </div>
                     </td>
                 )
             };

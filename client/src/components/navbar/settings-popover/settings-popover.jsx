@@ -1,35 +1,41 @@
 import './settings-popover.scss';
-import React, { useEffect, useRef } from 'react';
-import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
+import React, { useRef, useEffect } from 'react';
 
-import { logout } from '../../../store/user/user.actions.js';
-
-const SettingsPopover = props => {
+const SettingsPopover = ({
+    user,
+    settingsPopoutActive,
+    logout,
+    collapseSettingsPopover,
+    history,
+    toggleButton
+}) => {
     const node = useRef();
-    const { user, settingsPopoutActive, storeLogout } = props;
-
-    const startLogout = () => {
-        props.collapseSettingsPopover(false);
-        storeLogout();
-        props.history.push('/login');
-    };
 
     const redirectToUserDetails = () => {
-        props.collapseSettingsPopover(false);
-        props.history.push(`/users/${props.user.id}`);
+        collapseSettingsPopover(false);
+        history.push(`/users/${user.id}`);
     }
 
     const handleClickEvent = event => {
-        const clickedToggle = props.toggleButton.current.contains(event.target);
+        const clickedToggle = toggleButton.current.contains(event.target);
         if (!node.current.contains(event.target) && !clickedToggle) {
-            props.collapseSettingsPopover(false);
+            console.log('removing event listener');
+            document.removeEventListener('mousedown', handleClickEvent);
+            collapseSettingsPopover(false);
         }
     };
 
+    const handleLogout = () => {
+        console.log('removing event listener');
+        document.removeEventListener('mousedown', handleClickEvent);
+        logout();
+    }
+
     useEffect(() => {
+        console.log('adding event listener');
         document.addEventListener('mousedown', handleClickEvent);
         return () => {
+            console.log('removing event listener');
             document.removeEventListener('mousedown', handleClickEvent);
         }
     }, []);
@@ -47,7 +53,7 @@ const SettingsPopover = props => {
                 <div className="nav-item" onClick={redirectToUserDetails}>
                     Edit
                 </div>
-                <div className="nav-item" onClick={startLogout}>
+                <div className="nav-item" onClick={handleLogout}>
                     Log Out
                 </div>
             </div>
@@ -56,16 +62,4 @@ const SettingsPopover = props => {
     );
 };
 
-const mapStateToProps = ({ userReducer }) => ({
-    user: userReducer.user
-});
-const mapDispatchToProps = dispatch => ({
-    storeLogout: () => dispatch(logout())
-});
-
-export default withRouter(
-    connect(
-        mapStateToProps,
-        mapDispatchToProps
-    )(SettingsPopover)
-);
+export default SettingsPopover;

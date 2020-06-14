@@ -3,11 +3,11 @@
 
 body {
     margin: 0;
+    font-family: $font;
 
     .app-wrapper {
         width: 100%;
         min-height: 100vh;
-        font-family: $font;
         background-color: $primary;
         display: flex;
 

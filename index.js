@@ -8,6 +8,7 @@ const express    = require('express'),
       axios      = require('axios'),
       cache      = require('./cache/cache.js'),
       last       = require('lodash/last'),
+      get        = require('lodash/get'),
       LEAGUES    = require('./constants/leagues.json');
 
 require('./database/firestore/firestore.js');
@@ -62,12 +63,17 @@ app.use('/api/v1', router);
     const headers = {
         'x-api-key': '0TvQnueqKa5mxJntVWt0w4LpLfEkrV1Ta8rQBb9Z'
     };
-    let esportsUrl = 'https://esports-api.lolesports.com/persisted/gw/getTournamentsForLeague?hl=en-US';
+    let getTournamentsForLeagueUrl = 'https://esports-api.lolesports.com/persisted/gw/getTournamentsForLeague?hl=en-US';
+    let getTeamsUrl = 'https://esports-api.lolesports.com/persisted/gw/getTeams?hl=en-US';
 
     let tournamentsByLeague;
+    let teams;
     try {
-        const data = await axios.get(`${esportsUrl}&leagueId=${leagues.map(el => el.id)}`, { headers });
+        const data = await axios.get(`${getTournamentsForLeagueUrl}&leagueId=${leagues.map(el => el.id)}`, { headers });
         tournamentsByLeague = data.data.data.leagues;
+
+        const teamData = await axios.get(`${getTeamsUrl}`, { headers });
+        teams = teamData.data.data.teams;
     } catch (error) {
         console.log('ERROR IN INIT FUNCTION');
         console.log(error)
@@ -84,7 +90,11 @@ app.use('/api/v1', router);
         currentTournamentIds[leagueId] = last(tournamentsSortedByEndDate).id;
     });
 
+    // same for teams - only LCS & LEC
+    teams = teams.filter((team) => ['LEC', 'LCS'].includes(get(team, 'homeLeague.name', null)));
+
     cache.set('currentTournamentIds', currentTournamentIds);
+    cache.set('currentTeams', teams);
 })();
 
 const port = process.env.PORT || 4444;

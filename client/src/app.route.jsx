@@ -5,9 +5,9 @@ import { createBrowserHistory } from 'history';
 import PrivateRoute from './components/private-route/private-route.jsx';
 import Homepage from './homepage/homepage.tsx';
 import PredictionsContainer from './predictions/predictions.jsx';
-import UserDetails from './user-details/user-details.jsx';
+import UserDetails from './user-details/user-details';
 import Welcome from './welcome/welcome.tsx';
-import Navbar from './components/navbar/navbar.jsx';
+import Navbar from './components/navbar/navbar';
 import Header from './components/header/header.jsx';
 
 const history = createBrowserHistory();
