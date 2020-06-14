@@ -19,23 +19,19 @@ const SettingsPopover = ({
     const handleClickEvent = event => {
         const clickedToggle = toggleButton.current.contains(event.target);
         if (!node.current.contains(event.target) && !clickedToggle) {
-            console.log('removing event listener');
             document.removeEventListener('mousedown', handleClickEvent);
             collapseSettingsPopover(false);
         }
     };
 
     const handleLogout = () => {
-        console.log('removing event listener');
         document.removeEventListener('mousedown', handleClickEvent);
         logout();
     }
 
     useEffect(() => {
-        console.log('adding event listener');
         document.addEventListener('mousedown', handleClickEvent);
         return () => {
-            console.log('removing event listener');
             document.removeEventListener('mousedown', handleClickEvent);
         }
     }, []);

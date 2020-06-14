@@ -2,13 +2,12 @@ import './header.scss';
 import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import get from 'lodash/get';
 
 const Header = ({ location, user }) => {
     const parseRouteHeaders = pathname => {
         if (pathname === '/') return 'Dashboard';
         if (pathname === '/predictions') return 'Predictions';
-        if (/users\/(.*)/.test(pathname)) return `${get(user, 'summonerName', '')}`;
+        if (/users\/(.*)/.test(pathname)) return 'User Details';
         return '';
     };
 

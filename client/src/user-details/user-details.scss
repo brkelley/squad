@@ -1,53 +1,22 @@
 @import '../style/variables.scss';
 
 .user-details-wrapper {
+    margin: 16px;
+    padding: 24px;
     background-color: $secondary;
     border: solid 1px $border-color;
     border-radius: 15px;
     color: $font-color;
-    margin: 16px;
-    padding: 16px;
+    display: flex;
 
-    .user-detail {
-        .user-value {
-            font-size: 2rem;
+    .user-details-section {
+        &.user-metadata-wrapper {
+            width: 500px;
         }
 
-        .user-label {
-            opacity: 0.7;
+        &.team-selector-wrapper {
+            flex: 1 1 auto;
+            text-align: center;
         }
-    }
-
-    .user-information-wrapper {
-        .user-field {
-            &.summoner-name-field {
-                width: 500px;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            }
-
-            &:not(:first-child) {
-                padding-top: 16px;
-            }
-
-            .user-label {
-                opacity: 0.8;
-                padding-bottom: 4px;
-            }
-
-            .user-value {
-                font-size: 1.8rem;
-
-                .input-wrapper {
-                    width: 500px;
-                }
-            }
-        }
-    }
-
-    .user-details-actions {
-        padding: 16px;
-        margin-left: 175px;
     }
 }
