@@ -1,0 +1,28 @@
+.user-metadata {
+    .user-metadata-set {
+        &:not(:first-child) {
+            padding-top: 16px;
+        }
+
+        &.summoner-name-set {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-metadata-label {
+            opacity: 0.8;
+            padding-bottom: 4px;
+        }
+
+        .user-metadata-field {
+            font-size: 1.6rem;
+        }
+    }
+
+    .user-metadata-actions {
+        padding-top: 24px;
+        display: flex;
+        justify-content: space-around;
+    }
+}

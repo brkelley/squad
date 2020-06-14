@@ -1,0 +1,17 @@
+@import '../../../style/variables.scss';
+
+.team-selector {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 0;
+    background-color: $secondary;
+    transition: all .5s ease;
+    overflow: hidden;
+
+    &.team-selector-visible {
+        height: 100vh;
+        transition: all 1.5s;
+    }
+}
