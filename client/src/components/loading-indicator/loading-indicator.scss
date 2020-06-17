@@ -4,6 +4,10 @@
     width: 80px;
     height: 80px;
 
+    &.light-mode div {
+        background: darken(white, 25%) !important;
+    }
+
     & div {
         display: inline-block;
         position: absolute;

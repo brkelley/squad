@@ -62,37 +62,33 @@ export const calculateUserSplitStatistics = ({ userId, users, schedule, predicti
             userStat = { correct: 0, incorrect: 0, perTeamStats: {} }
         }
 
-        console.log(user.summonerName, userStat);
-
         const { mostPredicted, mostWon, blindspot } = toPairs(userStat.perTeamStats).reduce((teamAcc, [teamName, teamStat]) => {
             const { correct, incorrect } = teamStat;
             const totalPredicted = correct + incorrect;
-            const wonRatio = correct / totalPredicted;
-            const blindspotRatio = incorrect / totalPredicted;
 
-            if (teamAcc.mostPredictedRatio < totalPredicted) {
-                teamAcc.mostPredictedRatio = totalPredicted;
+            if (teamAcc.mostPredictedNum < totalPredicted) {
+                teamAcc.mostPredictedNum = totalPredicted;
                 teamAcc.mostPredicted = teamName;
             }
 
-            if (teamAcc.mostWonRatio < wonRatio) {
-                teamAcc.mostWonRatio = wonRatio;
+            if (teamAcc.mostWonNum < correct) {
+                teamAcc.mostWonNum = correct;
                 teamAcc.mostWon = teamName;
             }
 
-            if (teamAcc.blindspotRatio < blindspotRatio) {
-                teamAcc.blindspotRatio = blindspotRatio;
+            if (teamAcc.blindspotNum < incorrect) {
+                teamAcc.blindspotNum = incorrect;
                 teamAcc.blindspot = teamName;
             }
 
             return teamAcc;
         }, {
             mostPredicted: null,
-            mostPredictedRatio: -1,
+            mostPredictedNum: -1,
             mostWon: null,
-            mostWonRatio: -1,
+            mostWonNum: -1,
             blindspot: null,
-            blindspotRatio: -1
+            blindspotNum: -1
         });
 
         return {

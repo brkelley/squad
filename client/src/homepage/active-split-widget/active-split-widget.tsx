@@ -4,6 +4,7 @@ import { Team } from '../../types/predictions';
 
 import { calculateUserSplitStatistics } from './active-split-widget.helper.js';
 import { convertNumberToCardinal } from '../../utils/common.util';
+import LoadingIndicator from '../../components/loading-indicator/loading-indicator';
 import isEmpty from 'lodash/isEmpty';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserNinja } from '@fortawesome/free-solid-svg-icons';
@@ -15,6 +16,7 @@ interface LeaderboardEntry {
 };
 
 const ActiveSplitWidget = ({ users, user, predictionMap, schedule }) => {
+    const [widgetLoading, setWidgetLoading] = useState<boolean>(true);
     const [score, setScore] = useState<number>(0);
     const [placement, setPlacement] = useState<number>(-1);
     const [mostPredicted, setMostPredicted] = useState<Team>();
@@ -32,6 +34,7 @@ const ActiveSplitWidget = ({ users, user, predictionMap, schedule }) => {
         setMostWon(stats.mostWon);
         setBlindspot(stats.blindspot);
         setLeaderboard(stats.leaderboard);
+        setWidgetLoading(false);
     }, [users, schedule, predictionMap]);
 
     const renderTeamIcon = (team) => {
@@ -68,6 +71,16 @@ const ActiveSplitWidget = ({ users, user, predictionMap, schedule }) => {
             </div>
         );
     };
+
+    if (widgetLoading) {
+        return (
+            <div className="active-split-widget-wrapper">
+                <div className="loading-wrapper">
+                    <LoadingIndicator theme="light" />
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="active-split-widget-wrapper">
