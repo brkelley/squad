@@ -7,26 +7,27 @@ import { faUsers } from '@fortawesome/free-solid-svg-icons';
 import TeamSelector from './team-selector/team-selector';
 
 const UserFavoriteTeam = ({ teamMetadata, userTeam }) => {
-    const [teamSelectorActive, setTeamSelectorActive] = useState(false);
+    const [teamSelectorActive, setTeamSelectorActive] = useState(true);
 
     const teamSelector = (
         <TeamSelector
             teamMetadata={teamMetadata}
-            closeTeamSelector={setTeamSelectorActive} />
+            closeTeamSelector={() => setTeamSelectorActive(false)} />
     );
 
     useEffect(() => {
-        // if (teamSelectorActive) {
-        //     const container = document.createElement('div');
-        //     container.setAttribute('id', 'team-selector-popover');
-        //     document.body.appendChild(container);
-        //     ReactDOM.render(teamSelector, container);
-        // } else {
-        //     const element = document.getElementById('team-selector-popover');
-        //     if (element && element.parentNode) {
-        //         element.parentNode.removeChild(element);
-        //     }
-        // }
+        if (!teamMetadata) return;
+        if (teamSelectorActive) {
+            const container = document.createElement('div');
+            container.setAttribute('id', 'team-selector-popover');
+            document.body.appendChild(container);
+            ReactDOM.render(teamSelector, container);
+        } else {
+            const element = document.getElementById('team-selector-popover');
+            if (element && element.parentNode) {
+                element.parentNode.removeChild(element);
+            }
+        }
     }, [teamSelectorActive]);
 
     const renderTeamInfo = () => {

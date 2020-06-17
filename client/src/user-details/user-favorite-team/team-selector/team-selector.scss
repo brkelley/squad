@@ -1,17 +1,54 @@
 @import '../../../style/variables.scss';
 
-.team-selector {
+.team-selector-container {
     position: absolute;
     left: 0;
     top: 0;
     width: 100vw;
     height: 0;
     background-color: $secondary;
-    transition: all .5s ease;
+    transition: all .3s;
     overflow: hidden;
 
     &.team-selector-visible {
         height: 100vh;
-        transition: all 1.5s;
+        transition: all .3s;
+    }
+
+    .team-selector {
+        padding: 24px;
+    
+        .team-selector-header {
+            text-align: center;
+            font-size: 2.4rem;
+            color: $font-color;
+            padding: 24px;
+            border-bottom: $border;
+
+            .team-selector-close-icon {
+                position: absolute;
+                right: 48px;
+                top: 48px;
+                height: 24px;
+                color: darken(white, 15%);
+
+                &:hover {
+                    color: darken(white, 20%);
+                    cursor: pointer;
+                }
+            }
+        }
+
+        .region-wrapper {
+            .region-title {
+                font-size: 1.8rem;
+                color: $font-color;
+            }
+
+            .region-image {
+                height: 24px;
+                width: auto;
+            }
+        }
     }
 }
