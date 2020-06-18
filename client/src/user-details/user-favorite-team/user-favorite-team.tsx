@@ -7,16 +7,21 @@ import { faUsers } from '@fortawesome/free-solid-svg-icons';
 import TeamSelector from './team-selector/team-selector';
 
 const UserFavoriteTeam = ({ teamMetadata, userTeam }) => {
-    const [teamSelectorActive, setTeamSelectorActive] = useState(true);
+    const [teamSelectorActive, setTeamSelectorActive] = useState(false);
 
-    const teamSelector = (
-        <TeamSelector
-            teamMetadata={teamMetadata}
-            closeTeamSelector={() => setTeamSelectorActive(false)} />
-    );
+    setTimeout(() => {
+        setTeamSelectorActive(true);
+    }, 750);
 
     useEffect(() => {
         if (!teamMetadata) return;
+
+        const teamSelector = (
+            <TeamSelector
+                teamMetadata={teamMetadata}
+                closeTeamSelector={() => setTeamSelectorActive(false)} />
+        );
+
         if (teamSelectorActive) {
             const container = document.createElement('div');
             container.setAttribute('id', 'team-selector-popover');

@@ -9,6 +9,7 @@
     background-color: $secondary;
     transition: all .3s;
     overflow: hidden;
+    color: $font-color;
 
     &.team-selector-visible {
         height: 100vh;
@@ -21,7 +22,6 @@
         .team-selector-header {
             text-align: center;
             font-size: 2.4rem;
-            color: $font-color;
             padding: 24px;
             border-bottom: $border;
 
@@ -39,15 +39,67 @@
             }
         }
 
-        .region-wrapper {
-            .region-title {
-                font-size: 1.8rem;
-                color: $font-color;
+        .team-selector-body {
+            display: flex;
+
+            .current-favorite-team-wrapper {
+                width: 150px;
             }
 
-            .region-image {
-                height: 24px;
-                width: auto;
+            .available-teams-wrapper {
+                .region-wrapper {
+                    padding: 24px 0;
+                    border-bottom: $border;
+        
+                    .region-header {
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        margin: 12px 0 40px 0;
+        
+                        .region-image {
+                            height: 48px;
+                            width: auto;
+                        }
+        
+                        .region-title {
+                            font-size: 2.5rem;
+                            padding-left: 50px;
+                            font-weight: bold;
+                        }
+                    }
+        
+                    .region-team-container {
+                        display: flex;
+                        justify-content: center;
+                        flex-wrap: wrap;
+        
+                        .team-wrapper {
+                            padding: 24px;
+                            width: 125px;
+                            text-align: center;
+                            transition: all .2s;
+        
+                            .team-icon {
+                                height: 75px;
+                                width: auto;
+                                padding-bottom: 12px;
+                            }
+        
+                            .team-label {
+                                font-size: 1.2rem;
+                                color: darken($font-color, 5%);
+                            }
+        
+                            &:hover {
+                                background-color: darken($secondary, 3%);
+                                border-radius: 25px;
+                                transition: all .2s;
+                                cursor: pointer;
+                            }
+                        }
+                    }
+                }
             }
         }
     }
