@@ -63,7 +63,7 @@ const Navbar = ({ history, user, logout }) => {
                     className="nav-icon" />
             </Link>
             <div className="navbar-links">
-                <Link to="/predictions" className={`navbar-link${ activeNav === 'predictions' ? ' active' : '' }`}>
+                <Link to="/predictions" className={`navbar-link${ activeNav === 'predictions' ? ' active-nav' : '' }`}>
                     <FontAwesomeIcon icon={faEye} className="nav-icon" />
                     Predictions
                 </Link>
