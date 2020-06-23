@@ -43,23 +43,25 @@ const Bo1Grid = ({ matches, usersMetadata, predictionMap }) => {
                                 {user.summonerName}
                             </td>
                             {
-                                matches.map(match => {
-                                    const { league } = match;
-                                    const userPredictions = get(predictionMap, `${user.id}.${league.id}`, []);
-                                    const userPrediction = userPredictions
-                                        .find(pred => pred.matchId === match.id);
-                                    
-                                    const { score, template } = renderPredictionCell({
-                                        id: match.id,
-                                        prediction: userPrediction,
-                                        teams: match.teams,
-                                        matchTime: match.startTime,
-                                        matchState: match.state
-                                    });
-                                    userScore += score;
+                                matches
+                                    .sort((a, b) => ((new Date(a.startTime).getTime()) - new Date(b.startTime).getTime()))
+                                    .map(match => {
+                                        const { league } = match;
+                                        const userPredictions = get(predictionMap, `${user.id}.${league.id}`, []);
+                                        const userPrediction = userPredictions
+                                            .find(pred => pred.matchId === match.id);
+                                        
+                                        const { score, template } = renderPredictionCell({
+                                            id: match.id,
+                                            prediction: userPrediction,
+                                            teams: match.teams,
+                                            matchTime: match.startTime,
+                                            matchState: match.state
+                                        });
+                                        userScore += score;
 
-                                    return template;
-                                })
+                                        return template;
+                                    })
                             }
                             <td className="prediction-table-cell totals-cell">
                                 {showCurrentScores ? userScore : ''}

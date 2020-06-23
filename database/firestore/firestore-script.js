@@ -37,7 +37,7 @@ db.collection('predictions').get().then((snapshot) => {
             console.log(userId, predictions.length);
         })
     // predictions
-    //     .filter(el => el.userId === 'YUfP0x1C913WIdkaEtYR')
+    //     .filter(el => el.userId === 'NZHHy69kHu2Oi5sFBUQW')
     //     .forEach((prediction) => {
     //         if (!predictionMap[prediction.matchId]) {
     //             predictionMap[prediction.matchId] = [prediction];

@@ -8,7 +8,7 @@
     height: 0;
     background-color: $secondary;
     transition: all .3s;
-    overflow: hidden;
+    overflow: auto;
     color: $font-color;
 
     &.team-selector-visible {
@@ -43,13 +43,36 @@
             display: flex;
 
             .current-favorite-team-wrapper {
-                width: 150px;
+                align-self: flex-start;
+                position: sticky;
+                top: 0;
+                flex: 0 0 200px;
+                border-right: $border;
+                padding: 24px 24px 0 0;
+
+                .current-favorite-team-image {
+                    width: 100%;
+                    height: auto;
+                }
+
+                .current-favorite-team-name {
+                    text-align: center;
+                    font-size: 1.6rem;
+                }
+
+                .save-team-wrapper {
+                    margin-top: 32px;
+                    text-align: center;
+                }
             }
 
             .available-teams-wrapper {
                 .region-wrapper {
                     padding: 24px 0;
-                    border-bottom: $border;
+
+                    &:not(:last-child) {
+                        border-bottom: $border;
+                    }
         
                     .region-header {
                         display: flex;
@@ -79,6 +102,11 @@
                             width: 125px;
                             text-align: center;
                             transition: all .2s;
+
+                            .selected-team {
+                                opacity: 0.5;
+                                transition: all 0.2s;
+                            }
         
                             .team-icon {
                                 height: 75px;

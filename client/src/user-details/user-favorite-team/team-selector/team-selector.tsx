@@ -2,29 +2,16 @@ import './team-selector.scss';
 import React, { useState, useEffect } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faTimes, faUsers } from '@fortawesome/free-solid-svg-icons';
+import Button from '../../../components/button/button';
 import _ from 'lodash';
 import LEAGUES_METADATA from '../../../constants/leagues.json';
 import { TeamMetadata } from '../../../types/pro-play-metadata';
 
-const TEST_FAVE_TEAM = {
-    "id": "98767991866488695",
-    "slug": "fnatic",
-    "name": "Fnatic",
-    "code": "FNC",
-    "image": "https://lolstatic-a.akamaihd.net/esports-assets/production/team/fnatic-9gbeptb1.png",
-    "alternativeImage": "https://lolstatic-a.akamaihd.net/esports-assets/production/team/fnatic-8w0cvhu1.png",
-    "backgroundImage": "https://lolstatic-a.akamaihd.net/esports-assets/production/team/fnatic-719v4q48.png",
-    "homeLeague": {
-        "name": "LEC",
-        "region": "EUROPE"
-    },
-    players: []
-};
-
-const TeamSelector = ({ teamMetadata, closeTeamSelector }) => {
+const TeamSelector = ({ userTeam, teamMetadata, closeTeamSelector, updateUserTeam }) => {
     const [transition, setTransition] = useState(false);
-    const [selectedFavoriteTeam, setSelectedFavoriteTeam] = useState<TeamMetadata>(TEST_FAVE_TEAM);
+    const [selectedFavoriteTeam, setSelectedFavoriteTeam] = useState<TeamMetadata>(userTeam);
+    const [unsavedChanges, setUnsavedChanges] = useState(false);
 
     const teamsByRegions = _
         .chain(teamMetadata)
@@ -36,20 +23,79 @@ const TeamSelector = ({ teamMetadata, closeTeamSelector }) => {
         setTimeout(() => setTransition(true), 25);
     }, []);
 
-    const beginCloseTeamSelector = () => {
+    const beginCloseTeamSelector = async (favoriteTeam) => {
         setTransition(false);
+        if (unsavedChanges) {
+            await updateUserTeam(favoriteTeam);
+            setUnsavedChanges(false);
+        }
         setTimeout(closeTeamSelector, 500);
     };
 
+    const renderFavoriteTeam = () => {
+        let teamImage;
+        let teamName;
+        let saveButton;
+
+        if (!selectedFavoriteTeam) {
+            teamImage = (
+                <FontAwesomeIcon
+                    className="current-favorite-team-image"
+                    icon={faUsers} />
+            );
+            teamName = (
+                <div className="current-favorite-team-name">
+                    No team selected
+                </div>
+            )
+        } else {
+            teamImage = (
+                <img
+                    className="current-favorite-team-image"
+                    src={selectedFavoriteTeam.image} />
+            );
+            teamName = (
+                <div className="current-favorite-team-name">
+                    {selectedFavoriteTeam.name}
+                </div>
+            );
+        }
+
+        if (_.get(selectedFavoriteTeam, 'id') !== _.get(userTeam, 'id')) {
+            saveButton = (
+                <div className="save-team-wrapper">
+                    <Button
+                        buttonLabel="Save Team"
+                        click={() => beginCloseTeamSelector(selectedFavoriteTeam)} />
+                </div>
+            );
+        }
+
+        return (
+            <div className="current-favorite-team-wrapper">
+                {teamImage}
+                {teamName}
+                {saveButton}
+            </div>
+        );
+    };
+
     const renderRegionTeam = (team) => {
+        const selectedTeamClass = team.id === _.get(selectedFavoriteTeam, 'id') ? 'selected-team' : '';
+        const onTeamSelected = () => {
+            setUnsavedChanges(true);
+            setSelectedFavoriteTeam(team)
+        }
+
         return (
             <div
                 className="team-wrapper"
-                key={team.name}>
+                key={team.name}
+                onClick={onTeamSelected}>
                 <img
-                    className="team-icon"
+                    className={`team-icon ${selectedTeamClass}`}
                     src={team.image} />
-                <div className="team-label">
+                <div className={`team-label ${selectedTeamClass}`}>
                     {team.name}
                 </div>
             </div>
@@ -90,9 +136,7 @@ const TeamSelector = ({ teamMetadata, closeTeamSelector }) => {
                         onClick={beginCloseTeamSelector} />
                 </div>
                 <div className="team-selector-body">
-                    <div className="current-favorite-team-wrapper">
-                        FNATIC
-                    </div>
+                    {renderFavoriteTeam()}
                     <div className="available-teams-wrapper">
                         {teamsByRegions.map((region) => renderRegion(region))}
                     </div>

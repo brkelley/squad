@@ -4,6 +4,7 @@ import React, { useEffect } from 'react';
 
 import UserMetadata from './user-metadata/user-metadata';
 import UserFavoriteTeam from './user-favorite-team/user-favorite-team';
+import get from 'lodash/get';
 
 const UserDetails = ({
     user,
@@ -16,6 +17,17 @@ const UserDetails = ({
         loadAllTeams();
     }, []);
 
+    const updateUserTeam = async (favoriteTeam) => {
+        await updateUser({
+            ...user,
+            preferences: {
+                favoriteTeam
+            }
+        });
+    };
+
+    const userTeam = get(user.preferences, 'favoriteTeam');
+
     return (
         <div className="user-details-wrapper">
             <div className="user-details-section user-metadata-wrapper">
@@ -27,7 +39,8 @@ const UserDetails = ({
             <div className="user-details-section team-selector-wrapper">
                 <UserFavoriteTeam
                     teamMetadata={teamMetadata}
-                    userTeam={user.team} />
+                    userTeam={userTeam}
+                    updateUserTeam={updateUserTeam} />
             </div>
         </div>
     );

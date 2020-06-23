@@ -6,20 +6,18 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUsers } from '@fortawesome/free-solid-svg-icons';
 import TeamSelector from './team-selector/team-selector';
 
-const UserFavoriteTeam = ({ teamMetadata, userTeam }) => {
+const UserFavoriteTeam = ({ teamMetadata, userTeam, updateUserTeam }) => {
     const [teamSelectorActive, setTeamSelectorActive] = useState(false);
-
-    setTimeout(() => {
-        setTeamSelectorActive(true);
-    }, 750);
 
     useEffect(() => {
         if (!teamMetadata) return;
 
         const teamSelector = (
             <TeamSelector
+                userTeam={userTeam}
                 teamMetadata={teamMetadata}
-                closeTeamSelector={() => setTeamSelectorActive(false)} />
+                closeTeamSelector={() => setTeamSelectorActive(false)}
+                updateUserTeam={updateUserTeam} />
         );
 
         if (teamSelectorActive) {

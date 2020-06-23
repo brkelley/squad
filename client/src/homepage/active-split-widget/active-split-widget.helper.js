@@ -18,6 +18,11 @@ export const calculateUserSplitStatistics = ({ userId, users, schedule, predicti
         let userStat = toPairs(userPredictionMap).reduce((stats, [leagueId, leaguePredictions]) => {
             for (let i = 0; i < leaguePredictions.length; i++) {
                 const prediction = leaguePredictions[i];
+
+                if (!prediction) {
+                    return;
+                }
+
                 const actualMatchResults = get(scheduleByMatchId, `${leagueId}.${prediction.matchId}[0]`, {});
 
                 // add team to team map (so we can pull the metadata later)
