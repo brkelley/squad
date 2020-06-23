@@ -6,8 +6,9 @@ import LoadingIndicator from '../components/loading-indicator/loading-indicator'
 import AchievementWidget from './achievement-widget/achievement-widget';
 import ActiveSplitWidget from './active-split-widget/active-split-widget';
 import PredictionWidget from './prediction-widget/prediction-widget';
+import FavoriteTeamNews from './favorite-team-news/favorite-team-news';
+import LEAGUES_METADATA from '../constants/leagues.json';
 
-import chain from 'lodash/chain';
 import get from 'lodash/get';
 import isEmpty from 'lodash/isEmpty';
 import values from 'lodash/values';
@@ -40,10 +41,8 @@ const Homepage = ({
     const findNextWeek = ({ schedule }): string[] => {
         const now = new Date().getTime();
         const lecSchedule = values(schedule)[0].map(el => new Date(el.startTime).getTime());
-        const lcsSchedule = values(schedule)[1].map(el => new Date(el.startTime).getTime());
 
         const upcomingLECIndex = lecSchedule.findIndex((matchTime) => matchTime > now);
-        const upcomingLCSIndex = lcsSchedule.findIndex((matchTime) => matchTime > now);
 
         const lecGames = values(schedule)[0];
         
@@ -62,6 +61,26 @@ const Homepage = ({
                 </div>
             );
         }
+
+        const userPlacings = get(user, 'splitStats', {});
+        const favoriteTeam = get(user.preferences, 'favoriteTeam');
+        let secondaryWidget;
+
+        if (favoriteTeam) {
+            const leagueId = LEAGUES_METADATA.find((league) => favoriteTeam.homeLeague.name === league.name);
+            const leagueSchedule = schedule[get(leagueId, 'id', -1)];
+            secondaryWidget = (
+                <FavoriteTeamNews
+                    favoriteTeam={favoriteTeam}
+                    schedule={leagueSchedule} />
+            );
+
+        } else {
+            secondaryWidget = (
+                <AchievementWidget
+                    userPlacings={userPlacings} />
+            );
+        }
     
         return (
             <div className="homepage-wrapper">
@@ -76,8 +95,7 @@ const Homepage = ({
                         }
                     </div>
                     <div className="widget-wrapper">
-                        <AchievementWidget
-                            user={user} />
+                        {secondaryWidget}
                     </div>
                 </div>
                 {
