@@ -12,17 +12,19 @@ const Bo1Grid = ({ matches, usersMetadata, predictionMap }) => {
             <tr className="bo1-table-row">
                 <th className="bo1-table-cell header-cell" />
                 {
-                    matches.map(match => (
-                        <th className="bo1-table-cell header-cell" key={match.id}>
-                            <div className="header-team-name">
-                                {match.teams[0].code}
-                            </div>
-                            <div className="header-vs">vs</div>
-                            <div className="header-team-name">
-                                {match.teams[1].code}
-                            </div>
-                        </th>
-                    ))
+                    matches
+                        .sort((a, b) => ((new Date(a.startTime).getTime()) - new Date(b.startTime).getTime()))
+                        .map(match => (
+                            <th className="bo1-table-cell header-cell" key={match.id}>
+                                <div className="header-team-name">
+                                    {match.teams[0].code}
+                                </div>
+                                <div className="header-vs">vs</div>
+                                <div className="header-team-name">
+                                    {match.teams[1].code}
+                                </div>
+                            </th>
+                        ))
                 }
             </tr>
         </thead>
