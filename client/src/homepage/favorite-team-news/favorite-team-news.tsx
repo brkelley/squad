@@ -28,7 +28,7 @@ const FavoriteTeamNews = ({ favoriteTeam, schedule }) => {
         const teamInfo: ScheduleTeam = get(upcomingMatches, '[0].match.teams', [])
             .find((el: Team) => el.name === favoriteTeam.name);
 
-        if (!teamInfo) return;
+        if (!teamInfo || !teamInfo.record) return;
         
         return (
             <div className="favorite-team-subtitle team-record">
@@ -57,23 +57,27 @@ const FavoriteTeamNews = ({ favoriteTeam, schedule }) => {
                 </div>
                 <div className="upcoming-matches">
                     {
-                        ...upcomingOpponents.map((opponent) => (
-                            <div
-                                key={opponent.name}
-                                className="upcoming-match">
-                                <div className="upcoming-opponent-image-wrapper">
-                                    <img
-                                        className="upcoming-opponent-image"
-                                        src={opponent.image} />
+                        ...upcomingOpponents.map((opponent) => {
+                            if (!opponent || !opponent.record) return;
+
+                            return (
+                                <div
+                                    key={opponent.name}
+                                    className="upcoming-match">
+                                    <div className="upcoming-opponent-image-wrapper">
+                                        <img
+                                            className="upcoming-opponent-image"
+                                            src={opponent.image} />
+                                    </div>
+                                    <div className="upcoming-opponent-subtitle opponent-name">
+                                        {opponent.name}
+                                    </div>
+                                    <div className="upcoming-opponent-subtitle opponent-record">
+                                        {opponent.record.wins} - {opponent.record.losses}
+                                    </div>
                                 </div>
-                                <div className="upcoming-opponent-subtitle opponent-name">
-                                    {opponent.name}
-                                </div>
-                                <div className="upcoming-opponent-subtitle opponent-record">
-                                    {opponent.record.wins} - {opponent.record.losses}
-                                </div>
-                            </div>
-                        ))
+                            )
+                        })
                     }
                 </div>
             </div>
