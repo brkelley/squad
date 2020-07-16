@@ -40,15 +40,15 @@ const Homepage = ({
 
     const findNextWeek = ({ schedule }): string[] => {
         const now = new Date().getTime();
-        const lecSchedule = values(schedule)[0].map(el => new Date(el.startTime).getTime());
+        const lcsSchedule = values(schedule)[1].map(el => new Date(el.startTime).getTime());
 
-        const upcomingLECIndex = lecSchedule.findIndex((matchTime) => matchTime > now);
+        const upcomingLCSIndex = lcsSchedule.findIndex((matchTime) => matchTime > now);
 
-        const lecGames = values(schedule)[0];
+        const lcsGames = values(schedule)[1];
         
         return uniq(
-            lecGames
-                .slice(0, upcomingLECIndex + 1)
+            lcsGames
+                .slice(0, upcomingLCSIndex + 1)
                 .map((el) => el.blockName)
         );
     };
