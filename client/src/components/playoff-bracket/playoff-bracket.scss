@@ -18,14 +18,14 @@
             align-items: center;
 
             &:hover {
-                background-color: darken($primary, 2%);
+                background-color: darken($squad-primary, 2%);
                 cursor: pointer;
                 transition: background-color .2s;
             }
 
             &.active-section {
-                background-color: $secondary;
-                border: solid 2px $border-color;
+                background-color: $squad-primary;
+                border: solid 2px $squad-primary;
                 margin: -2px -2px 0 -2px;
                 border-bottom: 0;
                 z-index: 5;
@@ -39,9 +39,9 @@
             
             .playoff-section-matches {
                 .playoff-match {
-                    background-color: $primary;
+                    background-color: $squad-primary;
                     width: 225px;
-                    border: solid 1px $border-color;
+                    border: solid 1px $squad-primary;
                     margin-bottom: 28px;
 
                     &.condensed-match {
@@ -54,7 +54,7 @@
                         align-items: center;
             
                         &:first-child {
-                            border-bottom: solid 1px $border-color;
+                            border-bottom: solid 1px $squad-primary;
                         }
             
                         .left-side {
@@ -82,7 +82,7 @@
                         .right-side {
                             padding: 0 12px;
                             text-align: center;
-                            border-left: solid 2px $border-color;
+                            border-left: solid 2px $squad-primary;
             
                             .team-score {
                                 font-size: 0.9rem;
@@ -103,15 +103,15 @@
        transition: all 0.3s;
        overflow: hidden;
        margin-top: -2px;
-       background-color: $secondary;
+       background-color: $squad-primary;
        z-index: 50;
 
         &.section-visible {
             max-height: 2000px;
             height: auto;
             transition: all 0.3s;
-            border-top: solid 2px $border-color;
-            border-bottom: solid 2px $border-color;
+            border-top: solid 2px $squad-primary;
+            border-bottom: solid 2px $squad-primary;
         }
 
         .active-playoff-section {
@@ -124,14 +124,14 @@
                 position: absolute;
                 bottom: 100%;
                 border: 36px solid transparent;
-                border-bottom-color: $border-color;
+                border-bottom-color: $squad-primary;
             }
     
             .inner-triangle-indicator {
                 position: absolute;
                 bottom: 100%;
                 border: 33px solid transparent;
-                border-bottom-color: $secondary;
+                border-bottom-color: $squad-primary;
             }
     
             .close-section {

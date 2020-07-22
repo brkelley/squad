@@ -3,8 +3,7 @@ import {
     SET_PREDICTION_AT_KEY,
     SET_PREDICTION_FILTER,
     SET_UNSAVED_PREDICTIONS,
-    RESET_UNSAVED_PREDICTIONS,
-    SET_FETCHING
+    RESET_UNSAVED_PREDICTIONS
 } from '../constants/constants.js';
 import cloneDeep from 'lodash/cloneDeep';
 import keyBy from 'lodash/keyBy';
@@ -79,10 +78,6 @@ const setPredictionFilter = (state, action) => {
     return Object.assign({}, state, { predictionFilters });
 };
 
-const setFetching = (state, action) => {
-    return Object.assign({}, state, { fetching: action.fetching });
-};
-
 export default function (state = initialState, action) {
     switch (action.type) {
         case SET_PREDICTION_MAP:
@@ -95,8 +90,6 @@ export default function (state = initialState, action) {
             return resetUnsavedPredictions(state);
         case SET_PREDICTION_FILTER:
             return setPredictionFilter(state, action);
-        case SET_FETCHING:
-            return setFetching(state, action);
         default:
             return state;
     }

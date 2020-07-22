@@ -2,10 +2,9 @@
 
 .current-tournament-statistics {
     margin: 24px;
-    display: flex;
+    width: '~calc(100% - 48px)';
 
     .tournament-overview {
-        width: 50%;
         display: flex;
         justify-content: space-between;
 
@@ -15,7 +14,7 @@
             flex: 1 1 auto;
 
             &.scoreboard-section {
-                flex: 1 2 auto;
+                flex: 1 1 auto;
             }
 
             .score-and-placing {
@@ -46,16 +45,17 @@
         .current-tournament-scoreboard {
             border-left: solid 1px white;
             padding-left: 24px;
-            font-size: 1.2rem;
+            font-size: 1rem;
 
             .tournament-table {
                 min-width: 240px;
+                margin: auto;
 
                 .scoreboard-row {
                     padding: 12px;
 
                     &.active-user-row {
-                        color: $teal;
+                        color: $squad-triad-gold;
                     }
     
                     .scoreboard-cell {

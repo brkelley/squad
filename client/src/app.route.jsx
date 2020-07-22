@@ -2,18 +2,20 @@ import React, { useState } from 'react';
 import { Router, Switch, Route } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
 
-import PrivateRoute from './components/private-route/private-route.jsx';
+import PrivateRoute from './components/private-route/private-route';
 import Homepage from './homepage/homepage.tsx';
 import Predictions from './predictions/predictions';
 import UserDetails from './user-details/user-details.tsx';
-import Welcome from './welcome/welcome.tsx';
+import Login from './login/login.tsx';
+import Register from './register/register.tsx';
+import Redirect from './login/redirect/redirect';
 import Navbar from './components/navbar/navbar.tsx';
 import Header from './components/header/header.jsx';
 
 const history = createBrowserHistory();
 
 export default function AppRoute () {
-    const routesWithoutNavbar = ['/login', '/register', '/spectate', '/reset-password'];
+    const routesWithoutNavbar = ['/login', '/auth/redirect', '/register'];
     const [displayNavbar, setDisplayNavbar] = useState(!routesWithoutNavbar.includes(history.location.pathname));
 
     history.listen(location => {
@@ -37,7 +39,7 @@ export default function AppRoute () {
     return (
         <Router history={history}>
             {renderNavbar()}
-            <div className="content-wrapper">
+            <div className={`content-wrapper ${displayNavbar ? 'with-navbar' : ''}`}>
                 {renderHeader()}
                 <Switch>
                     <PrivateRoute
@@ -49,25 +51,17 @@ export default function AppRoute () {
                         exact
                         component={Homepage} />
                     <Route
-                        path="/welcome"
-                        exact
-                        component={Welcome} />
-                    <Route
                         path="/login"
                         exact
-                        component={Welcome} />
+                        component={Login} />
+                    <Route
+                        path="/auth/redirect"
+                        exact
+                        component={Redirect} />
                     <Route
                         path="/register"
                         exact
-                        component={Welcome} />
-                    <Route
-                        path="/spectate"
-                        exact
-                        component={Welcome} />
-                    <Route
-                        path="/reset-password"
-                        exact
-                        component={Welcome} />
+                        component={Register} />
                     <PrivateRoute
                         path="/predictions"
                         exact

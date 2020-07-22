@@ -19,15 +19,17 @@ const GroupStageGrid = ({ label = '', matches, usersMetadata, predictionMap }) =
                     matches
                         .sort((a, b) => ((new Date(a.startTime).getTime()) - new Date(b.startTime).getTime()))
                         .map(match => {
-                            if (!match || !match.teams) return null;
+                            if (!match || !match.match.teams) return null;
                             return (
-                                <th className="group-stage-table-cell header-cell" key={match.id}>
+                                <th
+                                    className="group-stage-table-cell header-cell"
+                                    key={match.match.id}>
                                     <div className="header-team-name">
-                                        {match.teams[0].code}
+                                        {match.match.teams[0].code}
                                     </div>
                                     <div className="header-vs">vs</div>
                                     <div className="header-team-name">
-                                        {match.teams[1].code}
+                                        {match.match.teams[1].code}
                                     </div>
                                 </th>
                             )
@@ -43,7 +45,7 @@ const GroupStageGrid = ({ label = '', matches, usersMetadata, predictionMap }) =
                 usersMetadata.map(user => {
                     let userScore = 0;
                     const currentTime = Date.now();
-                    const firstMatchTime = moment(matches[0].matchTime).valueOf();
+                    const firstMatchTime = moment(matches[0].startTime).valueOf();
                     const showCurrentScores = (currentTime >= firstMatchTime);
 
                     return (
@@ -55,15 +57,15 @@ const GroupStageGrid = ({ label = '', matches, usersMetadata, predictionMap }) =
                                 matches
                                     .sort((a, b) => ((new Date(a.startTime).getTime()) - new Date(b.startTime).getTime()))
                                     .map(match => {
-                                        if (!match || !match.teams) return null;
+                                        if (!match || !match.match.teams) return null;
                                         const userPredictions = get(predictionMap, `${user.id}`, {});
                                         const userPrediction = Object.values(userPredictions)
-                                            .find((pred: Prediction) => pred.matchId === match.id);
+                                            .find((pred: Prediction) => pred.matchId === match.match.id);
 
                                         const { score, template } = renderPredictionCell({
-                                            id: match.id,
+                                            id: match.match.id,
                                             prediction: userPrediction,
-                                            teams: match.teams,
+                                            teams: match.match.teams,
                                             matchTime: match.startTime,
                                             matchState: match.state
                                         });

@@ -8,25 +8,26 @@ import {
 } from '../utils/pro-play-dashboard.util';
 import { convertNumberToCardinal } from '../../../utils/common.util';
 import { Prediction } from '../../../types/predictions';
-import { ScheduleByLeague, ScheduleTeam } from '../../../types/pro-play-metadata';
+import { MatchMetadata, Team } from '../../../types/pro-play-metadata';
 import { User } from '../../../types/user';
 import isEmpty from 'lodash/isEmpty';
+import keyBy from 'lodash/keyBy';
 import some from 'lodash/some';
 
 interface CurrentTournamentStatisticsProps {
     predictionMap: {
         [userId: string]: {
-            [matchId: string]: Prediction;
-        };
-    };
-    schedule: ScheduleByLeague[];
-    currentUser: User;
-    users: User[];
-    teams: ScheduleTeam[]
+            [matchId: string]: Prediction
+        }
+    }
+    matches: MatchMetadata[]
+    currentUser: User
+    users: User[]
+    teams: Team[]
 };
 export default ({
     predictionMap,
-    schedule,
+    matches,
     currentUser,
     users,
     teams
@@ -36,12 +37,13 @@ export default ({
     const [userTeamStats, setUserTeamStats] = useState<UserTeamStats>();
 
     useEffect(() => {
-        if (!isEmpty(predictionMap) && !isEmpty(schedule) && !isEmpty(users) && !isEmpty(teams)) {
-            setScoreboard(calculateScoresByUsers({ predictionMap, schedule, currentUser, users }));
-            setUserTeamStats(calculateUserTeamStats({ predictionMap, schedule, currentUser, teams }));
+        if (!isEmpty(matches) && !isEmpty(users) && !isEmpty(teams)) {
+            const matchesMap = keyBy(matches, 'match.id')
+            setScoreboard(calculateScoresByUsers({ predictionMap, matchesMap, users }));
+            setUserTeamStats(calculateUserTeamStats({ predictionMap, matchesMap, currentUser, teams }));
             setShowScoreboard(true);
         }
-    }, [predictionMap, schedule, users, teams]);
+    }, [predictionMap, matches, users, teams]);
 
     const renderScoreAndPlacing = () => {
         const activeUserPlacing = scoreboard.findIndex((el) => el.id === currentUser.id);
@@ -60,30 +62,42 @@ export default ({
 
         return (
             <div className="user-team-stats">
-                <div className="team-stat">
-                    <img
-                        className="team-stat-image"
-                        src={mostGuessedTeam.image} />
-                    <div className="team-stat-label">
-                        most predicted
-                    </div>
-                </div>
-                <div className="team-stat">
-                    <img
-                        className="team-stat-image"
-                        src={mostWonTeam.image} />
-                    <div className="team-stat-label">
-                        most won
-                    </div>
-                </div>
-                <div className="team-stat">
-                    <img
-                        className="team-stat-image"
-                        src={mostIncorrectTeam.image} />
-                    <div className="team-stat-label">
-                        blindspot
-                    </div>
-                </div>
+                {
+                    mostGuessedTeam && (
+                        <div className="team-stat">
+                            <img
+                                className="team-stat-image"
+                                src={mostGuessedTeam.image} />
+                            <div className="team-stat-label">
+                                most predicted
+                            </div>
+                        </div>
+                    )
+                }
+                {
+                    mostWonTeam && (
+                        <div className="team-stat">
+                            <img
+                                className="team-stat-image"
+                                src={mostWonTeam.image} />
+                            <div className="team-stat-label">
+                                most won
+                            </div>
+                        </div>
+                    )
+                }
+                {
+                    mostIncorrectTeam && (
+                        <div className="team-stat">
+                            <img
+                                className="team-stat-image"
+                                src={mostIncorrectTeam.image} />
+                            <div className="team-stat-label">
+                                blindspot
+                            </div>
+                        </div>
+                    )
+                }
             </div>
         );
     }
@@ -96,12 +110,13 @@ export default ({
                 <table className="tournament-table">
                     <tbody>
                         {
-                            scoreboard.map(({ id, summonerName, score}) => {
+                            scoreboard.map(({ id, summonerName, score}, index) => {
                                 const activeUserClass = id === currentUser.id ? 'active-user-row' : '';
                                 return (
                                     <tr
                                         className={`scoreboard-row ${activeUserClass}`}
                                         key={id}>
+                                        <td>{index + 1}.</td>
                                         <td className="scoreboard-cell">{summonerName}</td>
                                         <td className="scoreboard-cell score-cell">{score}</td>
                                     </tr>

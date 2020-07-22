@@ -3,11 +3,13 @@ import {
     SET_USERS_METADATA,
     SET_USER,
     SET_USER_TOKEN,
-    SET_USER_FETCHING
+    SET_DISCORD_INFO
 } from '../constants/constants.js';
 import firebase from 'firebase';
 import Cookies from 'js-cookie';
-import crypto from 'crypto';
+import axios from 'axios';
+
+let getAllUsersPromise;
 
 const setUpPendo = user => {
     // in your authentication promise handler or callback
@@ -56,10 +58,22 @@ export const setUserToken = userToken => ({
     userToken
 });
 
+export const setDiscordInfo = discordInfo => ({
+    type: SET_DISCORD_INFO,
+    discordInfo
+});
+
 export const setUserFetching = fetching => ({
-    type: SET_USER_FETCHING,
+    typ,
     fetching
 });
+
+export const setUserTokenToCookies = (userToken) => (dispatch) => {
+    Cookies.remove('squadtoken');
+    Cookies.set('squadtoken', userToken);
+    dispatch(setUserToken(userToken));
+    axios.defaults.headers.common['squadtoken'] = userToken;
+}
 
 export const updateUser = user => async dispatch => {
     let updatedUser;
@@ -73,99 +87,39 @@ export const updateUser = user => async dispatch => {
 };
 
 export const loadAllUsers = () => async (dispatch, getState) => {
-    const { userReducer: state } = getState();
     let usersMetadata;
-    if (state.usersMetadata.length > 0) {
+    if (getAllUsersPromise) {
         return;
     }
 
-    dispatch(setUserFetching(true));
+    getAllUsersPromise = axios.get('/users');
+
     try {
-        usersMetadata = await axios.get('/users');
+        usersMetadata = await getAllUsersPromise;
         dispatch(setUsersMetadata(usersMetadata.data));
     } catch (error) {
         console.log(error);
     }
-    dispatch(setUserFetching(false));
 };
 
 export const logout = () => async dispatch => {
-    Cookies.remove('userToken');
+    Cookies.remove('squadtoken');
     await firebase.auth().signOut();
     dispatch(setUserToken(null));
 };
 
 export const registerNewUser = body => dispatch => {
-    const registrationSalt = 'fdfb1ee61c7ab750bff0a1d8a0f8f563';
-    const registrationHash = crypto.pbkdf2Sync(body.registrationCode, registrationSalt, 1000, 64, 'sha512').toString('hex');
-    delete body.registrationCode;
-    body.registrationHash = registrationHash;
-
-    return axios.post('/user/register', body)
+    return axios.post('/users', body)
         .then(({ data: results }) => {
             dispatch(setUser(results.user));
-            dispatch(setUserToken(results.token));
+            dispatch(setUserTokenToCookies(results.jwtToken));
             setUpPendo(results.user);
-            Cookies.set('userToken', results.token);
-            axios.defaults.headers.common.squadToken = results.token;
         });
-};
-
-export const resetPassword = body => dispatch => {
-    return axios.patch('/user/updatePassword', body)
-        .then(({ data: results }) => {
-            dispatch(setUser(results.user));
-            dispatch(setUserToken(results.token));
-            Cookies.set('userToken', results.token);
-        });
-};
-
-export const login = (summonerName, password) => async (dispatch, getState) => {
-    const { userReducer: state } = getState();
-    if (state.userToken && !['', 'INVALID'].includes(state.userToken)) {
-        return Promise.resolve();
-    }
-
-    let token, user;
-    try {
-        const loginResults = await axios.post('/user/login', { summonerName, password });
-        token = loginResults.data.token;
-        user = loginResults.data.user;
-
-        await firebase.auth().signInWithCustomToken(token);
-    } catch (error) {
-        console.error(error);
-        return;
-    }
-
-    dispatch(setUser(user));
-    dispatch(setUserToken(token));
-    setUpPendo(user);
-    Cookies.set('userToken', token);
-    axios.defaults.headers.common.squadToken = token;
-};
-
-export const validateUserToken = idToken => async dispatch => {
-    const data = await axios.post('/user/validateToken', { token: idToken });
-    const results = data.data;
-
-    const { token, valid, user } = results;
-
-    if (!valid) {
-        dispatch(setUserToken('INVALID'));
-    } else {
-        dispatch(setUser(user));
-        dispatch(setUserToken(token));
-        setUpPendo(user);
-        Cookies.set('userToken', token);
-        axios.defaults.headers.common['squadToken'] = token;
-    }
 };
 
 export const validateSummonerName = summonerName => () => {
-    return axios.get(`/user/validateSummonerName?summonerName=${summonerName}`)
+    return axios.get(`/auth/riot/${summonerName}`)
         .catch(({ response }) => {
-            console.log(response);
             return Promise.reject({ message: response.data.message })
         });
 };

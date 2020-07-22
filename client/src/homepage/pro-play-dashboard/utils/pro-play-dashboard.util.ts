@@ -1,34 +1,9 @@
-import countBy from 'lodash/countBy';
-import get from 'lodash/get';
-import isEqual from 'lodash/isEqual';
-import keyBy from 'lodash/keyBy';
 
 import { Prediction } from '../../../types/predictions';
-import { ScheduleByLeague, ScheduleMatch, ScheduleTeam } from '../../../types/pro-play-metadata';
-import { User } from '../../../types/user';
-
-interface FlattenScheduleProps {
-    schedule: ScheduleByLeague[];
-};
-export const flattenSchedule = ({ schedule }: FlattenScheduleProps) => {
-    return schedule.reduce((matches: ScheduleMatch[], leagueTournaments) => {
-        const tournaments = get(leagueTournaments, 'schedule', []);
-        for (let tournament of tournaments) {
-            const stages = get(tournament, 'stages', []);
-
-            for (let stage of stages) {
-                const sections = get(stage, 'sections', []);
-
-                for (let section of sections) {
-                    const sectionMatches = get(section, 'matches', []);
-                    matches.push(...sectionMatches);
-                }
-            }
-        }
-
-        return matches;
-    }, []);
-}
+import { MatchMetadata, Team } from '../../../types/pro-play-metadata';
+import { User } from '../../../types/user';import countBy from 'lodash/countBy';
+import get from 'lodash/get';
+import isEqual from 'lodash/isEqual';
 
 export interface UserTournamentStatistics {
     id: string;
@@ -39,25 +14,25 @@ export interface UserTournamentStatistics {
 interface CalculateScoresByUsersProps {
     predictionMap: {
         [userId: string]: {
-            [matchId: string]: Prediction;
-        };
-    };
-    schedule: ScheduleByLeague[];
-    users: User[];
-    currentUser: User;
-};
+            [matchId: string]: Prediction
+        }
+    }
+    matchesMap: {
+        [matchId: string]: MatchMetadata
+    }
+    users: User[]
+}
 export const calculateScoresByUsers = ({
     predictionMap,
-    schedule,
+    matchesMap,
     users
 }: CalculateScoresByUsersProps) => {
-    const flattenedSchedule = flattenSchedule({ schedule });
-    const mappedSchedule = keyBy(flattenedSchedule, 'id');
-    
     return users.reduce((userStatsArr: any, user) => {
         const predictionsMap = get(predictionMap, user.id, {});
-        const predictionsByUser = Object.values(predictionsMap);
-        if (!predictionsByUser) return userStatsArr;
+        const predictionsByUser: Prediction[] = Object.values(predictionsMap);
+        if (!predictionsByUser) {
+            return userStatsArr;
+        }
 
         const userStats = {
             id: user.id,
@@ -66,17 +41,17 @@ export const calculateScoresByUsers = ({
         };
 
         for (let i = 0; i < predictionsByUser.length; i++) {
-            const currPrediction = predictionsByUser[i];
-            const matchMetadata = get(mappedSchedule, currPrediction.matchId);
-            if (!matchMetadata
-                || !matchMetadata.strategy
-                || ['unstarted', 'inProgress'].includes(matchMetadata.state)
-            ) continue;
+            const currPrediction: Prediction = predictionsByUser[i];
+            const matchMetadata: MatchMetadata = get(matchesMap, currPrediction.matchId);
+            if (!matchMetadata || matchMetadata.type != 'match' || matchMetadata.state != 'completed') {
+                continue;
+            }
 
-            const bestOf = matchMetadata.strategy.count;
-
-            const winningTeam = matchMetadata.teams.find((el) => el.result.outcome === 'win');
-            if (!winningTeam) continue;
+            const bestOf = matchMetadata.match.strategy.count;
+            const winningTeam = matchMetadata.match.teams.find((el) => el.result && el.result.outcome === 'win');
+            if (!winningTeam) {
+                continue;
+            }
 
             const winningTeamName = winningTeam.name;
 
@@ -85,34 +60,7 @@ export const calculateScoresByUsers = ({
                     userStats.score++;
                 }
             } else {
-                const winningScore = Math.ceil(bestOf / 2);
-                const actualSeriesResults = matchMetadata.teams.reduce((acc, curr) => {
-                    acc[curr.name] = curr.result.gameWins;
-
-                    return acc;
-                }, {});
-                const [ actualSeriesWinner ] = Object.entries(actualSeriesResults)
-                    .find(([, score]) => score === winningScore) || [];
-
-                const predictedScoreMap = countBy(currPrediction.prediction.split(','), el => el);
-                const predictedResults = matchMetadata.teams.reduce((acc, curr) => ({
-                    ...acc,
-                    [curr.name]: predictedScoreMap[curr.name] || 0
-                }), {});
-
-                const [ predictedSeriesWinner ] = Object.entries(predictedResults)
-                    .find(([, score]) => score === winningScore) || [];
-
-                const hasCorrectWinner = actualSeriesWinner === predictedSeriesWinner;
-                const hasCorrectScore = isEqual(predictedResults, actualSeriesResults);
-
-                if (hasCorrectWinner) {
-                    userStats.score += 3;
-
-                    if (hasCorrectScore) {
-                        userStats.score += 2;
-                    }
-                }
+                userStats.score += calculateSeriesScore({ bestOf, matchMetadata, currPrediction });
             }
         }
 
@@ -123,27 +71,77 @@ export const calculateScoresByUsers = ({
         .sort((a, b) => b.score - a.score);
 };
 
+const calculateSeriesScore = ({ bestOf, matchMetadata, currPrediction }): number => {
+    const winningScore = Math.ceil(bestOf / 2);
+    const actualSeriesResults = matchMetadata.match.teams.reduce((acc, curr) => {
+        acc[curr.name] = curr.result.gameWins;
+
+        return acc;
+    }, {});
+
+    const [ actualSeriesWinner ] = Object.entries(actualSeriesResults)
+        .find(([, score]) => score === winningScore) || [];
+
+    const predictedScoreMap = countBy(currPrediction.prediction.split(','), el => el);
+    const predictedResults = matchMetadata.match.teams.reduce((acc, curr) => ({
+        ...acc,
+        [curr.name]: predictedScoreMap[curr.name] || 0
+    }), {});
+
+    const [ predictedSeriesWinner ] = Object.entries(predictedResults)
+        .find(([, score]) => score === winningScore) || [];
+
+    const hasCorrectWinner = actualSeriesWinner === predictedSeriesWinner;
+    const hasCorrectScore = isEqual(predictedResults, actualSeriesResults);
+
+    let total = 0;
+    if (hasCorrectWinner) {
+        total += 3;
+
+        if (hasCorrectScore) {
+            total += 2;
+        }
+    }
+
+    return total;
+}
+
 export interface UserTeamStats {
-    mostGuessedTeam: ScheduleTeam;
-    mostWonTeam: ScheduleTeam;
-    mostIncorrectTeam: ScheduleTeam;
+    mostGuessedTeam: Team | null
+    mostWonTeam: Team | null
+    mostIncorrectTeam: Team | null
 };
-export const calculateUserTeamStats = ({ predictionMap, schedule, currentUser, teams }) => {
-    const flattenedSchedule = flattenSchedule({ schedule });
-    const mappedSchedule = keyBy(flattenedSchedule, 'id');
+interface UserTeamStatsProps {
+    predictionMap: {
+        [userId: string]: {
+            [matchId: string]: Prediction
+        }
+    }
+    matchesMap: {
+        [matchId: string]: MatchMetadata
+    }
+    currentUser: User
+    teams: Team[]
+}
+export const calculateUserTeamStats = ({
+    predictionMap,
+    matchesMap,
+    currentUser,
+    teams
+}: UserTeamStatsProps): UserTeamStats => {
     const userId = get(currentUser, 'id');
-    const userPredictions = Object.values(get(predictionMap, userId, {}));
+    const userPredictions: Prediction[] = Object.values(get(predictionMap, userId, {}));
     const teamMap: { [teamName: string]: { guessed: number, correct: number, incorrect: number } } = {};
 
     userPredictions.forEach(({ prediction, matchId }) => {
-        const scheduleMatch = mappedSchedule[matchId];
+        const scheduleMatch: MatchMetadata = matchesMap[matchId];
         if (!scheduleMatch
             || scheduleMatch.state !== 'completed'
-            || !scheduleMatch.strategy
-            || scheduleMatch.strategy.count !== 1) return;
+            || !scheduleMatch.match.strategy
+            || scheduleMatch.match.strategy.count !== 1) return;
 
-        const winningTeam = scheduleMatch.teams.find((el) => el.result.outcome === 'win');
-        const losingTeam = scheduleMatch.teams.find((el) => el.result.outcome === 'loss');
+        const winningTeam = scheduleMatch.match.teams.find((el) => el.result && el.result.outcome === 'win');
+        const losingTeam = scheduleMatch.match.teams.find((el) => el.result && el.result.outcome === 'loss');
 
         if (!winningTeam || !losingTeam) return;
 
@@ -179,10 +177,22 @@ export const calculateUserTeamStats = ({ predictionMap, schedule, currentUser, t
         incorrectTeam: null,
         incorrectIter: 0
     });
+    const TBDTeam: Team = {
+        code: 'TBD',
+        image: 'https://lolstatic-a.akamaihd.net/esports-assets/production/team/tbd-awibzy0k.png',
+        name: 'TBD',
+        id: '100205572995797818',
+        slug: 'tbd',
+        alternativeImage: 'https://lolstatic-a.akamaihd.net/esports-assets/production/team/tbd-frpypqn6.png'
+      }
+
+    const mostGuessedTeam = teams.find((team) => team.name === userStats.guessedTeam) || TBDTeam;
+    const mostWonTeam = teams.find((team) => team.name === userStats.correctTeam) || TBDTeam;
+    const mostIncorrectTeam = teams.find((team) => team.name === userStats.incorrectTeam) || TBDTeam;
 
     return {
-        mostGuessedTeam: teams.find((team) => team.name === userStats.guessedTeam),
-        mostWonTeam: teams.find((team) => team.name === userStats.correctTeam),
-        mostIncorrectTeam: teams.find((team) => team.name === userStats.incorrectTeam)
+        mostGuessedTeam,
+        mostWonTeam,
+        mostIncorrectTeam
     };
 };

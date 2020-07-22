@@ -1,4 +1,4 @@
-import { ScheduleMatch } from '../types/pro-play-metadata';
+import { MatchMetadata } from '../types/pro-play-metadata';
 import moment, { Moment } from 'moment';
 import cloneDeep from 'lodash/cloneDeep';
 
@@ -23,10 +23,10 @@ export const convertNumberToCardinal = (num: number) => {
 export interface GroupedMatches {
     startTime: Moment;
     endTime: Moment;
-    matches: ScheduleMatch[];
+    matches: MatchMetadata[];
 };
-export const groupMatchesByTime = (matches: ScheduleMatch[]) => {
-    const groupedMatches = matches.reduce((acc: GroupedMatches[], match: ScheduleMatch) => {
+export const groupMatchesByTime = (matches: MatchMetadata[]) => {
+    const groupedMatches = matches.reduce((acc: GroupedMatches[], match: MatchMetadata) => {
         const matchStartTime = moment(match.startTime);
         const applicableGroup = acc.find((el) => {
             const btwn = matchStartTime.isBetween(el.startTime, el.endTime);

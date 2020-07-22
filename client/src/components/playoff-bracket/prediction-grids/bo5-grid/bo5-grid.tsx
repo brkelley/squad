@@ -1,7 +1,7 @@
 import React from 'react';
 import './bo5-grid.scss';
 import { Prediction } from '../../../../types/predictions';
-import { ScheduleMatch } from '../../../../types/pro-play-metadata';
+import { MatchMetadata } from '../../../../types/pro-play-metadata';
 import { User } from '../../../../types/user';
 import moment from 'moment';
 import get from 'lodash/get';
@@ -9,7 +9,7 @@ import isEqual from 'lodash/isEqual';
 import toPairs from 'lodash/toPairs';
 
 interface Bo5GridProps {
-    matches: ScheduleMatch[];
+    matches: MatchMetadata[];
     usersMetadata: User[];
     predictionMap: {
         [userId: string]: {
@@ -24,13 +24,13 @@ const Bo5Grid = ({ matches, usersMetadata, predictionMap }: Bo5GridProps) => {
                 <th className="bo5-table-cell header-cell" />
                 {
                     matches.map(match => (
-                        <th className="bo5-table-cell header-cell" key={match.id}>
+                        <th className="bo5-table-cell header-cell" key={match.match.id}>
                             <div className="header-team-name">
-                                {match.teams[0].code}
+                                {match.match.teams[0].code}
                             </div>
                             <div className="header-vs">vs</div>
                             <div className="header-team-name">
-                                {match.teams[1].code}
+                                {match.match.teams[1].code}
                             </div>
                         </th>
                     ))
@@ -62,13 +62,13 @@ const Bo5Grid = ({ matches, usersMetadata, predictionMap }: Bo5GridProps) => {
 
                                         const userPrediction = (!userPredictions)
                                             ? null
-                                            : Object.values(userPredictions).find(pred => pred.matchId === match.id);
+                                            : Object.values(userPredictions).find(pred => pred.matchId === match.match.id);
                                         
                                         const { score, template } = renderPredictionCell({
-                                            id: match.id,
+                                            id: match.match.id,
                                             prediction: userPrediction,
-                                            teams: match.teams,
-                                            seriesCount: match.strategy.count
+                                            teams: match.match.teams,
+                                            seriesCount: match.match.strategy.count
                                         });
                                         userScore += score;
 

@@ -3,13 +3,15 @@ import React from 'react';
 import Button from '@material-ui/core/Button';
 
 interface SquadButtonProps {
-    label: string
-    loading?: boolean
-    click: Function
+    label: string;
+    loading?: boolean;
+    disabled?: boolean;
+    click: Function;
 }
 export default function SquadButton ({
     label,
     loading,
+    disabled,
     click
 }: SquadButtonProps) {
     const renderButtonText = () => {
@@ -31,6 +33,7 @@ export default function SquadButton ({
         <Button
             variant="contained"
             className="squad-button"
+            disabled={disabled}
             onClick={() => click()}>
             {renderButtonText()}
         </Button>

@@ -1,78 +1,87 @@
 import './predictions.scss';
 import React, { useState, useEffect } from 'react';
 import connectPredictions from './predictions.connector';
-import { ScheduleByLeague, ScheduleSection, TournamentSchedule } from '../types/pro-play-metadata';
+import { MatchMetadata } from '../types/pro-play-metadata';
+import { User } from '../types/user';
+import { Prediction, PredictionFilter } from '../types/predictions';
 import LoadingIndicator from '../components/loading-indicator/loading-indicator';
 import PredictionFilters from './prediction-filters/prediction-filters';
 import PredictionMatches from './prediction-matches/prediction-matches';
 import PlayoffBracket from '../components/playoff-bracket/playoff-bracket';
 import SeriesMatch from './prediction-matches/series-match/series-match';
-import { User } from '../types/user';
-import { Prediction } from '../types/predictions';
+import { getMatchesByFilters } from '../utils/pro-play-metadata/pro-play-metadata.utils';
+import get from 'lodash/get';
 
 interface PredictionsProps {
-    filters: {
-        leagueId: string;
-        tournamentSlug: string;
-        stageSlug: string;
-        sectionName: string;
-    },
-    schedule: ScheduleByLeague[];
-    users: User[];
+    filters: PredictionFilter
+    matches: MatchMetadata[]
+    users: User[]
     predictionMap: {
         [userId: string]: {
             [matchId: string]: Prediction
         }
-    };
-    loadAllSchedule: Function;
-    loadAllPredictions: Function;
-    updatePredictionFilter: Function;
+    }
+    loadAllMatches: Function
+    loadAllPredictions: Function
+    updatePredictionFilter: Function
 }
 const Predictions = ({
     filters,
-    schedule,
+    matches,
     users,
     predictionMap,
-    loadAllSchedule,
+    loadAllMatches,
     loadAllPredictions,
     updatePredictionFilter
 }: PredictionsProps) => {
     const [predictionsLoading, setPredictionsLoading] = useState<boolean>(true);
     const [filtersSet, setFiltersSet] = useState<boolean>(false);
+
     useEffect(() => {
-        Promise.all([loadAllPredictions(), loadAllSchedule()])
-            .then(() => {
-                setPredictionsLoading(false);
-            });
+        loadAllPredictions();
+        loadAllMatches().then(() => {
+            setPredictionsLoading(false);
+        })
     }, []);
 
     useEffect(() => {
-        setFiltersSet(filters.leagueId !== '' && filters.tournamentSlug !== '' && filters.stageSlug !== '' && filters.sectionName !== '');
+        setFiltersSet(filters.leagueSlug !== '' && filters.tournamentId !== '' && filters.stageSlug !== '' && filters.sectionName !== '');
     }, [filters]);
 
     const renderContentFromFilters = () => {
-        if (filters.leagueId === '' || filters.tournamentSlug === '' || filters.stageSlug === '' || filters.sectionName === '') return;
-        const { leagueId, tournamentSlug, stageSlug, sectionName } = filters;
-        const selectedLeague = schedule.find((league) => league.leagueId === leagueId);
-        if (!selectedLeague) return;
-        const selectedTournament = selectedLeague.schedule.find((tournament) => tournament.tournamentSlug === tournamentSlug);
-        if (!selectedTournament) return;
-        const selectedStage = selectedTournament.stages.find((stage) => stage.slug === stageSlug);
-        if (!selectedStage) return;
+        if (filters.leagueSlug === '' || filters.tournamentId === '' || filters.stageSlug === '' || filters.sectionName === '') return;
+        const { leagueSlug, tournamentId, stageSlug, sectionName } = filters;
 
-        if (selectedStage.type === 'bracket') {
-            const dropdownContent = (activeSection: ScheduleSection) => {
-                if (!activeSection) return;
+        const stageMatches = getMatchesByFilters(matches, {
+            league: {
+                slug: leagueSlug
+            },
+            tournamentMetadata: {
+                tournament: {
+                    id: tournamentId
+                },
+                stage: {
+                    slug: stageSlug
+                }
+            }
+        });
+        const stageType = get(stageMatches[0], 'tournamentMetadata.stage.type');
+
+        if (!stageType) return;
+
+        if (stageType === 'bracket') {
+            const dropdownContent = (activeSectionMatches: MatchMetadata[]) => {
+                if (!activeSectionMatches || activeSectionMatches.length === 0) return;
 
                 return (
                     <div className="section-prediction-container">
                         {
-                            ...activeSection.matches.map((match) => {
-                                const [redSide, blueSide] = match.teams;
+                            ...activeSectionMatches.map((match) => {
+                                const [redSide, blueSide] = match.match.teams;
 
                                 return (
                                     <div
-                                        key={match.id}
+                                        key={match.match.id}
                                         className="series-match-container">
                                         <div className="series-match-label">
                                             {redSide.name} vs {blueSide.name}
@@ -93,20 +102,34 @@ const Predictions = ({
 
             return (
                 <PlayoffBracket
-                    playoffStage={selectedStage}
+                    playoffMatches={stageMatches}
                     users={users}
                     predictionMap={predictionMap}
                     showActiveSection={true}
                     dropdownContent={dropdownContent} />
             );
-        } else if (selectedStage.type === 'groups' || selectedStage.type === 'split') {
-            const selectedSection = selectedStage.sections.find((section) => section.name === sectionName);
-            if (!selectedSection) return;
+        } else if (stageType === 'groups' || stageType === 'split') {
+            const sectionMatches = getMatchesByFilters(matches, {
+                league: {
+                    slug: leagueSlug
+                },
+                tournamentMetadata: {
+                    tournament: {
+                        id: tournamentId
+                    },
+                    stage: {
+                        slug: stageSlug
+                    },
+                    section: {
+                        name: sectionName
+                    }
+                }
+            });
+            if (!sectionMatches || sectionMatches.length === 0) return;
 
             return (
                 <PredictionMatches
-                    section={selectedSection}
-                    type={selectedStage.type} />
+                    sectionMatches={sectionMatches} />
             );
         } else return;
     };
@@ -116,8 +139,9 @@ const Predictions = ({
             <div className="predictions-wrapper">
                 <PredictionFilters
                     filters={filters}
-                    schedule={schedule}
+                    matches={matches}
                     updatePredictionFilter={updatePredictionFilter} />
+                <div className="filter-space" />
                 {
                     filtersSet && renderContentFromFilters()
                 }

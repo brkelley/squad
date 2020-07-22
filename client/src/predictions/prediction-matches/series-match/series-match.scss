@@ -19,7 +19,7 @@
 
             &.hoverable:hover {
                 cursor: pointer;
-                background-color: lighten($secondary, 5%);
+                background-color: lighten(black, 5%);
                 transition: all 0.2s;
             }
 

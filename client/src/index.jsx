@@ -12,22 +12,33 @@ import './style/app.scss';
 import { ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import theme from './style/theme';
+import get from 'lodash/get';
 
-const token = Cookies.get('userToken');
-if (token) {
-    axios.defaults.headers.common['squadToken'] = token;
-}
+axios.interceptors.request.use((config) => {
+    config.url = `${SERVER_URL}/api/v2${config.url}`;
 
-axios.interceptors.request.use(config => {
-    config.url = `${SERVER_URL}/api/v1${config.url}`;
     return config;
 });
+
+const token = Cookies.get('squadtoken');
+if (token) {
+    axios.defaults.headers.common['squadtoken'] = token;
+}
+
+axios.interceptors.response.use(
+    (response) => response,
+    (reject) => {
+        if (reject.response.headers === 404 && get(reject.response.body, 'Invalid Discord access code')) {
+            window.location.href = '/login'
+        }
+    }
+);
 
 const composeParams = [
     applyMiddleware(thunk)
 ];
 
-firebase.initializeApp(JSON.parse(atob(process.env.FIREBASE_CONFIG)));
+firebase.initializeApp(JSON.parse(atob(process.env.FIREBASE_CONFIG_CLIENT)));
 
 if (ENVIRONMENT === 'dev' && window.__REDUX_DEVTOOLS_EXTENSION__) {
     composeParams.push(window.__REDUX_DEVTOOLS_EXTENSION__());
@@ -51,4 +62,3 @@ ReactDOM.render(
     </Provider>,
     document.getElementById('app')
 );
-// module.hot.accept();

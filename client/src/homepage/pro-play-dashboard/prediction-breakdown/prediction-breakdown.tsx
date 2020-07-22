@@ -2,10 +2,15 @@ import './prediction-breakdown.scss';
 import React, { useState, useEffect } from 'react';
 import PlayoffBracket from '../../../components/playoff-bracket/playoff-bracket';
 import GroupStageGrid from './group-stage-grid/group-stage-grid';
-import { ScheduleByLeague, ScheduleStage } from '../../../types/pro-play-metadata';
+import { findNearestMatch, getUniqueTournaments } from '../../../utils/pro-play-metadata/pro-play-metadata.utils';
+import LEAGUES from '../../../constants/leagues.json';
+import { TOURNAMENT_SLUG_MAP } from '../../../constants/pro-play-metadata.constants';
+import { MatchMetadata, Tournament, TournamentMetadata, MatchLeague } from '../../../types/pro-play-metadata';
 import { Prediction } from '../../../types/predictions';
 import { User } from '../../../types/user';
-import flatMap from 'lodash/flatMap';
+import every from 'lodash/every';
+import groupBy from 'lodash/groupBy';
+import some from 'lodash/some';
 import startCase from 'lodash/startCase';
 
 interface PredictionBreakdownProps {
@@ -13,49 +18,86 @@ interface PredictionBreakdownProps {
         [userId: string]: {
             [matchId: string]: Prediction
         }
-    };
-    schedule: ScheduleByLeague[];
-    users: User[];
+    }
+    matches: MatchMetadata[]
+    users: User[]
 };
 export default ({
     predictionMap,
-    schedule,
+    matches,
     users
 }: PredictionBreakdownProps) => {
+    const [activeTournamentMetadata, setActiveTournamentMetadata] = useState<TournamentMetadata>();
+    const [activeLeague, setActiveLeague] = useState<MatchLeague>();
     const [activeTournament, setActiveTournament] = useState<string>();
 
-    useEffect(() => {
-        const nowTimestamp = new Date().getTime();
-        let activeTournament;
-        for (let leagueTournaments of schedule) {
-            for (let schedule of leagueTournaments.schedule) {
-                const tournamentStart = new Date(schedule.startTime).getTime();
-                const tournamentEnd = new Date(schedule.endTime).getTime();
+    const [activeTournamentMap, setActiveTournamentMap] = useState<{ [name: string]: Tournament }>({});
+    const [matchesByTournament, setMatchesByTournament] = useState<{ [tournamentId: string]: MatchMetadata[] }>();
 
-                if (tournamentStart < nowTimestamp && tournamentEnd > nowTimestamp) {
-                    activeTournament = schedule;
-                    break;
+    useEffect(() => {
+        getMatchesByTournament();
+        const closestMatch = findNearestMatch(matches);
+        setActiveTournamentMetadata(closestMatch.tournamentMetadata);
+        setActiveLeague(closestMatch.league);
+        setActiveTournament(closestMatch.tournamentMetadata.tournament.id);
+    }, [matches]);
+
+    useEffect(() => {
+        getCurrentActiveTournament();
+    }, [matchesByTournament]);
+
+    const getCurrentActiveTournament = () => {
+        if (matchesByTournament) {
+            const activeTournamentMap: { [name: string]: Tournament } = {};
+            const currentTime = new Date().getTime();
+            for (let [ _, matches ] of Object.entries(matchesByTournament)) {
+                // find the match's region
+                if (matches.length > 0) {
+                    const leagueName = matches[0].league.name;
+                    const tournament = matches[0].tournamentMetadata.tournament;
+                    const isTournamentFuture = new Date(tournament.startDate).getTime() > currentTime;
+                    if (isTournamentFuture) {
+                        continue;
+                    }
+                    if (!activeTournamentMap[leagueName]) {
+                        activeTournamentMap[leagueName] = tournament;
+                    } else {
+                        // if there's an active tournament, we don't care about tournaments in the past
+                        const isActive = new Date(tournament.startDate).getTime() < currentTime && new Date(tournament.endDate).getTime() >= currentTime;
+                        // choose the tournament with the smallest duration
+                        const tempActiveTournament = activeTournamentMap[leagueName];
+                        const activeTournamentDuration = new Date(tempActiveTournament.endDate).getTime() - new Date(tempActiveTournament.startDate).getTime();
+                        const newTournamentDuration = new Date(tournament.endDate).getTime() - new Date(tournament.startDate).getTime();
+
+                        if (isActive && newTournamentDuration < activeTournamentDuration) {
+                            activeTournamentMap[leagueName] = tournament;
+                        }
+                    }
                 }
             }
-
-            if (activeTournament) break;
         }
-
-        if (activeTournament) {
-            setActiveTournament(activeTournament.tournamentName);
+        setActiveTournamentMap(activeTournamentMap);
+        if (Object.values(activeTournamentMap).length !== 0) {
+            const tournamentId = Object.values(activeTournamentMap)[0].id;
+            setActiveTournament(tournamentId);
         }
-    }, [schedule]);
+    }
+    
+    const getMatchesByTournament = () => {
+        setMatchesByTournament(groupBy(matches, (match) => match.tournamentMetadata.tournament.id));
+    };
 
-    const renderPlayoffs = (playoffSchedule) => {
+    const renderPlayoffs = (playoffMatches) => {
+        const { name, slug } = playoffMatches[0].tournamentMetadata.stage;
         return (
             <div
                 className="playoff-bracket-wrapper"
-                key={playoffSchedule.slug}>
+                key={slug}>
                 <div className="playoff-bracket-title">
-                    {playoffSchedule.name}
+                    {name}
                 </div>
                 <PlayoffBracket
-                    playoffStage={playoffSchedule}
+                    playoffMatches={playoffMatches}
                     users={users}
                     predictionMap={predictionMap}
                     showActiveSection={true} />
@@ -63,45 +105,44 @@ export default ({
         );
     };
 
-    const renderGroupStage = (stage: ScheduleStage, isSplit: Boolean = false) => {
-        const nowTimestamp = new Date().getTime();
-        let filteredSections;
-        if (isSplit) {
-            let nextSection = stage.sections.findIndex((section) => {
-                const sectionStartTimestamp = new Date(section.startTime).getTime();
-                const sectionEndTimestamp = new Date(section.endTime).getTime();
+    const renderGroupStage = (matchesInStage: MatchMetadata[]) => {
+        const stage = matchesInStage[0].tournamentMetadata.stage;
+        // Sort matches by start time
+        const matchesBySection = groupBy(matchesInStage, (match) => {
+            if (match.blockName.includes('Week')) {
+                return match.blockName;
+            }
 
-                return (nowTimestamp > sectionStartTimestamp && nowTimestamp < sectionEndTimestamp)
-                    || nowTimestamp < sectionStartTimestamp;
+            return match.tournamentMetadata.section.name;
+        });
+
+        const sortedMatchesBySection: [string, MatchMetadata[]][] = Object.entries(matchesBySection)
+            .map(([sectionName, matches]) => {
+                return [
+                    sectionName,
+                    matches.sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime())
+                ]
             });
 
-            if (nextSection === -1) {
-                nextSection = stage.sections.length - 1;
-            }
-            filteredSections = stage.sections.slice(0, nextSection + 1).reverse();
-        } else {
-            filteredSections = stage.sections;
-        }
-        
         return (
             <div
                 className="prediction-group-stage"
                 key={stage.slug}>
                 {
-                    ...filteredSections.map((section) => (
+                    ...sortedMatchesBySection.map(([sectionName, sectionMatch]) => (
                         <div
                             className="section-container"
-                            key={section.name}>
+                            key={sectionName}>
                             <div
                                 className="group-stage-section-label"
-                                key={`${section.id}-label`}>
-                                {stage.name} - {startCase(section.name)}
+                                key={`${sectionName}-label`}>
+                                {stage.name} - {startCase(sectionName)}
                             </div>
                             <div
                                 className="prediction-group"
-                                key={`${section.id}-content`}>
+                                key={`${sectionName}-content`}>
                                 <GroupStageGrid
-                                    matches={section.matches}
+                                    matches={sectionMatch}
                                     usersMetadata={users}
                                     predictionMap={predictionMap} />
                             </div>
@@ -112,83 +153,144 @@ export default ({
         );
     };
 
-    const renderTournamentPills = () => {
-        // first, find all the tournaments
-        const tournamentNames: string[] = schedule.reduce((acc: string[], leagueTournaments): string[] => {
-            acc.push(...leagueTournaments.schedule.map((schedule) => schedule.tournamentName));
+    const renderLeagueHeader = () => {
+        if (!activeLeague) return;
 
-            return acc;
-        }, []);
+        if (['lcs', 'lec'].includes(activeLeague.slug)) {
+            const lcsMetadata = LEAGUES.find((league) => league.slug === 'lcs');
+            const lecMetadata = LEAGUES.find((league) => league.slug === 'lec');
+
+            if (!lcsMetadata || !lecMetadata) return;
+
+            return (
+                <div className="league-header">
+                    <img
+                        src={lecMetadata.image}
+                        className="league-icon" />
+                    <img
+                        src={lcsMetadata.image}
+                        className="league-icon" />
+                    <span className="league-name">
+                        {lecMetadata.name} / {lcsMetadata.name}
+                    </span>
+                </div>
+            )
+        }
+
+        const leagueMetadata = LEAGUES.find((league) => league.slug === activeLeague.slug);
+
+        if (!leagueMetadata) return;
 
         return (
-            <div className="tournament-pills">
+            <div className="league-header">
+                <img
+                    src={leagueMetadata.image}
+                    className="league-icon" />
+                <span className="league-name">
+                    {leagueMetadata.name}
+                </span>
+            </div>
+        )
+    };
+
+    const renderTournamentOptions = () => {
+        if (!matches || matches.length === 0 || !activeLeague || !activeTournamentMetadata) return;
+
+        let uniqueTournaments: Tournament[] = [];
+        if (['lec', 'lcs'].includes(activeLeague.slug)) {
+            uniqueTournaments = [
+                ...getUniqueTournaments({ matches, leagueSlug: 'lec' }),
+                ...getUniqueTournaments({ matches, leagueSlug: 'lcs' })
+            ]
+        } else {
+            uniqueTournaments = getUniqueTournaments({ matches, leagueSlug: activeLeague.slug });
+        }
+
+        if (uniqueTournaments.length === 1) {
+            return <></>;
+        }
+
+        return (
+            <div className="tournament-options">
                 {
-                    tournamentNames.map((name, index) => (
-                        <div
-                            key={index}
-                            className={`tournament-pill ${name === activeTournament ? 'active-tournament' : ''}`}
-                            onClick={() => setActiveTournament(name)}>
-                            {name}
-                        </div>
-                    ))
+                    ...uniqueTournaments.map((tournament) => {
+                        const isActiveTournament = activeTournament === tournament.id;
+
+                        return (
+                            <div
+                                key={tournament.id}
+                                className={`tournament-option ${isActiveTournament ? 'active-tournament' : ''}`}
+                                onClick={() => setActiveTournament(tournament.id)}>
+                                {TOURNAMENT_SLUG_MAP[tournament.slug]}
+                            </div>
+                        )
+                    })
                 }
             </div>
-        );
+        )
     };
 
     const renderPredictions = () => {
-        let activeStages = schedule.reduce((tournAcc: ScheduleStage[], tournamentsByLeague) => {
-            const applicableTournaments = tournamentsByLeague.schedule
-                .filter((el) => el.tournamentName === activeTournament)
-                .map((el) => el.stages);
-
-            tournAcc.push(...flatMap(applicableTournaments))
-
-            return tournAcc;
-        }, []);
-
-        const nowTimestamp = new Date().getTime();
-        let activeStageIndex = activeStages.findIndex((stage) => {
-            const stageStartTimestamp = new Date(stage.startTime).getTime();
-            const stageEndTimestamp = new Date(stage.endTime).getTime();
-
-            return (nowTimestamp > stageStartTimestamp && nowTimestamp < stageEndTimestamp)
-                || nowTimestamp < stageStartTimestamp;
-        });
-        if (activeStageIndex === -1) {
-            activeStageIndex = activeStages.length - 1;
+        if (!matchesByTournament || !activeTournament) {
+            return [];
         }
+        const currentDate = new Date().getTime();
+        // first, group the matches of the tournament into the stages
+        const matchesByStage = groupBy(matchesByTournament[activeTournament], (match) =>
+            match.blockName.includes('Week') ? match.blockName : match.tournamentMetadata.stage.slug
+        );
 
-        activeStages = activeStages
-            .slice(0, activeStageIndex + 1)
-            .reverse();
+        const pastAndPresentStageIndex = Object.entries(matchesByStage)
+            .sort(([aName, aMatches], [bName, bMatches]) => {
+                const aStartTime = new Date(aMatches[0].startTime).getTime();
+                const bStartTime = new Date(bMatches[0].startTime).getTime();
 
-        return activeStages
-            .map((stage) => {
-                if (stage.type === 'split') {
+                return bStartTime - aStartTime;
+            })
+            .findIndex(([stageName, matchesByStage]) => {
+                // if all matches haven't yet occurred, return
+                if (every(matchesByStage, (match) => new Date(match.startTime).getTime() > currentDate)) {
+                    return true;
+                }
+
+                // return if some matches have occurred
+                return some(matchesByStage, (match) => new Date(match.startTime).getTime() < currentDate);
+            });
+        const pastAndPresentStages = Object.entries(matchesByStage).slice(0, pastAndPresentStageIndex + 1);
+
+        // sort the active stages - this is assuming no 2 stages in a tournament
+        // overlap each other
+        return pastAndPresentStages
+            .map(([stageName, matchesByStage]) => {
+                const stage = matchesByStage[0].tournamentMetadata.stage;
+                const league = matchesByStage[0].league.slug;
+                const key = `${league}:${stageName}`;
+                if (stage.type === 'regular_season') {
                     return (
                         <div
-                            key={stage.slug}
+                            key={key}
                             className="prediction-breakdown">
-                            {renderGroupStage(stage, true)}
+                            {renderGroupStage(matchesByStage)}
                         </div>
                     );
                 } if (stage.type === 'groups') {
                     return (
                         <div
-                            key={stage.slug}
+                            key={key}
                             className="prediction-breakdown">
-                            {renderGroupStage(stage)}
+                            {renderGroupStage(matchesByStage)}
                         </div>
                     );
                 } else if (stage.type === 'bracket') {
                     return (
                         <div
-                            key={stage.slug}
+                            key={key}
                             className="prediction-breakdown">
-                            {renderPlayoffs(stage)}
+                            {renderPlayoffs(matchesByStage)}
                         </div>
                     );
+                } else {
+                    return (<></>)
                 }
             });
     };
@@ -196,7 +298,8 @@ export default ({
     const renderSchedule = () => {
         return (
             <>
-                {renderTournamentPills()}
+                {renderLeagueHeader()}
+                {renderTournamentOptions()}
                 {...renderPredictions()}
             </>
         );

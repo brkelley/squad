@@ -1,8 +1,44 @@
 @import '../../../style/variables.scss';
 
-.splitter {
-    border: solid 1px grey;
-    margin: 24px 10%;
+.league-header {
+    margin-top: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .league-icon {
+        height: 100px;
+        width: auto;
+    }
+
+    .league-name {
+        font-size: 28px;
+        padding-left: 48px;
+    }
+}
+
+.tournament-options {
+    margin-top: 24px;
+    color: $font-color;
+    display: flex;
+    justify-content: center;
+    font-size: 16px;
+
+    .tournament-option {
+        &:not(:first-child) {
+            margin-left: 24px;
+        }
+
+        &:hover {
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        &.active-tournament {
+            text-decoration: underline;
+            color: $squad-primary;
+        }
+    }
 }
 
 .tournament-pills {
@@ -14,6 +50,12 @@
     .tournament-pill {
         animation: text-decoration 0.2s;
         padding: 4px 12px;
+        font-size: 24px;
+        text-align: center;
+
+        &__league {
+            font-size: 16px;
+        }
 
         &:hover {
             cursor: pointer;
@@ -22,9 +64,8 @@
         }
 
         &.active-tournament {
-            background-color: white;
-            color: black;
-            border-radius: 12px;
+            color: $squad-primary;
+            border-bottom: solid 2px white;
         }
     }
 }
@@ -42,8 +83,6 @@
     }
 
     .playoff-bracket-wrapper {
-        padding-top: 48px;
-
         .playoff-bracket-title {
             width: 100%;
             text-align: center;

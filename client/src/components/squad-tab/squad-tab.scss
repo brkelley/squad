@@ -11,13 +11,13 @@
 
         .squad-tab {
             padding: 12px;
-            margin: 0 48px 32px 0;
+            margin: 0 0 32px 0;
             cursor: pointer;
             color: darken($font-color, 25%);
             transition: all 0.2s;
 
             &.active-tab {
-                border-bottom: solid 2px $tertiary;
+                border-bottom: solid 2px $squad-primary;
                 color: $font-color;
             }
 

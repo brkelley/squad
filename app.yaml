@@ -1,4 +1,4 @@
-runtime: nodejs10
+runtime: go112
 handlers:
 - url: /api/.*
   script: auto

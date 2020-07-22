@@ -1,30 +1,24 @@
-import { TeamMetadata, AbbreviatedTeamMetadata } from './pro-play-metadata';
+import { Team } from './pro-play-metadata';
 
 export interface User {
     id: string;
+    discordId: string;
+    discordName: string;
     email: string;
     firstName: string;
     lastName: string;
-    hash: string;
-    salt: string;
-    role: number;
     summonerId: string;
     summonerName: string;
     preferences: {
-        favoriteTeam: TeamMetadata
-    },
-    splitStats: {
-        [splitName: string]: SplitStat;
-    },
-    flags: {
-        [flagName: string]: Boolean;
-    }
+        favoriteTeam: Team | null
+    };
+    userFlags: string[]
 }
 
 export interface SplitStat {
-    blindspot: AbbreviatedTeamMetadata;
-    mostPredicted: AbbreviatedTeamMetadata;
-    mostWon: AbbreviatedTeamMetadata;
+    blindspot: Team;
+    mostPredicted: Team;
+    mostWon: Team;
     placement: number;
     score: number;
     mostGuessedSeriesScore: string;

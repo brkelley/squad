@@ -1,99 +1,77 @@
-export interface TeamMetadata {
-    id: string;
-    slug: string;
-    name: string;
-    code: string;
-    image: string;
-    alternativeImage: string;
-    backgroundImage: string;
-    homeLeague: {
-        name: string;
-        region: string;
-    };
-    players: Player[];
+export interface MatchMetadata {
+    startTime: string
+    state: string
+    type: string
+    blockName: string
+    league: MatchLeague
+    match: Match
+    tournamentMetadata: TournamentMetadata
 }
 
-export interface AbbreviatedTeamMetadata {
-    code: string;
-    image: string;
-    name: string;
+interface Match {
+    id: string
+    flags: string[]
+    strategy: MatchStrategy
+    teams: Team[]
 }
 
-export interface Player {
-    id: string;
-    summonerName: string;
-    firstName: string;
-    lastName: string;
-    image: string;
-    role: string;
+interface MatchStrategy {
+    type: string
+    count: number
 }
 
-export interface ScheduleByLeague {
-    leagueId: string;
-    leagueName: string;
-    schedule: TournamentSchedule[]
+interface MatchLeague {
+    name: string
+    slug: string
 }
 
-export interface TournamentSchedule {
-    stages: ScheduleStage[];
-    tournamentSlug: string;
-    tournamentName: string;
-    startTime: string;
-    endTime: string;
-}
-
-export interface ScheduleStage {
-    name: string;
-    type: string;
-    slug: string;
-    sections: ScheduleSection[];
-    startTime: string;
-    endTime: string
-}
-
-export interface ScheduleSection {
-    name: string;
-    id: string;
-    matches: ScheduleMatch[];
-    rankings: ScheduleRanking[];
-    startTime: string;
-    endTime: string;
-}
-
-export interface ScheduleMatch {
-    startTime: string;
-    blockName: string;
-    league: {
+interface Team {
+    code: string
+    image: string
+    name: string
+    record?: TeamRecord
+    // This might only be relevant for teams inside match info
+    result?: TeamMatchResult
+    // Main team endpoint
+    id?: string
+    slug?: string
+    alternativeImage?: string
+    homeLeague?: {
         name: string
+        region: string
     },
-    state: string,
-    id: string,
-    type: string,
-    teams: ScheduleTeam[],
-    strategy: {
-        type: string,
-        count: number
-    },
-    previousMatchIds: string[]
+    players?: []
 }
 
-export interface ScheduleRanking {
-    ordinal: number;
-    teams: ScheduleTeam[];
+interface TeamRecord {
+    wins: number
+    losses: number
 }
 
-export interface ScheduleTeam {
-    id: string;
-    slug: string;
-    name: string,
-    code: string,
-    image: string,
-    result: {
-        outcome: string,
-        gameWins: number
-    },
-    record: {
-        wins: number,
-        losses: number
-    }
+interface TeamMatchResult {
+    outcome: string
+    gameWins: number
+}
+
+interface TournamentMetadata {
+    tournament: Tournament
+    stage: Stage
+    section: Section
+}
+
+interface Tournament {
+    id: string
+    slug: string
+    startDate: string
+    endDate: string
+}
+
+interface Stage {
+    name: string
+    type: string
+    slug: string
+}
+
+interface Section {
+    name: string
 }

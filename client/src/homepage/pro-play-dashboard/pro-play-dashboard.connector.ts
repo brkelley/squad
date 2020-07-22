@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { loadAllSchedule, loadAllTeams } from '../../store/pro-play-metadata/pro-play-metadata.actions';
+import { loadAllMatches, loadAllTeams } from '../../store/pro-play-metadata/pro-play-metadata.actions';
 import { loadAllPredictions } from '../../store/predictions/predictions.actions';
 import { loadAllUsers } from '../../store/user/user.actions';
 
@@ -9,14 +9,14 @@ const mapStateToComponents = ({
     userReducer
 }) => ({
     predictionMap: predictionReducer.predictionMap,
-    schedule: proPlayMetadataReducer.schedule,
+    matches: proPlayMetadataReducer.matches,
     currentUser: userReducer.user,
     usersMetadata: userReducer.usersMetadata,
     teams: proPlayMetadataReducer.teams
 });
 
 const mapDispatchToComponents = (dispatch) => ({
-    loadAllSchedule: () => dispatch(loadAllSchedule()),
+    loadAllMatches: () => dispatch(loadAllMatches()),
     loadAllPredictions: () => dispatch(loadAllPredictions()),
     loadAllUsers: () => dispatch(loadAllUsers()),
     loadAllTeams: () => dispatch(loadAllTeams())

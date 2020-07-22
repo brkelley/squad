@@ -1,38 +1,41 @@
 import './prediction-filters.scss';
 import React, { useState, useEffect } from 'react';
 import connect from './prediction-filters.connector';
+import { MatchMetadata } from '../../types/pro-play-metadata';
+import { Prediction, PredictionFilter } from '../../types/predictions';
 import SquadSelect, { SquadSelectOptions } from '../../components/squad-select/squad-select';
 import SquadButton from '../../components/squad-button/squad-button';
-import { ScheduleByLeague } from '../../types/pro-play-metadata';
-import { Prediction } from '../../types/predictions';
+import {
+    getUniqueLeagues,
+    getUniqueTournaments,
+    getUniqueStages,
+    getUniqueSections,
+    getMatchesByFilters,
+    findNearestMatch
+} from '../../utils/pro-play-metadata/pro-play-metadata.utils';
+import get from 'lodash/get';
 import isEmpty from 'lodash/isEmpty';
+import sortBy from 'lodash/sortBy';
 import startCase from 'lodash/startCase';
 
 interface PredictionFiltersProps {
-    filters: {
-        leagueId: string
-        tournamentSlug: string
-        stageSlug: string
-        sectionName: string
-    }
-    schedule: ScheduleByLeague[]
+    filters: PredictionFilter
+    matches: MatchMetadata[]
     unsavedPredictions: {
         [id: string]: Prediction
     }
-    getStageType: Function
     updatePredictionFilter: Function
     savePredictions: Function
 }
 
 const PredictionFilters = ({
     filters,
-    schedule,
+    matches,
     unsavedPredictions,
-    getStageType,
     updatePredictionFilter,
     savePredictions
 }: PredictionFiltersProps) => {
-    const { leagueId, tournamentSlug, stageSlug, sectionName } = filters;
+    const [activeMatchMetadata, setActiveMatchMetadata] = useState<MatchMetadata>();
     const [leagueFilterOptions, setLeagueFilterOptions] = useState<SquadSelectOptions[]>([]);
     const [tournamentFilterOptions, setTournamentFilterOptions] = useState<SquadSelectOptions[]>([]);
     const [stageFilterOptions, setStageFilterOptions] = useState<SquadSelectOptions[]>([]);
@@ -41,61 +44,80 @@ const PredictionFilters = ({
     const hasUnsavedPredictions = !isEmpty(unsavedPredictions);
 
     useEffect(() => {
-        if (schedule.length) {
+        const activeMatch = findNearestMatch(matches);
+        setActiveMatchMetadata(activeMatch);
+        if (matches.length) {
+            const uniqueLeagues = getUniqueLeagues(matches);
             setLeagueFilterOptions(
-                schedule.map((scheduleByLeague) => ({
-                    value: scheduleByLeague.leagueId,
-                    label: scheduleByLeague.leagueName
+                uniqueLeagues.map((leagueMetadata) => ({
+                    value: leagueMetadata.slug,
+                    label: leagueMetadata.name
                 }))
             );
-            updatePredictionFilter({ key: 'leagueId', value: schedule[0].leagueId });
+            updatePredictionFilter({
+                key: 'leagueSlug',
+                value: get(activeMatch, 'league.slug', uniqueLeagues[0].slug)
+            });
         }
-    }, [schedule]);
+    }, [matches]);
 
     useEffect(() => {
-        if (filters.leagueId) {
-            const leagueTournaments = schedule.find((el) => el.leagueId === leagueId);
-            if (!leagueTournaments || !leagueTournaments.schedule) return;
+        if (filters.leagueSlug) {
+            const leagueTournaments = getUniqueTournaments({
+                matches,
+                leagueSlug: filters.leagueSlug
+            });
+            if (!leagueTournaments || leagueTournaments.length === 0) return;
     
             setTournamentFilterOptions(
-                leagueTournaments.schedule.map((el) => ({ value: el.tournamentSlug, label: el.tournamentName }))
+                leagueTournaments.map((el) => ({ value: el.id, label: el.slug }))
             );
-            updatePredictionFilter({ key: 'tournamentSlug', value: leagueTournaments.schedule[0].tournamentSlug });
+            updatePredictionFilter({
+                key: 'tournamentId',
+                value: get(activeMatchMetadata, 'tournamentMetadata.tournament.id', leagueTournaments[0].id)
+            });
         }
-    }, [filters.leagueId]);
+    }, [filters.leagueSlug]);
 
     useEffect(() => {
-        if (filters.leagueId && filters.tournamentSlug) {
-            const leagueTournaments = schedule.find((el) => el.leagueId === leagueId);
-            if (!leagueTournaments || !leagueTournaments.schedule) return;
-
-            const tournament = leagueTournaments.schedule.find((el) => el.tournamentSlug === tournamentSlug);
-            if (!tournament || !tournament.stages) return;
+        if (filters.leagueSlug && filters.tournamentId) {
+            const stages = getUniqueStages({
+                matches,
+                leagueSlug: filters.leagueSlug,
+                tournamentId: filters.tournamentId
+            });
+            if (!stages || stages.length === 0) return;
 
             setStageFilterOptions(
-                tournament.stages.map((el) => ({ value: el.slug, label: el.name }))
+                stages.map((el) => ({ value: el.slug, label: el.name }))
             );
-            updatePredictionFilter({ key: 'stageSlug', value: tournament.stages[0].slug });
+            updatePredictionFilter({
+                key: 'stageSlug',
+                value: get(activeMatchMetadata, 'tournamentMetadata.stage.slug', stages[0].slug)
+            });
         }
-    }, [filters.tournamentSlug]);
+    }, [filters.tournamentId]);
 
     useEffect(() => {
-        if (filters.leagueId && filters.tournamentSlug && filters.stageSlug) {
-            if (sectionName === 'NO_SECTIONS') return;
-
-            const leagueTournaments = schedule.find((el) => el.leagueId === leagueId);
-            if (!leagueTournaments || !leagueTournaments.schedule) return;
-
-            const tournament = leagueTournaments.schedule.find((el) => el.tournamentSlug === tournamentSlug);
-            if (!tournament || !tournament.stages) return;
-
-            const chosenStage = tournament.stages.find((stage) => stage.slug === stageSlug);
-            if (!chosenStage || !chosenStage.sections) return;
+        if (filters.leagueSlug && filters.tournamentId && filters.stageSlug && filters.sectionName !== 'NO_SECTIONS') {
+            const sections = getUniqueSections({
+                matches,
+                leagueSlug: filters.leagueSlug,
+                tournamentId: filters.tournamentId,
+                stageSlug: filters.stageSlug
+            });
+            if (!sections || sections.length === 0) return;
 
             setSectionOptions(
-                chosenStage.sections.map((section) => ({ value: section.name, label: startCase(section.name) }))
+                sortBy(
+                    sections.map((section) => ({ value: section.name, label: startCase(section.name) })),
+                    'value'
+                )
             );
-            updatePredictionFilter({ key: 'sectionName', value: chosenStage.sections[0].name });
+            updatePredictionFilter({
+                key: 'sectionName',
+                value: get(activeMatchMetadata, 'tournamentMetadata.section.name', sections[0].name)
+            });
         }
     }, [filters.stageSlug]);
 
@@ -103,16 +125,17 @@ const PredictionFilters = ({
         updatePredictionFilter({ key, value });
 
         switch (key) {
-            case 'leagueId':
-                updatePredictionFilter({ key: 'tournamentSlug', value: '' });
-            case 'tournamentSlug':
+            case 'leagueSlug':
+                updatePredictionFilter({ key: 'tournamentId', value: '' });
+            case 'tournamentId':
                 updatePredictionFilter({ key: 'stageSlug', value: '' });
             case 'stageSlug':
-                const stageType = getStageType({
-                    leagueId: key === 'leagueId' ? value : leagueId,
-                    tournamentSlug: key === 'tournamentSlug' ? value : tournamentSlug,
-                    stageSlug: key === 'stageSlug' ? value : stageSlug
+                const applicableMatch = getMatchesByFilters(matches, {
+                    'league.slug': key === 'leagueSlug' ? value : filters.leagueSlug,
+                    'tournamentMetadata.tournament.id': key === 'tournamentId' ? value : filters.tournamentId,
+                    'tournamentMetadata.stage.slug': key === 'stageSlug' ? value : filters.stageSlug
                 });
+                const stageType = get(applicableMatch, 'type');
                 const selectionType = stageType === 'bracket' ? 'NO_SECTIONS' : '';
                 updatePredictionFilter({ key: 'sectionName', value: selectionType });
         }
@@ -123,21 +146,21 @@ const PredictionFilters = ({
             <div className="prediction-dropdowns">
                 <SquadSelect
                     options={leagueFilterOptions}
-                    value={leagueId}
-                    onChange={(value) => onFilterChange('leagueId', value)} />
+                    value={filters.leagueSlug}
+                    onChange={(value) => onFilterChange('leagueSlug', value)} />
                 <SquadSelect
                     options={tournamentFilterOptions}
-                    value={tournamentSlug}
-                    onChange={(value) => onFilterChange('tournamentSlug', value)} />
+                    value={filters.tournamentId}
+                    onChange={(value) => onFilterChange('tournamentId', value)} />
                 <SquadSelect
                     options={stageFilterOptions}
-                    value={stageSlug}
+                    value={filters.stageSlug}
                     onChange={(value) => onFilterChange('stageSlug', value)} />
                 {
-                    sectionName !== 'NO_SECTIONS' &&
+                    filters.sectionName !== 'NO_SECTIONS' &&
                         <SquadSelect
                             options={sectionOptions}
-                            value={sectionName}
+                            value={filters.sectionName}
                             onChange={(value) => onFilterChange('sectionName', value)} />
                 }
             </div>
