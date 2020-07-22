@@ -7,12 +7,12 @@ import AchievementWidget from './achievement-widget/achievement-widget';
 import ActiveSplitWidget from './active-split-widget/active-split-widget';
 import PredictionWidget from './prediction-widget/prediction-widget';
 import FavoriteTeamNews from './favorite-team-news/favorite-team-news';
+import { sortMatchesByDate, MatchesByDate } from './utils/homepage-util';
 import LEAGUES_METADATA from '../constants/leagues.json';
 
+import moment from 'moment';
 import get from 'lodash/get';
 import isEmpty from 'lodash/isEmpty';
-import values from 'lodash/values';
-import uniq from 'lodash/uniq';
 
 const Homepage = ({
     user,
@@ -24,7 +24,8 @@ const Homepage = ({
     loadAllPredictions,
     loadAllSchedule
 }) => {
-    const [upcomingWeek, setUpcomingWeek] = useState<string[]>([]);
+    const [matchesByDate, setMatchesByDate] = useState<MatchesByDate[]>([]);
+    const [nextDateIndex, setNextDateIndex] = useState<number>(-1);
 
     useEffect(() => {
         loadAllUsers();
@@ -34,23 +35,17 @@ const Homepage = ({
 
     useEffect(() => {
         if (!isEmpty(schedule)) {
-            setUpcomingWeek(findNextWeek({ schedule }).reverse());
+            findBlocksToDisplay({ schedule });
         }
     }, [schedule]);
 
-    const findNextWeek = ({ schedule }): string[] => {
-        const now = new Date().getTime();
-        const lcsSchedule = values(schedule)[1].map(el => new Date(el.startTime).getTime());
+    useEffect(() => {
+        const currentDate = moment();
+        setNextDateIndex(matchesByDate.findIndex((matches) => !currentDate.isAfter(matches.startTime)));
+    }, [matchesByDate]);
 
-        const upcomingLCSIndex = lcsSchedule.findIndex((matchTime) => matchTime > now);
-
-        const lcsGames = values(schedule)[1];
-        
-        return uniq(
-            lcsGames
-                .slice(0, upcomingLCSIndex + 1)
-                .map((el) => el.blockName)
-        );
+    const findBlocksToDisplay = ({ schedule }) => {
+        setMatchesByDate(sortMatchesByDate({ schedule }));
     };
 
     const renderMainHomePage = () => {
@@ -98,15 +93,16 @@ const Homepage = ({
                         {secondaryWidget}
                     </div>
                 </div>
+                {nextDateIndex}
                 {
-                    upcomingWeek.map((blockName) => (
+                    (nextDateIndex === -1) ? ('') : Array(nextDateIndex).fill(null).map((_, i) => (
                         <div
                             className="homepage-row"
-                            key={blockName}>
+                            key={i}>
                             <div className="widget-wrapper">
                                 <PredictionWidget
-                                    schedule={schedule}
-                                    timespan={blockName}
+                                    matches={matchesByDate[nextDateIndex - i].matches}
+                                    blockName={`Week ${nextDateIndex - (i)}`}
                                     usersMetadata={users}
                                     predictionMap={predictionMap} />
                             </div>

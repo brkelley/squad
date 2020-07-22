@@ -3,17 +3,15 @@ import React from 'react';
 import Bo1Grid from './bo1-grid/bo1-grid.jsx';
 import Bo5Grid from './bo5-grid/bo5-grid.jsx';
 import LEAGUES_METADATA from '../../constants/leagues.json';
-import flatMap from 'lodash/flatMap';
 import get from 'lodash/get';
 
 const PredictionWidget = ({
-    schedule,
-    timespan,
+    matches,
+    blockName,
     usersMetadata,
     predictionMap
 }) => {
-    const currentMatches = flatMap(Object.values(schedule))
-        .filter(el => el.blockName === timespan && get(el.match, 'type') !== 'tiebreaker')
+    const currentMatches = matches
         .map(match => ({
             ...match.match,
             league: LEAGUES_METADATA.find(league => league.name === match.league.name),
@@ -48,7 +46,7 @@ const PredictionWidget = ({
     return (
         <div className="prediction-widget-wrapper">
             <div className="block-title">
-                {timespan}
+                {blockName}
             </div>
             {renderCorrectTable()}
         </div>
