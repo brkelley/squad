@@ -15,6 +15,8 @@ interface sortMatchesByDateProps {
     schedule: ScheduleMatchMetadata[]
 }
 
+const MATCH_TIME_CARDINALITY = 80;
+
 export function sortMatchesByDate ({ schedule }: sortMatchesByDateProps) {
     const combinedMatches = flatMap(Object.values(schedule));
 
@@ -24,9 +26,11 @@ export function sortMatchesByDate ({ schedule }: sortMatchesByDateProps) {
         const currentMatch = combinedMatches[i];
         const currentMatchTime = moment(currentMatch.startTime);
 
+        if (currentMatch.startTime === "2020-07-24T17:00:00Z") debugger;
+
         const applicableChunk = matchesByTimeChunks.find((chunk) => {
-            const chunkExtendedStart = cloneDeep(chunk.startTime).subtract(75, 'hours');
-            const chunkExtendedEnd = cloneDeep(chunk.endTime).add(75, 'hours');
+            const chunkExtendedStart = cloneDeep(chunk.startTime).subtract(MATCH_TIME_CARDINALITY, 'hours');
+            const chunkExtendedEnd = cloneDeep(chunk.endTime).add(MATCH_TIME_CARDINALITY, 'hours');
 
             return currentMatchTime.isBetween(chunkExtendedStart, chunkExtendedEnd);
         });

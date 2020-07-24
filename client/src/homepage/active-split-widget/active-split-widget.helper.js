@@ -20,10 +20,14 @@ export const calculateUserSplitStatistics = ({ userId, users, schedule, predicti
                 const prediction = leaguePredictions[i];
 
                 if (!prediction) {
-                    return;
+                    continue;
                 }
 
                 const actualMatchResults = get(scheduleByMatchId, `${leagueId}.${prediction.matchId}[0]`, {});
+
+                if (!actualMatchResults || !actualMatchResults.match) {
+                    continue;
+                }
 
                 // add team to team map (so we can pull the metadata later)
                 actualMatchResults.match.teams.forEach((team) => {
