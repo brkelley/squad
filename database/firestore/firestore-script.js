@@ -1,7 +1,7 @@
 const firebase = require('firebase-admin');
 const dotenv = require('dotenv');
 require('firebase/firestore');
-const _ = require('lodash');
+const lodash = require('lodash');
 const fs = require('fs');
 const axios = require('axios');
 const headers = {
@@ -23,19 +23,19 @@ const predictions = [];
 const predictionMap = {};
 const duplicatePredictions = {};
 
-db.collection('predictions').get().then((snapshot) => {
-    snapshot.forEach(doc => {
-        predictions.push({
-            ...doc.data(),
-            id: doc.id
-        });
-    })
-})
-.then(() => {
-    Object.entries(_.groupBy(predictions, 'userId'))
-        .forEach(([userId, predictions]) => {
-            console.log(userId, predictions.length);
-        })
+// db.collection('predictions').get().then((snapshot) => {
+//     snapshot.forEach(doc => {
+//         predictions.push({
+//             ...doc.data(),
+//             id: doc.id
+//         });
+//     })
+// })
+// .then(() => {
+//     Object.entries(_.groupBy(predictions, 'userId'))
+//         .forEach(([userId, predictions]) => {
+//             console.log(userId, predictions.length);
+//         })
     // predictions
     //     .filter(el => el.userId === 'NZHHy69kHu2Oi5sFBUQW')
     //     .forEach((prediction) => {
@@ -52,7 +52,7 @@ db.collection('predictions').get().then((snapshot) => {
     //             }
     //         });
     //     });
-})
+// })
 
 // db.collection('predictions').get().then(snapshot => {
 //     snapshot.forEach(doc => {
@@ -60,7 +60,7 @@ db.collection('predictions').get().then((snapshot) => {
 //     });
 
 //     try {
-//         fs.writeFileSync('./old-data/spring-2020-predictions.json', JSON.stringify(predictions));
+//         fs.writeFileSync('./old-data/summer-2020-predictions.json', JSON.stringify(predictions));
 //     } catch (err) {
 //         console.error(err);
 //     }
@@ -80,7 +80,7 @@ const retrieveSchedule = async ({ pageToken = null }) => {
 const getEndOfSplitAnalytics = async () => {
     const teamInfo = {};
     const userStatsMap = {};
-    const splitData = require('../firestore/old-data/spring-2020-predictions.json');
+    const splitData = require('../firestore/old-data/summer-2020-predictions.json');
 
     let { schedule, olderPageToken } = await retrieveSchedule({ pageToken: null });
 
@@ -195,6 +195,8 @@ const getEndOfSplitAnalytics = async () => {
 
     userArray.forEach((user) => {
         const userStats = userStatsMap[user.id];
+        if (!userStats) return;
+
         userStats.score = 0;
         userStats.mostCorrectTeam = null;
         userStats.mostCorrectNum = -1;
@@ -256,9 +258,9 @@ const getEndOfSplitAnalytics = async () => {
             .doc(userStats.userId)
             .set({
                 splitStats: {
-                    spring2020: userStats.stats
+                    summer2020: userStats.stats
                 }
             }, { merge: true });
     });
 };
-// getEndOfSplitAnalytics();
+getEndOfSplitAnalytics();

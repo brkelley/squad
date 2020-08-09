@@ -1,0 +1,65 @@
+@import '../../../style/variables.scss';
+
+.single-match {
+    color: $font-color;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    margin: 24px;
+    background-color: $secondary;
+    border: solid 1px $border-color;
+    border-radius: 24px;
+
+    .match-main-content {
+        display: flex;
+        flex-direction: center;
+        align-items: center;
+
+        .team-container {
+            width: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.2s;
+            padding: 12px 0;
+            border-radius: 12px;
+    
+            .team-image-container {
+                .team-image {
+                    height: 75px;
+                }
+
+                &.losing-team {
+                    opacity: 0.2;
+                }
+            }
+    
+            .team-name {
+                font-size: 1.2rem;
+                text-align: center;
+
+                &.losing-team {
+                    opacity: 0.2;
+                }
+            }
+
+            &.saveable:hover {
+                background-color: lighten($secondary, 5%);
+                transition: all 0.2s;
+                cursor: pointer;
+            }
+        }
+    
+        .match-vs-separator {
+            font-size: 1.6rem;
+            margin: 0 48px;
+        }
+    }
+
+    .team-start-time {
+        width: 85px;
+        font-size: 1.2rem;
+        margin: 0 24px;
+    }
+}

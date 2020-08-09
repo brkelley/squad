@@ -1,7 +1,7 @@
 import './user-metadata.scss';
 import React, { useState } from 'react';
 
-import Button from '../../components/button/button';
+import SquadButton from '../../components/squad-button/squad-button';
 import Input from '../../components/input/input.jsx';
 
 const UserMetadata = ({ user, updateUser, resyncSummonerName }) => {
@@ -63,8 +63,8 @@ const UserMetadata = ({ user, updateUser, resyncSummonerName }) => {
         if (!isEditing) {
             return (
                 <div className="user-metadata-actions">
-                    <Button
-                        buttonLabel="Edit"
+                    <SquadButton
+                        label="Edit"
                         click={() => setIsEditing(!isEditing)}
                     />
                 </div>
@@ -73,13 +73,13 @@ const UserMetadata = ({ user, updateUser, resyncSummonerName }) => {
 
         return (
             <div className="user-metadata-actions">
-                <Button
-                    buttonLabel="Save"
+                <SquadButton
+                    label="Save"
                     loading={isSaving}
                     click={() => initializeUserUpdate()}
                 />
-                <Button
-                    buttonLabel="Cancel"
+                <SquadButton
+                    label="Cancel"
                     click={() => cancelUserUpdate()} />
             </div>
         );
@@ -96,8 +96,8 @@ const UserMetadata = ({ user, updateUser, resyncSummonerName }) => {
                         {user.summonerName}
                     </div>
                 </div>
-                <Button
-                    buttonLabel="Sync"
+                <SquadButton
+                    label="Sync"
                     loading={isSyncing}
                     click={() => syncSummonerName()} />
             </div>

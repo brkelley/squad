@@ -1,7 +1,26 @@
+import { TeamMetadata } from './pro-play-metadata';
+
 export interface Team {
     abbr: string,
     name: string,
     image: string
+}
+
+export interface User {
+    email: string
+    firstName: string
+    lastName: string
+    hash: string
+    preferences: {
+        favoriteTeam: TeamMetadata
+    }
+    role: Number
+    salt: string
+    splitStats: {
+        [splitId: string]: SplitStats
+    }
+    summonerId: string
+    summonerName: string
 }
 
 export interface SplitStats {
@@ -23,4 +42,12 @@ export interface LeaderboardEntry {
     id: string,
     name: string,
     score: number
+}
+
+export interface Prediction {
+    id?: string
+    matchId: string
+    prediction: string
+    timestamp: Number
+    userId: string
 }

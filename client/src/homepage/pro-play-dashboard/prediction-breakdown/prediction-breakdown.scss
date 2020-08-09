@@ -1,0 +1,25 @@
+@import '../../../style/variables.scss';
+
+.prediction-breakdown {
+    margin: 24px 0;
+
+    .prediction-group-stage {
+        .group-stage-section-label {
+            width: 100%;
+            text-align: center;
+            margin: 48px 0 12px 0;
+            font-size: 2.1rem;
+        }
+    }
+
+    .playoff-bracket-wrapper {
+        padding-top: 48px;
+
+        .playoff-bracket-title {
+            width: 100%;
+            text-align: center;
+            margin: 48px 0 12px 0;
+            font-size: 2.1rem;
+        }
+    }
+}

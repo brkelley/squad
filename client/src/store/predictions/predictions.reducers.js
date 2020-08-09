@@ -13,8 +13,9 @@ const initialState = {
     predictionMap: {},
     unsavedPredictions: {},
     predictionFilters: {
-        leagueId: '98767991302996019',
-        blockName: ''
+        tournamentId: '',
+        stageSlug: '',
+        sectionName: ''
     },
     predictionScoresByUser: {},
     fetching: false
@@ -44,7 +45,7 @@ const setPredictionAtKey = (state, action) => {
 };
 
 const setUnsavedPredictions = (state, action) => {
-    const { leagueId, userId, matchId } = action.prediction;
+    const { userId, matchId } = action.prediction;
     const predictionMap = cloneDeep(state.predictionMap);
     const unsavedPredictions = {
         ...state.unsavedPredictions,
@@ -54,13 +55,13 @@ const setUnsavedPredictions = (state, action) => {
     if (!predictionMap[userId]) {
         predictionMap[userId] = {};
     }
-    if (!predictionMap[userId][leagueId]) {
-        predictionMap[userId][leagueId] = {};
+    if (!predictionMap[userId]) {
+        predictionMap[userId] = {};
     }
 
-    const mappedPredictions = keyBy(predictionMap[userId][leagueId], 'matchId');
+    const mappedPredictions = keyBy(predictionMap[userId], 'matchId');
     mappedPredictions[matchId] = action.prediction;
-    predictionMap[userId][leagueId] = Object.values(mappedPredictions);
+    predictionMap[userId] = mappedPredictions;
 
     return Object.assign({}, state, { unsavedPredictions, predictionMap });
 };

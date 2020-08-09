@@ -1,9 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Cabin&display=swap');
 @import './variables.scss';
-@import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
 
 body {
     margin: 0;
-    font-family: $font;
+    font-family: $font !important;
 
     .app-wrapper {
         width: 100%;
@@ -13,10 +13,10 @@ body {
 
         .content-wrapper {
             width: 100%;
-            margin-left: $navbar-size;
+            box-sizing: border-box;
+            padding-left: $navbar-size;
         }
     }
 }
 
-@import '../components/components.scss';
 @import '../predictions/predictions.scss';

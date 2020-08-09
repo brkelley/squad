@@ -5,24 +5,3 @@
     justify-content: center;
     padding-top: 250px;
 }
-
-.predictions-wrapper {
-    color: $font-color;
-
-    .block-name-wrapper {
-        width: 100%;
-        font-size: 1.7rem;
-        font-weight: bold;
-        text-align: center;
-        padding-top: 24px;
-    }
-
-    .datestamp-wrapper {
-        font-size: 1.2rem;
-        padding-left: 100px;
-
-        &.solo-datestamp {
-            padding-top: 24px;
-        }
-    }
-}

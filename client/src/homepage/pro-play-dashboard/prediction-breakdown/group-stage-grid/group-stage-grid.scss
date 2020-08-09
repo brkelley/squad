@@ -1,0 +1,60 @@
+@import '../../../../style/variables.scss';
+
+.group-stage-wrapper {
+    padding: 12px;
+    color: $font-color;
+    display: flex;
+    justify-content: center;
+
+    .group-stage-table-label {
+        font-size: 2.2rem;
+        margin: 12px;
+    }
+
+    .group-stage-table {
+        .group-stage-table-row {
+            height: 48px;
+
+            .group-stage-table-cell {
+                width: 65px;
+                text-align: center;
+
+                &.header-cell {
+                    text-align: center;
+
+                    .header-team-name {
+                        font-weight: bold;
+                        font-size: 1rem;
+                    }
+
+                    .header-vs {
+                        font-size: 0.7rem;
+                    }
+                }
+
+                &.row-label {
+                    width: 125px;
+                    font-size: 0.9rem;
+                    padding-right: 4px;
+                }
+
+                &.image-cell {
+                    padding: 8px 0;
+
+                    .prediction-logo {
+                        height: 32px;
+                        width: auto;
+
+                        &.incorrect-prediction {
+                            opacity: 0.2;
+                        }
+                    }
+
+                    .missing-prediction-icon {
+                        opacity: 0.7;
+                    }
+                }
+            }
+        }
+    }
+}

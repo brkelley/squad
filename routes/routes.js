@@ -5,7 +5,6 @@ const predictions = require('./predictions/predictions.js');
 module.exports = app => {
     // Pro play metadata endpoints
     app.get('/pro-play/teams', proPlayMetadata.getTeams);
-    app.get('/pro-play/leagues', proPlayMetadata.getLeagues);
     app.get('/pro-play/schedule', proPlayMetadata.getSchedule);
 
     // User Prediction endpoints

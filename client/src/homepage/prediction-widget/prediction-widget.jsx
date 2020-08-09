@@ -11,21 +11,15 @@ const PredictionWidget = ({
     usersMetadata,
     predictionMap
 }) => {
-    const currentMatches = matches
-        .map(match => ({
-            ...match.match,
-            league: LEAGUES_METADATA.find(league => league.name === match.league.name),
-            startTime: match.startTime,
-            state: match.state
-        }));
-
+    console.log(blockName)
+    console.log(matches)
     const renderCorrectTable = () => {
-        const seriesCount = get(currentMatches[0], 'strategy.count');
+        const seriesCount = get(matches[0], 'strategy.count');
         switch (seriesCount) {
             case 1:
                 return (
                     <Bo1Grid
-                        matches={currentMatches}
+                        matches={matches}
                         usersMetadata={usersMetadata}
                         predictionMap={predictionMap}
                     />

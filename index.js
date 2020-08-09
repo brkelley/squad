@@ -9,7 +9,8 @@ const express    = require('express'),
       cache      = require('./cache/cache.js'),
       last       = require('lodash/last'),
       get        = require('lodash/get'),
-      LEAGUES    = require('./constants/leagues.json');
+      LEAGUES    = require('./constants/leagues.json')
+      moment     = require('moment');
 
 require('./database/firestore/firestore.js');
 
@@ -59,7 +60,8 @@ app.use('/api/v1', router);
 
 // a few functions to run at startup
 (async () => {
-    const leagues = LEAGUES.filter(league => ['LEC', 'LCS'].includes(league.name));
+    const LEAGUE_NAMES = ['LEC', 'LCS', 'Worlds', 'MSI'];
+    const leagues = LEAGUES.filter(league => LEAGUE_NAMES.includes(league.name));
     const headers = {
         'x-api-key': '0TvQnueqKa5mxJntVWt0w4LpLfEkrV1Ta8rQBb9Z'
     };
@@ -75,25 +77,35 @@ app.use('/api/v1', router);
         const teamData = await axios.get(`${getTeamsUrl}`, { headers });
         teams = teamData.data.data.teams;
     } catch (error) {
-        console.log('ERROR IN INIT FUNCTION');
-        console.log(error)
+        throw new Error(error);
     }
 
-    const currentTournamentIds = {};
+    const currentTime = moment();
 
-    // Algorithm right now is just to return the latest tournament for LCS & LEC
-    tournamentsByLeague.forEach((league, index) => {
-        const tournamentsSortedByEndDate = league.tournaments.sort((first, second) => {
-            return new Date(first.endDate).getTime() - new Date(second.endDate).getTime();
-        });
-        const leagueId = leagues[index].id;
-        currentTournamentIds[leagueId] = last(tournamentsSortedByEndDate).id;
-    });
+    const currentTournamentArr = tournamentsByLeague.reduce((acc, league, index) => {
+        const currentTournaments = league.tournaments
+            .filter((tournament) => {
+                const startTime = moment(tournament.startDate);
+                const endTime = moment(tournament.endDate);
+                
+                if (currentTime.isBefore(startTime)) return true;
 
-    // same for teams - only LCS & LEC
-    teams = teams.filter((team) => ['LEC', 'LCS'].includes(get(team, 'homeLeague.name', null)));
+                return currentTime.isBetween(startTime, endTime);
+            })
+            .map((tournament) => ({
+                ...tournament,
+                leagueId: leagues[index].id,
+                leagueName: leagues[index].name
+            }));
+        
+        acc.push(...currentTournaments);
 
-    cache.set('currentTournamentIds', currentTournamentIds);
+        return acc;
+    }, []);
+
+    teams = teams.filter((team) => LEAGUE_NAMES.includes(get(team, 'homeLeague.name', null)));
+
+    cache.set('currentTournaments', currentTournamentArr);
     cache.set('currentTeams', teams);
 })();
 

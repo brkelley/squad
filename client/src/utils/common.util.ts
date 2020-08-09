@@ -1,3 +1,9 @@
+import { ScheduleMatch } from '../types/pro-play-metadata';
+import moment, { Moment } from 'moment';
+import cloneDeep from 'lodash/cloneDeep';
+
+const MATCH_TIME_CARDINALITY = 70;
+
 export const convertNumberToCardinal = (num: number) => {
     const j = num % 10;
     const k = num % 100;
@@ -12,4 +18,39 @@ export const convertNumberToCardinal = (num: number) => {
     }
 
     return num + 'th';
+};
+
+export interface GroupedMatches {
+    startTime: Moment;
+    endTime: Moment;
+    matches: ScheduleMatch[];
+};
+export const groupMatchesByTime = (matches: ScheduleMatch[]) => {
+    const groupedMatches = matches.reduce((acc: GroupedMatches[], match: ScheduleMatch) => {
+        const matchStartTime = moment(match.startTime);
+        const applicableGroup = acc.find((el) => {
+            const btwn = matchStartTime.isBetween(el.startTime, el.endTime);
+            return btwn;
+        });
+
+        if (applicableGroup) {
+            applicableGroup.matches.push(match);
+            applicableGroup.startTime = (matchStartTime.isBefore(applicableGroup.startTime)
+                ? cloneDeep(matchStartTime).subtract(MATCH_TIME_CARDINALITY, 'hours')
+                : applicableGroup.startTime);
+            applicableGroup.endTime = (matchStartTime.isAfter(applicableGroup.endTime)
+                ? cloneDeep(matchStartTime).add(MATCH_TIME_CARDINALITY, 'hours')
+                : applicableGroup.endTime);
+        } else {
+            acc.push({
+                startTime: cloneDeep(matchStartTime).subtract(MATCH_TIME_CARDINALITY, 'hours'),
+                endTime: cloneDeep(matchStartTime).add(MATCH_TIME_CARDINALITY, 'hours'),
+                matches: [match]
+            });
+        }
+
+        return acc;
+    }, []);
+
+    return groupedMatches;
 };

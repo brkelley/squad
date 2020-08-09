@@ -7,8 +7,9 @@ import {
     RESET_UNSAVED_PREDICTIONS,
     SET_FETCHING
 } from '../constants/constants.js';
-import isEmpty from 'lodash/isEmpty';
 import cloneDeep from 'lodash/cloneDeep';
+import isEmpty from 'lodash/isEmpty';
+import keyBy from 'lodash/keyBy';
 import axios from 'axios';
 
 export const setPredictionMap = predictionMap => ({
@@ -54,15 +55,13 @@ export const savePredictions = () => async (dispatch, getState) => {
     try {
         let updatedPredictions = await axios.post('/predictions', Object.values(predictionsToSave));
         updatedPredictions = updatedPredictions.data;
-        const updatedPredictionsIds = updatedPredictions.map(el => el.matchId);
         const clonedMap = cloneDeep(getState().predictionReducer.predictionMap);
-        const leagueFilter = getState().predictionReducer.predictionFilters.leagueId;
         const userId = getState().userReducer.user.id;
 
-        clonedMap[userId][leagueFilter] = [
-            ...clonedMap[userId][leagueFilter].filter(el => !updatedPredictionsIds.includes(el.id)),
-            ...updatedPredictions
-        ];
+        clonedMap[userId] = {
+            ...clonedMap[userId],
+            ...keyBy(updatedPredictions, 'matchId')
+        };
         dispatch(setPredictionMap(clonedMap));
     } catch (error) {
         throw new Error(error);
@@ -89,8 +88,13 @@ export const loadAllPredictions = ({ forceReload } = {}) => async (dispatch, get
     } catch (error) {
         throw new Error(error);
     }
+    const mappedPredictions = predictionData.reduce((acc, { userId, predictions }) => {
+        acc[userId] = keyBy(predictions, 'matchId');
 
-    dispatch(setPredictionMap(predictionData));
+        return acc;
+    }, {});
+
+    dispatch(setPredictionMap(mappedPredictions));
     dispatch(setFetching(false));
 };
 

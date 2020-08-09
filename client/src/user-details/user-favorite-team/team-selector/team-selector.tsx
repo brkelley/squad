@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faUsers } from '@fortawesome/free-solid-svg-icons';
-import Button from '../../../components/button/button';
+import SquadButton from '../../../components/squad-button/squad-button';
 import _ from 'lodash';
 import LEAGUES_METADATA from '../../../constants/leagues.json';
 import { TeamMetadata } from '../../../types/pro-play-metadata';
@@ -64,8 +64,8 @@ const TeamSelector = ({ userTeam, teamMetadata, closeTeamSelector, updateUserTea
         if (_.get(selectedFavoriteTeam, 'id') !== _.get(userTeam, 'id')) {
             saveButton = (
                 <div className="save-team-wrapper">
-                    <Button
-                        buttonLabel="Save Team"
+                    <SquadButton
+                        label="Save Team"
                         click={() => beginCloseTeamSelector(selectedFavoriteTeam)} />
                 </div>
             );

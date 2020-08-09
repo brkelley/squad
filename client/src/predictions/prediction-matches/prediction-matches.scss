@@ -1,0 +1,33 @@
+@import '../../style/variables.scss';
+
+.predictions-matches {
+    color: $font-color;
+
+    .matches-by-day {
+        &:not(:first-child) {
+            padding-top: 48px;
+        }
+
+        .matches-date-label {
+            text-align: center;
+            font-size: 1.6rem;
+        }
+    }
+
+    .block-name-wrapper {
+        width: 100%;
+        font-size: 1.7rem;
+        font-weight: bold;
+        text-align: center;
+        padding-top: 24px;
+    }
+
+    .datestamp-wrapper {
+        font-size: 1.2rem;
+        padding-left: 100px;
+
+        &.solo-datestamp {
+            padding-top: 24px;
+        }
+    }
+}

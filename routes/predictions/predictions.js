@@ -1,5 +1,4 @@
 const db = require('../../database/firestore/firestore.js');
-const entries = require('lodash/entries');
 const groupBy = require('lodash/groupBy');
 
 module.exports.getAllPredictions = async (req, res) => {
@@ -12,14 +11,15 @@ module.exports.getAllPredictions = async (req, res) => {
         res.status(400).json(error);
         return;
     }
-    userPredictions = groupBy(userPredictions, 'userId');
-    const groupedUserPredictions = {};
+    const groupedPredictions = groupBy(userPredictions, 'userId');
+    const finalPredictions = Object.entries(groupedPredictions)
+        .reduce((userArr, [userId, predictions]) => {
+            userArr.push({ userId, predictions });
 
-    entries(userPredictions).forEach(([key, value]) => {
-        groupedUserPredictions[key] = groupBy(value, 'leagueId');
-    });
+            return userArr;
+        }, []);
 
-    res.status(200).send(groupedUserPredictions);
+    res.status(200).send(finalPredictions);
 };
 
 module.exports.getPredictionsByUser = async (req, res) => {

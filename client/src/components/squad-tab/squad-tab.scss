@@ -1,0 +1,30 @@
+@import '../../style/variables.scss';
+
+.squad-tabs {
+    color: $font-color;
+    font-size: 1.3rem;
+
+    .squad-tab-labels {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+
+        .squad-tab {
+            padding: 12px;
+            margin: 0 48px 32px 0;
+            cursor: pointer;
+            color: darken($font-color, 25%);
+            transition: all 0.2s;
+
+            &.active-tab {
+                border-bottom: solid 2px $tertiary;
+                color: $font-color;
+            }
+
+            &:hover {
+                color: lighten($font-color, 10%);
+                transition: all 0.2s;
+            }
+        }
+    }
+}

@@ -1,6 +1,4 @@
 import {
-    SET_LEAGUES,
-    SET_LEAGUES_FETCHING,
     SET_SCHEDULE,
     SET_SCHEDULE_FETCHING,
     SET_TEAMS,
@@ -18,10 +16,6 @@ const initialState = {
 
 export default function (state = initialState, action) {
     switch (action.type) {
-        case SET_LEAGUES:
-            return Object.assign({}, state, { leagues: action.leagues });
-        case SET_LEAGUES_FETCHING:
-            return Object.assign({}, state, { leaguesFetching: action.fetching });
         case SET_SCHEDULE:
             return Object.assign({}, state, { schedule: action.schedule });
         case SET_SCHEDULE_FETCHING:

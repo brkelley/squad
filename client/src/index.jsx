@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import AppRoute from './app.route';
-
 import rootReducer from './store/reducers.js';
 import { createStore, applyMiddleware, compose } from 'redux';
 import { Provider } from 'react-redux';
@@ -10,6 +9,9 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import firebase from 'firebase/app';
 import './style/app.scss';
+import { ThemeProvider } from '@material-ui/core/styles';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import theme from './style/theme';
 
 const token = Cookies.get('userToken');
 if (token) {
@@ -40,9 +42,12 @@ const store = createStore(
 
 ReactDOM.render(
     <Provider store={store}>
-        <div className="app-wrapper">
-            <AppRoute store={store} />
-        </div>
+        <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <div className="app-wrapper">
+                <AppRoute store={store} />
+            </div>
+        </ThemeProvider>
     </Provider>,
     document.getElementById('app')
 );
