@@ -42,6 +42,7 @@ const Homepage = ({
     useEffect(() => {
         const currentDate = moment();
         setNextDateIndex(matchesByDate.findIndex((matches) => !currentDate.isAfter(matches.startTime)));
+        console.log('matchesByDate:', matchesByDate)
     }, [matchesByDate]);
 
     const findBlocksToDisplay = ({ schedule }) => {
@@ -101,7 +102,7 @@ const Homepage = ({
                             key={i}>
                             <div className="widget-wrapper">
                                 <PredictionWidget
-                                    matches={matchesByDate[nextDateIndex - i].matches}
+                                    matches={matchesByDate[nextDateIndex - i - 1].matches}
                                     blockName={`Week ${nextDateIndex - (i)}`}
                                     usersMetadata={users}
                                     predictionMap={predictionMap} />

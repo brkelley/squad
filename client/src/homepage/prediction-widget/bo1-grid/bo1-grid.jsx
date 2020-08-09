@@ -14,17 +14,20 @@ const Bo1Grid = ({ matches, usersMetadata, predictionMap }) => {
                 {
                     matches
                         .sort((a, b) => ((new Date(a.startTime).getTime()) - new Date(b.startTime).getTime()))
-                        .map(match => (
-                            <th className="bo1-table-cell header-cell" key={match.id}>
-                                <div className="header-team-name">
-                                    {match.teams[0].code}
-                                </div>
-                                <div className="header-vs">vs</div>
-                                <div className="header-team-name">
-                                    {match.teams[1].code}
-                                </div>
-                            </th>
-                        ))
+                        .map(match => {
+                            if (!match || !match.teams) return null;
+                            return (
+                                <th className="bo1-table-cell header-cell" key={match.id}>
+                                    <div className="header-team-name">
+                                        {match.teams[0].code}
+                                    </div>
+                                    <div className="header-vs">vs</div>
+                                    <div className="header-team-name">
+                                        {match.teams[1].code}
+                                    </div>
+                                </th>
+                            )
+                        })
                 }
             </tr>
         </thead>
@@ -48,6 +51,7 @@ const Bo1Grid = ({ matches, usersMetadata, predictionMap }) => {
                                 matches
                                     .sort((a, b) => ((new Date(a.startTime).getTime()) - new Date(b.startTime).getTime()))
                                     .map(match => {
+                                        if (!match || !match.teams) return null;
                                         const { league } = match;
                                         const userPredictions = get(predictionMap, `${user.id}.${league.id}`, []);
                                         const userPrediction = userPredictions

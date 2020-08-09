@@ -31,13 +31,13 @@ const PredictionWidget = ({
                     />
                 );
             case 5:
-                return (
-                    <Bo5Grid
-                        matches={currentMatches}
-                        usersMetadata={usersMetadata}
-                        predictionMap={predictionMap}
-                    />
-                );
+                // return (
+                //     <Bo5Grid
+                //         matches={currentMatches}
+                //         usersMetadata={usersMetadata}
+                //         predictionMap={predictionMap}
+                //     />
+                // );
             default:
                 return <div></div>;
         }
