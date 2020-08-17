@@ -36,6 +36,8 @@ const Bo5Grid = ({ matches, usersMetadata, predictionMap }) => {
                     const firstMatchTime = moment(matches[0].matchTime).valueOf();
                     const showCurrentScores = (currentTime >= firstMatchTime);
 
+                    if (!predictionMap[user.id]) return;
+
                     return (
                         <tr className="bo5-table-row" key={user.id}>
                             <td className="bo5-table-cell row-label">
@@ -44,7 +46,7 @@ const Bo5Grid = ({ matches, usersMetadata, predictionMap }) => {
                             {
                                 matches.map(match => {
                                     const { league } = match;
-                                    const userPrediction = predictionMap[league.id][user.id]
+                                    const userPrediction = predictionMap[user.id][league.id]
                                         .find(pred => pred.matchId === match.id);
                                     
                                     const { score, template } = renderPredictionCell({
@@ -79,9 +81,9 @@ const Bo5Grid = ({ matches, usersMetadata, predictionMap }) => {
                 score: 0,
                 template: (
                     <td
-                        className="prediction-table-cell image-cell"
+                        className="bo5-table-cell"
                         key={id}>
-                        <div className="prediction-answer-logo" />
+                        <div className="no-answer">x</div>
                     </td>
                 )
             };
@@ -145,6 +147,10 @@ const Bo5Grid = ({ matches, usersMetadata, predictionMap }) => {
             template
         };
     };
+
+    if (!predictionMap || predictionMap === {}) {
+        return '';
+    }
 
     return (
         <div className="bo5-grid-wrapper">

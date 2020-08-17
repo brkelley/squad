@@ -1,3 +1,4 @@
+import countBy from 'lodash/countBy';
 import get from 'lodash/get';
 import groupBy from 'lodash/groupBy';
 import toPairs from 'lodash/toPairs';
@@ -39,32 +40,75 @@ export const calculateUserSplitStatistics = ({ userId, users, schedule, predicti
                 if (!actualMatchResults || actualMatchResults.state !== 'completed') {
                     continue;
                 }
+                const bestOfCount = get(actualMatchResults, 'match.strategy.count', -1);
 
-                // this is because the API actually calls unstarted & completed games separately
-                // lol honestly IDK why I should check that out
-                const winner = actualMatchResults.match.teams.find(el => el.result.gameWins === 1);
+                switch (bestOfCount) {
+                    case 1:
+                        const winner = actualMatchResults.match.teams.find(el => el.result.gameWins === 1);
 
-                // when a game immediately ends, sometimes the state is "completed" but no winner is marked
-                if (!winner) return stats;
+                        // when a game immediately ends, sometimes the state is "completed" but no winner is marked
+                        if (!winner) continue;
+        
+                        if (!stats.perTeamStats[prediction.prediction]) {
+                            stats.perTeamStats[prediction.prediction] = { correct: 0, incorrect: 0 };
+                        }
+        
+                        if (winner.name === prediction.prediction) {
+                            stats.correct++;
+                            stats.perTeamStats[prediction.prediction].correct++;
+                        } else {
+                            stats.incorrect++;
+                            stats.perTeamStats[prediction.prediction].incorrect++;
+                        }
+                        break;
+                    case 5:
+                        if (!stats.seriesStats) {
+                            stats.seriesStats = {
+                                scoreMap: {},
+                                points: 0
+                            };
+                        }
+                        const seriesPredictionByTeam = countBy(prediction.prediction.split(','), (teamName) => teamName);
+                        const seriesPredictionWinner = Object.entries(seriesPredictionByTeam).find(([_, score]) => score === 3)[0];
 
-                if (!stats.perTeamStats[prediction.prediction]) {
-                    stats.perTeamStats[prediction.prediction] = { correct: 0, incorrect: 0 };
+                        if (Object.keys(seriesPredictionByTeam).length === 1) {
+                            const missingTeam = actualMatchResults.match.teams.find((el) => Object.keys(seriesPredictionByTeam)[0] !== el.name);
+                            seriesPredictionByTeam[missingTeam.name] = 0;
+                        }
+
+                        const seriesKey = Object.values(seriesPredictionByTeam).sort((a, b) => b - a).join('-');
+                        if (!stats.seriesStats.scoreMap[seriesKey]) {
+                            stats.seriesStats.scoreMap[seriesKey] = 0;
+                        }
+                        stats.seriesStats.scoreMap[seriesKey]++;
+
+                        const actualSeriesResults = actualMatchResults.match.teams.reduce((acc, team) => ({ ...acc, [team.name]: team.result.gameWins}), {});
+                        const actualSeriesWinner = actualMatchResults.match.teams.find((team) => team.result.gameWins === 3).name;
+
+                        if (seriesPredictionWinner === actualSeriesWinner) {
+                            stats.seriesStats.points += 3;
+
+                            if (Object.values(actualSeriesResults).sort() === Object.values(seriesPredictionByTeam).sort()) {
+                                stats.seriesStats.points += 2;
+                            }
+                        }
+
+                        break;
+                    default:
+                        continue;
                 }
-
-                if (winner.name === prediction.prediction) {
-                    stats.correct++;
-                    stats.perTeamStats[prediction.prediction].correct++;
-                } else {
-                    stats.incorrect++;
-                    stats.perTeamStats[prediction.prediction].incorrect++;
-                }
+                
             }
 
             return stats;
         }, {
             correct: 0,
             incorrect: 0,
-            perTeamStats: {}
+            perTeamStats: {},
+            seriesStats: {
+                scoreMap: {},
+                points: 0
+            }
         });
 
         if (!userStat) {
@@ -103,7 +147,7 @@ export const calculateUserSplitStatistics = ({ userId, users, schedule, predicti
         return {
             name: user.summonerName,
             id: user.id,
-            score: userStat.correct,
+            score: userStat.correct + userStat.seriesStats.points,
             total: userStat.correct + userStat.incorrect,
             mostPredicted: get(teamMap, mostPredicted, null),
             mostWon: get(teamMap, mostWon, null),
