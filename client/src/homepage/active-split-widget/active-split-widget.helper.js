@@ -1,6 +1,7 @@
 import countBy from 'lodash/countBy';
 import get from 'lodash/get';
 import groupBy from 'lodash/groupBy';
+import isEqual from 'lodash/isEqual';
 import toPairs from 'lodash/toPairs';
 
 export const calculateUserSplitStatistics = ({ userId, users, schedule, predictionMap }) => {
@@ -88,7 +89,7 @@ export const calculateUserSplitStatistics = ({ userId, users, schedule, predicti
                         if (seriesPredictionWinner === actualSeriesWinner) {
                             stats.seriesStats.points += 3;
 
-                            if (Object.values(actualSeriesResults).sort() === Object.values(seriesPredictionByTeam).sort()) {
+                            if (isEqual(actualSeriesResults, seriesPredictionByTeam)) {
                                 stats.seriesStats.points += 2;
                             }
                         }

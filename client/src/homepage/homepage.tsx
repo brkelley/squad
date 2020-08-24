@@ -41,7 +41,6 @@ const Homepage = ({
 
     useEffect(() => {
         const currentDate = moment();
-        console.log('matches by date:', matchesByDate);
         setNextDateIndex(matchesByDate.findIndex((matches) => !currentDate.isAfter(matches.endTime)) + 1);
     }, [matchesByDate]);
 
