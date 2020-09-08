@@ -41,7 +41,9 @@ const Homepage = ({
 
     useEffect(() => {
         const currentDate = moment();
-        setNextDateIndex(matchesByDate.findIndex((matches) => !currentDate.isAfter(matches.endTime)) + 1);
+        const nextDate = matchesByDate.findIndex((matches) => !currentDate.isAfter(matches.endTime)) + 1;
+        setNextDateIndex(nextDate === 0 ? matchesByDate.length : nextDate);
+        console.log('nextDate', nextDate === 0 ? matchesByDate.length : nextDate);
     }, [matchesByDate]);
 
     const findBlocksToDisplay = ({ schedule }) => {
