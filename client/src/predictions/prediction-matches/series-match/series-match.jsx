@@ -13,9 +13,8 @@ const SeriesMatch = ({
     userId,
     updatePrediction
 }) => {
-    const [predictionResults] = useState(
-        get(predictionMap, `${userId}.${matchMetadata.id}`, '').split(',')
-    );
+    const prediction = get(predictionMap, `${userId}.${matchMetadata.id}.prediction`, '').split(',')
+    const [predictionResults] = useState(prediction);
     const bestOfCount = get(matchMetadata, 'strategy.count');
 
     const setPredictionAtIndex = (prediction, index) => {
@@ -24,7 +23,12 @@ const SeriesMatch = ({
         if (winnerIndex <= 4) {
             predictionResults.length = winnerIndex + 1;
         }
-        updatePrediction(predictionResults.join(','));
+        updatePrediction({
+            prediction: predictionResults.join(','),
+            matchId: matchMetadata.id,
+            timestamp: (new Date()).getDate(),
+            userId
+        });
     };
 
     const findTeamSeriesFinalIndex = () => {
@@ -51,7 +55,6 @@ const SeriesMatch = ({
         const gameNumbers = findTeamSeriesFinalIndex();
         const isExtraMatch = index > gameNumbers;
         const predicted = predictionResults[index] === team.name;
-        console.log('redicted', predicted);
 
         const allowClick = !predictionPassed && !isExtraMatch && !isTbd;
         const teamClassName = (predictionResults[index] && !predicted) || isExtraMatch ? 'not-predicted' : '';
