@@ -15,7 +15,9 @@ import some from 'lodash/some';
 
 interface CurrentTournamentStatisticsProps {
     predictionMap: {
-        [userId: string]: Prediction[];
+        [userId: string]: {
+            [matchId: string]: Prediction;
+        };
     };
     schedule: TournamentSchedule[];
     currentUser: User;

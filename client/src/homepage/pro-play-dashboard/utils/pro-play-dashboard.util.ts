@@ -36,7 +36,9 @@ export interface UserTournamentStatistics {
 
 interface CalculateScoresByUsersProps {
     predictionMap: {
-        [userId: string]: Prediction[];
+        [userId: string]: {
+            [matchId: string]: Prediction;
+        };
     };
     schedule: TournamentSchedule[];
     users: User[];
@@ -51,7 +53,8 @@ export const calculateScoresByUsers = ({
     const mappedSchedule = keyBy(flattenedSchedule, 'id');
     
     return users.reduce((userStatsArr: any, user) => {
-        const predictionsByUser = get(predictionMap, user.id);
+        const predictionsMap = get(predictionMap, user.id, {});
+        const predictionsByUser = Object.values(predictionsMap);
         if (!predictionsByUser) return userStatsArr;
 
         const userStats = {
