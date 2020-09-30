@@ -61,17 +61,33 @@ const Predictions = ({
             const dropdownContent = (activeSection: ScheduleSection) => {
                 if (!activeSection) return;
 
-                const match = activeSection.matches[0];
-                const [redSide, blueSide] = match.teams;
-
                 return (
-                    <SeriesMatch
-                        redSide={redSide}
-                        blueSide={blueSide}
-                        matchMetadata={match}
-                        predictionMetadata={{}}
-                        saveOrUpdatePrediction={() => {}} />
-                );
+                    <div
+                        key={activeSection.name}
+                        className="section-prediction-container">
+                        {
+                            ...activeSection.matches.map((match) => {
+                                const [redSide, blueSide] = match.teams;
+
+                                return (
+                                    <div
+                                        key={match.id}
+                                        className="series-match-container">
+                                        <div className="series-match-label">
+                                            {redSide.name} vs {blueSide.name}
+                                        </div>
+                                        <SeriesMatch
+                                            redSide={redSide}
+                                            blueSide={blueSide}
+                                            matchMetadata={match}
+                                            predictionMetadata={{}}
+                                            saveOrUpdatePrediction={() => {}} />
+                                    </div>
+                                )
+                            })
+                        }
+                    </div>
+                )
             };
 
             return (

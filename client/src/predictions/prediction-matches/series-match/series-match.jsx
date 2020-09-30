@@ -1,18 +1,20 @@
 import './series-match.scss';
 import React, { useState } from 'react';
 import moment from 'moment';
+import connect from './series-match.connector';
 import get from 'lodash/get';
 import some from 'lodash/some';
 
-export default function SeriesMatch ({
+const SeriesMatch = ({
     redSide,
     blueSide,
     matchMetadata,
-    predictionMetadata,
-    saveOrUpdatePrediction
-}) {
+    predictionMap,
+    userId,
+    updatePrediction
+}) => {
     const [predictionResults] = useState(
-        get(predictionMetadata, 'prediction', '').split(',')
+        get(predictionMap, `${userId}.${matchMetadata.id}`, '').split(',')
     );
     const bestOfCount = get(matchMetadata, 'strategy.count');
 
@@ -22,7 +24,7 @@ export default function SeriesMatch ({
         if (winnerIndex <= 4) {
             predictionResults.length = winnerIndex + 1;
         }
-        saveOrUpdatePrediction(predictionResults.join(','));
+        updatePrediction(predictionResults.join(','));
     };
 
     const findTeamSeriesFinalIndex = () => {
@@ -49,6 +51,7 @@ export default function SeriesMatch ({
         const gameNumbers = findTeamSeriesFinalIndex();
         const isExtraMatch = index > gameNumbers;
         const predicted = predictionResults[index] === team.name;
+        console.log('redicted', predicted);
 
         const allowClick = !predictionPassed && !isExtraMatch && !isTbd;
         const teamClassName = (predictionResults[index] && !predicted) || isExtraMatch ? 'not-predicted' : '';
@@ -86,4 +89,6 @@ export default function SeriesMatch ({
             {renderSeriesWrapper()}
         </div>
     );
-}
+};
+
+export default connect(SeriesMatch);

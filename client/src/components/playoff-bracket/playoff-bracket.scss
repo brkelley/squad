@@ -107,7 +107,8 @@
        z-index: 50;
 
         &.section-visible {
-            height: 455px;
+            max-height: 2000px;
+            height: auto;
             transition: all 0.3s;
             border-top: solid 2px $border-color;
             border-bottom: solid 2px $border-color;
