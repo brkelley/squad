@@ -1,11 +1,14 @@
 client/node_modules/
-node_modules/
+/node_modules/
 
 config.env
 .vscode/
 
+database/mongodb/mongo-data
 database/firestore/firestore-config.json
 database/firestore/firestore-config-service-account.json
 
 client/dist/bundle.js
 client/src/.DS_Store
+
+main

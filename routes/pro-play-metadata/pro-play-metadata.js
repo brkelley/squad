@@ -131,11 +131,13 @@ module.exports.getSchedule = async (req, res) => {
     const populatedStandings = populateMatchTimes(standings, matchMetadata);
 
     populatedStandings.forEach((standing) => {
-        stagesData.push({
-            leagueId: 4444,
-            leagueName: 'Worlds',
-            schedule: standing
-        });
+        if (!standing.find((el) => el.slug === 'regular_season')) {
+            stagesData.push({
+                leagueId: 4444,
+                leagueName: 'LCS',
+                schedule: standing
+            });
+        }
     });
 
     res.status(200).json(stagesData);

@@ -5,6 +5,7 @@ import ProPlayDashboardConnector from './pro-play-dashboard.connector';
 import CurrentTournamentStatistics from './current-tournament-statistics/current-tournament-statistics';
 import PredictionBreakdown from './prediction-breakdown/prediction-breakdown';
 import LoadingIndicator from '../../components/loading-indicator/loading-indicator';
+import { User } from '../../types/user';
 import isEmpty from 'lodash/isEmpty';
 import some from 'lodash/some';
 
@@ -20,6 +21,7 @@ const ProPlayDashboard = ({
     loadAllTeams
 }) => {
     const [currentTournamentLabel, setCurrentTournamentLabel] = useState<string>();
+    const [currentPredictionUsers, setCurrentPredictionUsers] = useState<User[]>([]);
 
     useEffect(() => {
         loadAllSchedule();
@@ -35,6 +37,11 @@ const ProPlayDashboard = ({
         }
     }, [schedule]);
 
+    useEffect(() => {
+        const filteredUsers = usersMetadata.filter((user) => user.flags.hasPredictions);
+        setCurrentPredictionUsers(filteredUsers)
+    }, [usersMetadata]);
+
     const renderProPlayDashboard = () => {
         return (
             <div className="pro-play-dashboard">
@@ -45,12 +52,12 @@ const ProPlayDashboard = ({
                     predictionMap={predictionMap}
                     schedule={schedule}
                     currentUser={currentUser}
-                    users={usersMetadata}
+                    users={currentPredictionUsers}
                     teams={teams} />
                 <PredictionBreakdown
                     predictionMap={predictionMap}
                     schedule={schedule}
-                    users={usersMetadata} />
+                    users={currentPredictionUsers} />
             </div>
         );
     }

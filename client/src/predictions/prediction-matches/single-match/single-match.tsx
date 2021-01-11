@@ -66,7 +66,7 @@ const SingleMatch = ({
     return (
         <div className="single-match">
             <div className="team-start-time">
-                {moment(matchMetadata.startTime).format('H:mm a')}
+                {moment(matchMetadata.startTime).format('h:mm a')}
             </div>
             <div className="match-main-content">
                 {renderTeamBlock(redSide)}
