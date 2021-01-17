@@ -46,7 +46,7 @@ export default ({
         });
     };
 
-    if (type === 'groups') {
+    if (type === 'groups' || type === 'split') {
         const matches = section.matches;
 
         if (!matches || matches.length === 0) {

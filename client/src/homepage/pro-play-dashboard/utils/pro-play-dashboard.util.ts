@@ -4,23 +4,25 @@ import isEqual from 'lodash/isEqual';
 import keyBy from 'lodash/keyBy';
 
 import { Prediction } from '../../../types/predictions';
-import { TournamentSchedule, ScheduleMatch, ScheduleTeam } from '../../../types/pro-play-metadata';
+import { ScheduleByLeague, ScheduleMatch, ScheduleTeam } from '../../../types/pro-play-metadata';
 import { User } from '../../../types/user';
 
 interface FlattenScheduleProps {
-    schedule: TournamentSchedule[];
+    schedule: ScheduleByLeague[];
 };
 export const flattenSchedule = ({ schedule }: FlattenScheduleProps) => {
-    return schedule.reduce((matches: ScheduleMatch[], tournamentSchedule) => {
-        const schedules = get(tournamentSchedule, 'schedule', []);
-        for (let i = 0; i < schedules.length; i++) {
-            const currSchedule = schedules[i];
-            const tournamentSections = get(currSchedule, 'sections', []);
+    return schedule.reduce((matches: ScheduleMatch[], leagueTournaments) => {
+        const tournaments = get(leagueTournaments, 'schedule', []);
+        for (let tournament of tournaments) {
+            const stages = get(tournament, 'stages', []);
 
-            for (let j = 0; j < tournamentSections.length; j++) {
-                const section = tournamentSections[j];
-                const sectionMatches = get(section, 'matches', []);
-                matches.push(...sectionMatches);
+            for (let stage of stages) {
+                const sections = get(stage, 'sections', []);
+
+                for (let section of sections) {
+                    const sectionMatches = get(section, 'matches', []);
+                    matches.push(...sectionMatches);
+                }
             }
         }
 
@@ -40,7 +42,7 @@ interface CalculateScoresByUsersProps {
             [matchId: string]: Prediction;
         };
     };
-    schedule: TournamentSchedule[];
+    schedule: ScheduleByLeague[];
     users: User[];
     currentUser: User;
 };

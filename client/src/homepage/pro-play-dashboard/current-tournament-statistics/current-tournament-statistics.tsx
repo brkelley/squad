@@ -8,7 +8,7 @@ import {
 } from '../utils/pro-play-dashboard.util';
 import { convertNumberToCardinal } from '../../../utils/common.util';
 import { Prediction } from '../../../types/predictions';
-import { TournamentSchedule, ScheduleTeam } from '../../../types/pro-play-metadata';
+import { ScheduleByLeague, ScheduleTeam } from '../../../types/pro-play-metadata';
 import { User } from '../../../types/user';
 import isEmpty from 'lodash/isEmpty';
 import some from 'lodash/some';
@@ -19,7 +19,7 @@ interface CurrentTournamentStatisticsProps {
             [matchId: string]: Prediction;
         };
     };
-    schedule: TournamentSchedule[];
+    schedule: ScheduleByLeague[];
     currentUser: User;
     users: User[];
     teams: ScheduleTeam[]

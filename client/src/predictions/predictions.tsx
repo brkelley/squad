@@ -1,7 +1,7 @@
 import './predictions.scss';
 import React, { useState, useEffect } from 'react';
 import connectPredictions from './predictions.connector';
-import { ScheduleSection, TournamentSchedule } from '../types/pro-play-metadata';
+import { ScheduleByLeague, ScheduleSection, TournamentSchedule } from '../types/pro-play-metadata';
 import LoadingIndicator from '../components/loading-indicator/loading-indicator';
 import PredictionFilters from './prediction-filters/prediction-filters';
 import PredictionMatches from './prediction-matches/prediction-matches';
@@ -12,11 +12,12 @@ import { Prediction } from '../types/predictions';
 
 interface PredictionsProps {
     filters: {
-        tournamentId: string;
+        leagueId: string;
+        tournamentSlug: string;
         stageSlug: string;
         sectionName: string;
     },
-    schedule: TournamentSchedule[];
+    schedule: ScheduleByLeague[];
     users: User[];
     predictionMap: {
         [userId: string]: {
@@ -46,15 +47,17 @@ const Predictions = ({
     }, []);
 
     useEffect(() => {
-        setFiltersSet(filters.tournamentId !== '' && filters.stageSlug !== '' && filters.sectionName !== '');
+        setFiltersSet(filters.leagueId !== '' && filters.tournamentSlug !== '' && filters.stageSlug !== '' && filters.sectionName !== '');
     }, [filters]);
 
     const renderContentFromFilters = () => {
-        if (filters.tournamentId === '' || filters.stageSlug === '' || filters.sectionName === '') return;
-        const { tournamentId, stageSlug, sectionName } = filters;
-        const selectedTournament = schedule.find((tournament) => tournament.leagueId === tournamentId);
+        if (filters.leagueId === '' || filters.tournamentSlug === '' || filters.stageSlug === '' || filters.sectionName === '') return;
+        const { leagueId, tournamentSlug, stageSlug, sectionName } = filters;
+        const selectedLeague = schedule.find((league) => league.leagueId === leagueId);
+        if (!selectedLeague) return;
+        const selectedTournament = selectedLeague.schedule.find((tournament) => tournament.tournamentSlug === tournamentSlug);
         if (!selectedTournament) return;
-        const selectedStage = selectedTournament.schedule.find((stage) => stage.slug === stageSlug);
+        const selectedStage = selectedTournament.stages.find((stage) => stage.slug === stageSlug);
         if (!selectedStage) return;
 
         if (selectedStage.type === 'bracket') {
@@ -62,9 +65,7 @@ const Predictions = ({
                 if (!activeSection) return;
 
                 return (
-                    <div
-                        key={activeSection.name}
-                        className="section-prediction-container">
+                    <div className="section-prediction-container">
                         {
                             ...activeSection.matches.map((match) => {
                                 const [redSide, blueSide] = match.teams;
@@ -98,7 +99,7 @@ const Predictions = ({
                     showActiveSection={true}
                     dropdownContent={dropdownContent} />
             );
-        } else if (selectedStage.type === 'groups') {
+        } else if (selectedStage.type === 'groups' || selectedStage.type === 'split') {
             const selectedSection = selectedStage.sections.find((section) => section.name === sectionName);
             if (!selectedSection) return;
 

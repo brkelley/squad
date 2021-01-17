@@ -28,11 +28,15 @@ export default ({
     showActiveSection,
     dropdownContent
 }: PlayoffBracketProps) => {
+    const [initalLoad, setInitialLoad] = useState<Boolean>(true);
     const [activeSection, setActiveSection] = useState<ScheduleSection | null>();
     const [isSmallScreen, setIsSmallScreen] = useState<Boolean>(false);
     const playoffBracketRef = useRef(null);
 
     useEffect(() => {
+        if (initalLoad && !showActiveSection) return;
+        setInitialLoad(false);
+
         const today = moment();
         const nextActiveSection = playoffStage.sections.find((section, index) => {
             if (index === playoffStage.sections.length - 1) return section;
@@ -105,12 +109,12 @@ export default ({
                 className="playoff-bracket"
                 ref={playoffBracketRef}>
                 {
-                    playoffStage.sections.map((section) => {
+                    playoffStage.sections.map((section, index) => {
                         const isActiveSection = activeSection && section.name === activeSection.name;
 
                         return (
                             <div
-                                key={section.id}
+                                key={index}
                                 className={`playoff-bracket-section ${isActiveSection ? 'active-section' : ''}`}
                                 onClick={() => setActiveSection(section)}>
                                 <div className="playoff-section-title">
@@ -152,8 +156,6 @@ export default ({
     };
 
     const renderPlayoffGuesses = () => {
-        if (!showActiveSection) return '';
-
         let activeSectionMatches: ScheduleMatch[] = get(activeSection, 'matches', []);
         const usersWithPredictions = users.filter((el) => el.flags.hasPredictions);
 

@@ -1,10 +1,8 @@
+const ProPlayMetadataUtils = require('./pro-play-metadata.util.js');
 const axios = require('axios');
 const cache = require('../../cache/cache.js');
-const cloneDeep = require('lodash/cloneDeep');
 const get = require('lodash/get');
 const keyBy = require('lodash/keyBy');
-const moment = require('moment');
-const LEAGUES = require('../../constants/leagues.json');
 
 const headers = {
     'x-api-key': '0TvQnueqKa5mxJntVWt0w4LpLfEkrV1Ta8rQBb9Z'
@@ -12,7 +10,6 @@ const headers = {
 const GET_SCHEDULE_URL = 'https://esports-api.lolesports.com/persisted/gw/getSchedule?hl=en-US';
 const GET_COMPLETED_GAMES_URL = 'https://esports-api.lolesports.com/persisted/gw/getCompletedEvents?hl=en-US';
 const GET_STANDINGS_URL = 'https://esports-api.lolesports.com/persisted/gw/getStandings?hl=en-US';
-const REGULAR_SEASON_TIME_CARDINALITY = 70;
 
 module.exports.getTeams = async (req, res) => {
     res.status(200).json(cache.get('currentTeams'));
@@ -49,60 +46,7 @@ const getMatchMetadata = async (leagueIds, tournamentIds) => {
     }
 };
 
-const populateMatchTimes = (schedules, matchMetadata) => {
-    return schedules.map((schedule) => {
-        return schedule.stages.map((stage) => {
-            const sections = stage.sections
-                .map((section) => {
-                    const matches = section.matches
-                        .map((match) => {
-                            const metadataVal = get(matchMetadata, match.id);
-                            const extraData = (metadataVal)
-                                ? {
-                                    startTime: metadataVal.startTime,
-                                    blockName: metadataVal.blockName,
-                                    strategy: metadataVal.match.strategy,
-                                    league: metadataVal.league
-                                }
-                                : {};
-    
-                            return {
-                                ...match,
-                                ...extraData
-                            }; 
-                        })
-                        .sort((a, b) => {
-                            const aStartTime = new Date(a.startTime).getTime();
-                            const bStartTime = new Date(b.startTime).getTime();
-    
-                            return aStartTime - bStartTime;
-                        });
-    
-                    const startTime = matches[0].startTime;
-                    const endOfArr = matches.length === 0 ? 0 : matches.length - 1;
-                    const endTime = matches[endOfArr].startTime;
-    
-                    return {
-                        ...section,
-                        matches,
-                        startTime,
-                        endTime
-                    }
-                })
-                .sort((a, b) => {
-                    const aStartTime = new Date(a.startTime).getTime();
-                    const bStartTime = new Date(b.startTime).getTime();
-    
-                    return aStartTime - bStartTime;
-                });
-            
-            const startTime = sections[0].startTime;
-            const endTime = sections[sections.length - 1].endTime;
-    
-            return { ...stage, sections, startTime, endTime };
-        });
-    });
-};
+
 
 module.exports.getSchedule = async (req, res) => {
     if (!req.query.leagueId) {
@@ -116,29 +60,40 @@ module.exports.getSchedule = async (req, res) => {
     const currentTournamentIds = currentTournamentIdArr.join(',');
 
 
-    const stagesData = [];
-    let scheduleData, matchMetadata; 
+    const schedulesData = [];
     try {
-        scheduleData = await axios.get(`${GET_STANDINGS_URL}&tournamentId=${currentTournamentIds}`, { headers });
-        matchMetadata = await getMatchMetadata(leagueIds, currentTournamentIds);
+        const matchMetadata = await getMatchMetadata(leagueIds, currentTournamentIds);
+        for (let i = 0; i < currentTournaments.length; i++) {
+            const currentTournament = currentTournaments[i];
+            const currentScheduleData = await axios.get(`${GET_STANDINGS_URL}&tournamentId=${currentTournament.id}`, { headers });
+            let currentSchedule = get(currentScheduleData, 'data.data.standings[0]'); // need to be able to group tournaments by league in the future
+            currentSchedule.tournamentSlug = currentTournament.slug;
+            currentSchedule.tournamentName = ProPlayMetadataUtils.convertTournamentSlug(currentTournament.slug);
+            currentSchedule = ProPlayMetadataUtils.populateMatchTimes(currentSchedule, matchMetadata);
+
+            currentSchedule.stages = currentSchedule.stages.map((stage) => {
+                if (stage.slug === 'regular_season') {
+                    return ProPlayMetadataUtils.convertRegularSeasonStage(stage);
+                }
+
+                return stage;
+            });
+
+            const existingLeagueSchedule = schedulesData.find((schedule) => schedule.leagueId === currentTournament.leagueId);
+            if (existingLeagueSchedule) {
+                existingLeagueSchedule.schedule.push(currentSchedule);
+            } else {
+                schedulesData.push({
+                    leagueId: currentTournament.leagueId,
+                    leagueName: currentTournament.leagueName,
+                    schedule: [currentSchedule]
+                });
+            }
+        };
     } catch (error) {
         res.status(500).send(error);
         throw new Error(error);
     }
 
-    const standings = get(scheduleData, 'data.data.standings');
-
-    const populatedStandings = populateMatchTimes(standings, matchMetadata);
-
-    populatedStandings.forEach((standing) => {
-        if (!standing.find((el) => el.slug === 'regular_season')) {
-            stagesData.push({
-                leagueId: 4444,
-                leagueName: 'LCS',
-                schedule: standing
-            });
-        }
-    });
-
-    res.status(200).json(stagesData);
+    res.status(200).json(schedulesData);
 };

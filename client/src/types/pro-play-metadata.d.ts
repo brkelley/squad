@@ -28,10 +28,18 @@ export interface Player {
     role: string;
 }
 
-export interface TournamentSchedule {
+export interface ScheduleByLeague {
     leagueId: string;
     leagueName: string;
-    schedule: ScheduleStage[]
+    schedule: TournamentSchedule[]
+}
+
+export interface TournamentSchedule {
+    stages: ScheduleStage[];
+    tournamentSlug: string;
+    tournamentName: string;
+    startTime: string;
+    endTime: string;
 }
 
 export interface ScheduleStage {

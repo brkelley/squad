@@ -3,11 +3,14 @@ import { updatePredictionFilter, savePredictions } from '../../store/predictions
 
 const mapStateToProps = ({ predictionReducer, proPlayMetadataReducer }) => ({
     unsavedPredictions: predictionReducer.unsavedPredictions,
-    getStageType: ({ tournamentId, stageSlug }) => {
-        const selectedTournament = proPlayMetadataReducer.schedule.find((tourn) => tourn.leagueId === tournamentId);
+    getStageType: ({ leagueId, tournamentSlug, stageSlug }) => {
+        const selectedLeagueTournaments = proPlayMetadataReducer.schedule.find((league) => league.leagueId === leagueId);
+        if (!selectedLeagueTournaments) return '';
+
+        const selectedTournament = selectedLeagueTournaments.schedule.find((tourn) => tourn.tournamentSlug === tournamentSlug);
         if (!selectedTournament) return '';
 
-        const selectedStage = selectedTournament.schedule.find((stage) => stage.slug === stageSlug);
+        const selectedStage = selectedTournament.stages.find((stage) => stage.slug === stageSlug);
         if (!selectedStage) return '';
 
         return selectedStage.type;
