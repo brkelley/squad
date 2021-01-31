@@ -80,41 +80,39 @@ export const calculateScoresByUsers = ({
 
             const winningTeamName = winningTeam.name;
 
-            switch (bestOf) {
-                case 1:
-                    if (currPrediction.prediction === winningTeamName) {
-                        userStats.score++;
+            if (bestOf === 1) {
+                if (currPrediction.prediction === winningTeamName) {
+                    userStats.score++;
+                }
+            } else {
+                const winningScore = Math.ceil(bestOf / 2);
+                const actualSeriesResults = matchMetadata.teams.reduce((acc, curr) => {
+                    acc[curr.name] = curr.result.gameWins;
+
+                    return acc;
+                }, {});
+                const [ actualSeriesWinner ] = Object.entries(actualSeriesResults)
+                    .find(([, score]) => score === winningScore) || [];
+
+                const predictedScoreMap = countBy(currPrediction.prediction.split(','), el => el);
+                const predictedResults = matchMetadata.teams.reduce((acc, curr) => ({
+                    ...acc,
+                    [curr.name]: predictedScoreMap[curr.name] || 0
+                }), {});
+
+                const [ predictedSeriesWinner ] = Object.entries(predictedResults)
+                    .find(([, score]) => score === winningScore) || [];
+
+                const hasCorrectWinner = actualSeriesWinner === predictedSeriesWinner;
+                const hasCorrectScore = isEqual(predictedResults, actualSeriesResults);
+
+                if (hasCorrectWinner) {
+                    userStats.score += 3;
+
+                    if (hasCorrectScore) {
+                        userStats.score += 2;
                     }
-                    break;
-                case 5:
-                    const actualSeriesResults = matchMetadata.teams.reduce((acc, curr) => {
-                        acc[curr.name] = curr.result.gameWins;
-
-                        return acc;
-                    }, {});
-                    const [ actualSeriesWinner ] = Object.entries(actualSeriesResults)
-                        .find(([, score]) => score === 3) || [];
-
-                    const predictedScoreMap = countBy(currPrediction.prediction.split(','), el => el);
-                    const predictedResults = matchMetadata.teams.reduce((acc, curr) => ({
-                        ...acc,
-                        [curr.name]: predictedScoreMap[curr.name] || 0
-                    }), {});
-
-                    const [ predictedSeriesWinner ] = Object.entries(predictedResults)
-                        .find(([, score]) => score === 3) || [];
-
-                    const hasCorrectWinner = actualSeriesWinner === predictedSeriesWinner;
-                    const hasCorrectScore = isEqual(predictedResults, actualSeriesResults);
-
-                    if (hasCorrectWinner) {
-                        userStats.score += 3;
-
-                        if (hasCorrectScore) {
-                            userStats.score += 2;
-                        }
-                    }
-                    break;
+                }
             }
         }
 

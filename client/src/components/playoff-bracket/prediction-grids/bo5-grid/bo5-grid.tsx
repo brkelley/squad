@@ -67,7 +67,8 @@ const Bo5Grid = ({ matches, usersMetadata, predictionMap }: Bo5GridProps) => {
                                         const { score, template } = renderPredictionCell({
                                             id: match.id,
                                             prediction: userPrediction,
-                                            teams: match.teams
+                                            teams: match.teams,
+                                            seriesCount: match.strategy.count
                                         });
                                         userScore += score;
 
@@ -87,7 +88,8 @@ const Bo5Grid = ({ matches, usersMetadata, predictionMap }: Bo5GridProps) => {
     const renderPredictionCell = ({
         id,
         prediction,
-        teams
+        teams,
+        seriesCount
     }) => {
         if (!prediction) {
             return {
@@ -108,6 +110,7 @@ const Bo5Grid = ({ matches, usersMetadata, predictionMap }: Bo5GridProps) => {
             [teams[1].name]: 0
         };
         const predictionArray = prediction.prediction.split(',');
+        const winThreshold = Math.ceil(seriesCount / 2);
 
         for (let i = 0; i < predictionArray.length; i++) {
             scoreObj[predictionArray[i]]++;
@@ -126,10 +129,10 @@ const Bo5Grid = ({ matches, usersMetadata, predictionMap }: Bo5GridProps) => {
         let correctlyGuessedWinner = true;
         let correctlyGuessedScore = true;
         const containsTBD = teams.find(el => el.name === 'TBD');
-        const showScore = !containsTBD && teams.find(el => el.result.gameWins === 3);
+        const showScore = !containsTBD && teams.find(el => el.result.gameWins === winThreshold);
 
-        if (!containsTBD && teams.find(el => el.result.gameWins === 3)) {
-            actualWinningTeam = teams.find(el => el.result.gameWins === 3);
+        if (!containsTBD && teams.find(el => el.result.gameWins === winThreshold)) {
+            actualWinningTeam = teams.find(el => el.result.gameWins === winThreshold);
             correctlyGuessedWinner = winningTeam.name === actualWinningTeam.name;
             const actualScore = teams.map(el => el.result.gameWins).sort();
             const guessedScore = Object.values(scoreObj).sort();

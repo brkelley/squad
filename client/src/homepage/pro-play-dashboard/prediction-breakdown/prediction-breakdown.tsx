@@ -114,7 +114,6 @@ export default ({
 
     const renderTournamentPills = () => {
         // first, find all the tournaments
-        console.log(schedule);
         const tournamentNames: string[] = schedule.reduce((acc: string[], leagueTournaments): string[] => {
             acc.push(...leagueTournaments.schedule.map((schedule) => schedule.tournamentName));
 
