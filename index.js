@@ -81,16 +81,15 @@ app.use('/api/v1', router);
     }
 
     const currentTime = moment();
+    const currentYear = currentTime.year();
 
     const currentTournamentArr = tournamentsByLeague.reduce((acc, league, index) => {
         const currentTournaments = league.tournaments
             .filter((tournament) => {
-                const startTime = moment(tournament.startDate);
-                const endTime = moment(tournament.endDate);
+                const startMoment = moment(tournament.startDate);
+                const startYear = startMoment.year();
                 
-                if (currentTime.isBefore(startTime)) return true;
-
-                return currentTime.isBetween(startTime, endTime);
+                return startYear === currentYear;
             })
             .map((tournament) => ({
                 ...tournament,
