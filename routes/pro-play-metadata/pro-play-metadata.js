@@ -92,7 +92,7 @@ module.exports.getSchedule = async (req, res) => {
         };
     } catch (error) {
         res.status(500).send(error);
-        throw new Error(error);
+        console.log(error)
     }
 
     res.status(200).json(schedulesData);

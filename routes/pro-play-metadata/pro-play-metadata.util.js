@@ -4,7 +4,8 @@ const last = require('lodash/last');
 const MATCH_CARDINALITY = 3 * 24 * 60 * 60 * 1000; // 3 days into milliseconds
 const tournamentSlugMap = {
     'lcs_2021_lockin': 'Lock-In Tournament',
-    'lec_2021_split1': 'Spring 2021'
+    'lec_2021_split1': 'LEC - Spring 2021',
+    'lcs_2021': 'LCS Regular Season'
 };
 
 module.exports.convertTournamentSlug = (slug) => {
@@ -85,7 +86,7 @@ module.exports.populateMatchTimes = (schedule, matchMetadata) => {
 };
 
 module.exports.convertRegularSeasonStage = (stage) => {
-    const matches = get(stage.sections.find((el) => el.name === 'Round Robin'), 'matches');
+    const matches = get(stage.sections.find((el) => ['Round Robin', 'Regular Season'].includes(el.name)), 'matches');
 
     let groupedWeeks = groupMatchesIntoWeeks(matches);
 
