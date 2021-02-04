@@ -15,8 +15,14 @@ module.exports.convertTournamentSlug = (slug) => {
 module.exports.populateMatchTimes = (schedule, matchMetadata) => {
     const stages = schedule.stages.map((stage) => {
         const sections = stage.sections.map((section) => {
-            const matches = section.matches.map((match) => {
+            const matches = section.matches.reduce((allMatches, match) => {
+
                 const activeMatchMetadata = get(matchMetadata, match.id);
+
+                // This is because LCS doesn't always add their start times???????
+                // Stupid new split format.
+                if (!activeMatchMetadata || !activeMatchMetadata.startTime) return allMatches;
+
                 const supplementalData = (activeMatchMetadata)
                     ? {
                         startTime: activeMatchMetadata.startTime,
@@ -25,11 +31,13 @@ module.exports.populateMatchTimes = (schedule, matchMetadata) => {
                         league: activeMatchMetadata.league
                     } : {};
 
-                return {
+                allMatches.push({
                     ...match,
                     ...supplementalData
-                };
-            });
+                });
+
+                return allMatches;
+            }, []);
 
             const sortedMatches = matches.sort((a, b) => {
                 const aTimestamp = new Date(a.startTime).getTime();
