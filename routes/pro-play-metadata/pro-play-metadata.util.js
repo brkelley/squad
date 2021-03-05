@@ -39,6 +39,15 @@ module.exports.populateMatchTimes = (schedule, matchMetadata) => {
                 return allMatches;
             }, []);
 
+            if (matches.length === 0) {
+                return {
+                    ...section,
+                    matches: [],
+                    startTime: 0,
+                    endTime: 0
+                }
+            }
+
             const sortedMatches = matches.sort((a, b) => {
                 const aTimestamp = new Date(a.startTime).getTime();
                 const bTimestamp = new Date(b.startTime).getTime();
