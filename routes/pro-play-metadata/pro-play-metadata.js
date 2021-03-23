@@ -66,7 +66,6 @@ module.exports.getSchedule = async (req, res) => {
         for (let i = 0; i < currentTournaments.length; i++) {
             const currentTournament = currentTournaments[i];
             const currentScheduleData = await axios.get(`${GET_STANDINGS_URL}&tournamentId=${currentTournament.id}`, { headers });
-            console.log('tournament IDs', currentTournament.id)
             let currentSchedule = get(currentScheduleData, 'data.data.standings[0]'); // need to be able to group tournaments by league in the future
             currentSchedule.tournamentSlug = currentTournament.slug;
             currentSchedule.tournamentName = ProPlayMetadataUtils.convertTournamentSlug(currentTournament.slug);

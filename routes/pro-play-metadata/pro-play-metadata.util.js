@@ -5,7 +5,8 @@ const MATCH_CARDINALITY = 3 * 24 * 60 * 60 * 1000; // 3 days into milliseconds
 const tournamentSlugMap = {
     'lcs_2021_lockin': 'Lock-In Tournament',
     'lec_2021_split1': 'LEC - Spring 2021',
-    'lcs_2021': 'LCS Regular Season'
+    'lcs_2021': 'LCS Regular Season',
+    'mss_2021': 'Mid-Season Showdown'
 };
 
 module.exports.convertTournamentSlug = (slug) => {
