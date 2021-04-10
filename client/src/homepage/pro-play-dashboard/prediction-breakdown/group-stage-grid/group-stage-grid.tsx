@@ -7,6 +7,10 @@ import get from 'lodash/get';
 import { Prediction } from '../../../../types/predictions';
 
 const GroupStageGrid = ({ label = '', matches, usersMetadata, predictionMap }) => {
+    if (matches.length === 0) {
+        return <></>;
+    }
+
     const renderGroupStageTableHeaders = () => (
         <thead>
             <tr className="group-stage-table-row">
