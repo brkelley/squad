@@ -5,7 +5,12 @@ import { faTimesCircle } from '@fortawesome/free-regular-svg-icons';
 import { faDiscord } from '@fortawesome/free-brands-svg-icons';
 import SquadTitle from '../assets/squad-title.png';
 
-const DISCORD_AUTHORIZE_URL = 'https://discord.com/api/oauth2/authorize?client_id=805510957404782623&redirect_uri=http%3A%2F%2Flocalhost%3A5555%2Fauth%2Fredirect&response_type=code&scope=identify';
+let hostname = 'http://' + location.hostname;
+if (hostname === 'http://localhost') {
+    hostname = 'http://localhost:5555';
+}
+const encodedHostname = encodeURIComponent(hostname);
+const DISCORD_AUTHORIZE_URL = `https://discord.com/api/oauth2/authorize?client_id=805510957404782623&redirect_uri=${encodedHostname}%2Fauth%2Fredirect&response_type=code&scope=identify`;
 
 const Login = () => {
     const [errorMessage, setErrorMessage] = useState<string>('');
