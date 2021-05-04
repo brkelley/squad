@@ -8,6 +8,7 @@ import (
     "github.com/gorilla/mux"
     "github.com/rs/cors"
     User "squad/user"
+    "os"
     Predictions "squad/predictions"
     ProPlay "squad/proplay"
     "squad/utils"
@@ -15,7 +16,7 @@ import (
 )
 
 // PORT port number for the server to listen on
-var PORT = "4444"
+var PORT = os.Getenv("PORT")
 
 func loggingMiddleware(next http.Handler) http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
