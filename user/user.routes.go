@@ -77,8 +77,9 @@ var authorizeDiscord = http.HandlerFunc(func(w http.ResponseWriter, r *http.Requ
 	w.Header().Set("Content-Type", "application/json")
 	queryParams := r.URL.Query()
 	code := queryParams["code"][0]
+	redirectUri := queryParams["redirectUri"][0]
 
-	userResponse, userErr := AuthorizeDiscord(code)
+	userResponse, userErr := AuthorizeDiscord(code, redirectUri)
 	if userErr != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		log.Fatal(userErr)

@@ -26,14 +26,14 @@ type DiscordAuthorizationTokenResponse struct {
 	Scope 			string 	`json:"scope"`
 }
 
-func GetDiscordAuthorizationToken(code string) DiscordAuthorizationTokenResponse {
+func GetDiscordAuthorizationToken(code string, hostname string, redirectUri string) DiscordAuthorizationTokenResponse {
 	var discordResponse DiscordAuthorizationTokenResponse
 	url := "https://discord.com/api/v8/oauth2/token"
 	body := map[string]string {
 		"client_id": clientID,
 		"client_secret": clientSecret,
 		"grant_type": "authorization_code",
-		"redirect_uri": "http://localhost:5555/auth/redirect",
+		"redirect_uri": redirectUri,
 		"scope": "identify",
 		"code": code,
 	}

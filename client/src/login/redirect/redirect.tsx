@@ -3,9 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Redirect } from 'react-router-dom';
 import connect from './redirect.connector';
 import LoadingIndicator from '../../components/loading-indicator/loading-indicator';
-import { DiscordInfo } from '../../utils/discord.util';
 import axios from 'axios';
-import Cookies from 'js-cookie';
 
 interface RedirectProps {
     setDiscordInfo: Function;
@@ -26,8 +24,12 @@ const DiscordRedirect = ({
             setRedirectLink('/login');
             return;
         }
+        let hostname = 'http://' + location.hostname;
+        if (hostname === 'http://localhost') {
+            hostname = 'http://localhost:5555';
+        }
 
-        axios.get(`/auth/discord?code=${code}`)
+        axios.get(`/auth/discord?code=${code}&redirectUri=${hostname}/auth/redirect`)
             .then((response) => {
                 // for some reason, axios doesn't like catching the error, and instead
                 // calls this shit with response of undefined

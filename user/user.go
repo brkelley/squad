@@ -5,6 +5,7 @@ import (
 	"errors"
 	googleFirestore "cloud.google.com/go/firestore"
 	firestore "squad/database/firestore"
+	"os"
 	"squad/utils"
 )
 
@@ -89,8 +90,12 @@ func GetUser(id string) (User, error) {
 	return user, nil
 }
 
-func AuthorizeDiscord(discordCode string) (Response, error) {
-	discordResponse := utils.GetDiscordAuthorizationToken(discordCode)
+func AuthorizeDiscord(discordCode string, redirectUri string) (Response, error) {
+	hostname, err := os.Hostname()
+	if err != nil {
+		return Response{}, errors.New("Could not get hostname")
+	}
+	discordResponse := utils.GetDiscordAuthorizationToken(discordCode, hostname, redirectUri)
 	discordUser, discordErr := utils.GetDiscordUser(discordResponse.AccessToken)
 
 	if discordErr != nil || discordUser.ID == "" || discordUser.Username == "" {
