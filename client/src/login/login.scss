@@ -1,0 +1,69 @@
+@import '../style/variables.scss';
+
+.login-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-right: $navbar-size;
+    padding-top: 15%;
+
+    .login-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        .app-title {
+            padding-bottom: 120px;
+
+            .app-title-image {
+                height: 100px;
+                width: auto;
+            }
+        }
+
+        .login-error-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: $squad-primary;
+            border-radius: 5px;
+            color: black;
+            font-size: 1rem;
+            padding: 16px;
+            margin-bottom: 32px;
+
+            .error-icon {
+                height: 25px;
+                width: auto;
+                padding-right: 16px;
+            }
+        }
+
+        .discord-authentication-link {
+            color: $font-color;
+            text-decoration: none;
+            text-align: center;
+            background-color: $squad-complimentary;
+            border-radius: 5px;
+            padding: 12px 24px;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+
+            &:hover {
+                background-color: darken($squad-complimentary, 6%);
+                transition: background-color 0.2s;
+            }
+
+            .discord-icon {
+                height: 28px;
+                width: auto;
+                padding-right: 16px;
+            }
+
+            .discord-link-text {
+                font-size: 20px;
+                font-weight: bold;
+            }
+        }
+    }
+}

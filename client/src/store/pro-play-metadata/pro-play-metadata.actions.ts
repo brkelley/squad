@@ -1,64 +1,39 @@
-import {
-    SET_SCHEDULE,
-    SET_SCHEDULE_FETCHING,
-    SET_TEAMS,
-    SET_TEAMS_FETCHING
-} from '../constants/constants.js';
-import { LEAGUES_IDS } from '../../constants/pro-play-metadata.constants';
+import { SET_MATCHES, SET_TEAMS } from '../constants/constants.js';
 import axios from 'axios';
 import isEmpty from 'lodash/isEmpty';
 
-export const loadAllSchedule = () => async (dispatch, getState) => {
+let loadAllMatchesPromise;
+let loadAllTeamsPromise;
+
+export const loadAllMatches = () => async (dispatch, getState) => {
     const state = getState();
-    let { schedule, scheduleFetching } = state.proPlayMetadataReducer;
+    let { matches } = state.proPlayMetadataReducer;
 
-    if (!isEmpty(schedule) || scheduleFetching) return;
+    if (!isEmpty(matches) || loadAllMatchesPromise) return;
 
-    dispatch(setScheduleFetching(true));
+    loadAllMatchesPromise = axios.get('/pro-play/matches');
+
     try {
-        const data = await axios.get(`/pro-play/schedule?leagueId=${LEAGUES_IDS.join(',')}`);
-        schedule = data.data;
-        dispatch(setScheduleFetching(false));
+        const data = await loadAllMatchesPromise;
+        matches = data.data;
     } catch (error) {
         console.log(error);
-        dispatch(setScheduleFetching(false));
         throw new Error(error);
     }
-    dispatch(setSchedule(schedule));
+    dispatch({ type: SET_MATCHES, matches });
 };
 
 export const loadAllTeams = () => async (dispatch, getState) => {
-    let { teams, teamsFetching } = getState();
-    if (!isEmpty(teams) || teamsFetching) return;
+    let teams;
+    if (loadAllTeamsPromise) return;
 
-    dispatch(setTeamsFetching(true));
+    loadAllTeamsPromise = axios.get('/pro-play/teams');
     try {
-        const data = await axios.get('/pro-play/teams');
+        const data = await loadAllTeamsPromise;
         teams = data.data;
-        dispatch(setTeamsFetching(false));
     } catch (error) {
-        dispatch(setTeamsFetching(false));
         throw new Error(error);
     }
-    dispatch(setTeams(teams));
+    dispatch({ type: SET_TEAMS, teams });
 };
 
-const setSchedule = schedule => ({
-    type: SET_SCHEDULE,
-    schedule
-});
-
-const setScheduleFetching = fetching => ({
-    type: SET_SCHEDULE_FETCHING,
-    fetching
-});
-
-const setTeams = teams => ({
-    type: SET_TEAMS,
-    teams
-});
-
-const setTeamsFetching = fetching => ({
-    type: SET_TEAMS_FETCHING,
-    fetching
-});

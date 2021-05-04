@@ -1,8 +1,36 @@
+@import '../../style/variables.scss';
+
 .input-wrapper {
+    display: flex;
+    height: 50px;
+
+    .input-prefix {
+        width: 50px;
+        margin: auto -50px auto 0;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
     .input-box {
-        padding: 4px;
+        padding: 8px 8px 8px 50px;
         font-size: 1rem;
         min-width: 250px;
         width: calc(100% - 10px);
+        background-color: white;
+        border: solid 1px black;
+        border-radius: 0 4px 4px 0;
+        font-family: $font;
+        border-left: none;
+    }
+
+    .input-suffix {
+        width: 50px;
+        margin: auto 0 auto -50px;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 }

@@ -3,12 +3,16 @@
 .squad-button {
     min-width: 85px !important;
     height: 36px !important;
-    background-color: $dark-teal !important;
-    color: white !important;
+    background-color: $squad-primary !important;
+    color: lighten(black, 8%) !important;
     font-weight: bold !important;
 
+    &.Mui-disabled {
+        background-color: grey !important;
+    }
+
     &:hover {
-        background-color: darken($dark-teal, 4%) !important;
+        background-color: darken($squad-primary, 4%) !important;
     }
     .lds-ring {
         display: inline-block;

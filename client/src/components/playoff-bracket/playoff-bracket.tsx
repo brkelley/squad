@@ -3,15 +3,15 @@ import React, { useState, useEffect, useRef } from 'react';
 import Bo5Grid from './prediction-grids/bo5-grid/bo5-grid'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
-import { ScheduleStage, ScheduleSection, ScheduleMatch } from '../../types/pro-play-metadata';
+import { MatchMetadata } from '../../types/pro-play-metadata';
 import { Prediction } from '../../types/predictions';
 import { User } from '../../types/user';
 import moment from 'moment';
 import get from 'lodash/get';
-import some from 'lodash/some';
+import groupBy from 'lodash/groupBy';
 
 interface PlayoffBracketProps {
-    playoffStage: ScheduleStage;
+    playoffMatches: MatchMetadata[];
     users: User[];
     predictionMap: {
         [userId: string]: {
@@ -22,40 +22,61 @@ interface PlayoffBracketProps {
     dropdownContent?: Function;
 };
 export default ({
-    playoffStage,
+    playoffMatches,
     users,
     predictionMap,
     showActiveSection,
     dropdownContent
 }: PlayoffBracketProps) => {
-    const [initalLoad, setInitialLoad] = useState<Boolean>(true);
-    const [activeSection, setActiveSection] = useState<ScheduleSection | null>();
+    const [matchesBySection, setMatchesBySection] = useState<{ [sectionName: string]: MatchMetadata[] }>({});
+    const [activeSection, setActiveSection] = useState<string | null>(null);
     const [isSmallScreen, setIsSmallScreen] = useState<Boolean>(false);
     const playoffBracketRef = useRef(null);
 
     useEffect(() => {
-        if (initalLoad && !showActiveSection) return;
-        setInitialLoad(false);
+        const localTime = new Date().getTime();
+        const localMatchesBySection = groupBy(playoffMatches, 'tournamentMetadata.section.name');
 
-        const today = moment();
-        const nextActiveSection = playoffStage.sections.find((section, index) => {
-            if (index === playoffStage.sections.length - 1) return section;
-            if (some(section.matches, { state: 'inProgress' })) return section;
-            const sectionEnd = moment(section.endTime);
+        const sortedMatchesBySection: { [sectionName: string]: MatchMetadata[] } = Object.entries(localMatchesBySection)
+            .sort(([sectionNameA, matchesA], [sectionNameB, matchesB]) => {
+                return new Date(matchesA[0].startTime).getTime() - new Date(matchesB[0].startTime).getTime();
+            })
+            .reduce((acc, [sectionName, matches]) => {
+                const sortedMatches = matches.sort((a, b) => {
+                    return new Date(a.startTime).getTime() - new Date(b.startTime).getTime();
+                });
 
-            return today.isBefore(sectionEnd);
-        });
-        setActiveSection(nextActiveSection);
-    }, [playoffStage]);
+                return {
+                    ...acc,
+                    [sectionName]: sortedMatches
+                }
+            }, {});
+        setMatchesBySection(sortedMatchesBySection);
+
+        let localActiveSection: string | null = null;
+        for (let matchEntries of Object.entries(sortedMatchesBySection)) {
+            const [sectionName, sectionMatches] = matchEntries;
+
+            const sectionStart = new Date(sectionMatches[0].startTime).getTime();
+            const sectionEnd = new Date(sectionMatches[sectionMatches.length - 1].startTime).getTime();
+
+            if (sectionStart > localTime || (localTime > sectionStart && localTime < sectionEnd)) {
+                localActiveSection = sectionName;
+                break;
+            }
+        }
+
+        setActiveSection(localActiveSection);
+    }, [playoffMatches]);
 
     const checkWindowSize = () => {
-        const combinedWidth = playoffStage.sections.length * 275;
+        const combinedWidth = Object.keys(matchesBySection).length * 275;
         setIsSmallScreen(combinedWidth > get(playoffBracketRef, 'current.clientWidth', combinedWidth + 5));
     }
 
     useEffect(() => {
         checkWindowSize();
-    }, [playoffBracketRef]);
+    }, [playoffBracketRef, matchesBySection]);
 
     window.addEventListener('resize', checkWindowSize);
 
@@ -63,10 +84,10 @@ export default ({
         const matchIsCompleted = match.state === 'completed';
         return (
             <div
-                key={match.id}
+                key={match.match.id}
                 className={`playoff-match ${isSmallScreen ? 'condensed-match' : ''}`}>
                 {
-                    match.teams.map((team, index) => {
+                    match.match.teams.map((team, index) => {
                         const isLosingTeam = team.result && team.result.outcome && team.result.outcome !== 'win';
 
                         return (
@@ -104,48 +125,87 @@ export default ({
     };
 
     const renderPlayoffBracket = () => {
-        return (
-            <div
-                className="playoff-bracket"
-                ref={playoffBracketRef}>
-                {
-                    playoffStage.sections.map((section, index) => {
-                        const isActiveSection = activeSection && section.name === activeSection.name;
+        const upperBracketSections = Object.entries(matchesBySection).filter(([sectionName]) => sectionName.includes('Upper Bracket') || sectionName === 'Finals');
+        const lowerBracketSections = Object.entries(matchesBySection).filter(([sectionName]) => sectionName.includes('Lower Bracket'));
 
-                        return (
-                            <div
-                                key={index}
-                                className={`playoff-bracket-section ${isActiveSection ? 'active-section' : ''}`}
-                                onClick={() => setActiveSection(section)}>
-                                <div className="playoff-section-title">
-                                    {section.name}
+        return (
+            <>
+                <div
+                    className="playoff-bracket"
+                    ref={playoffBracketRef}>
+                    {
+                        upperBracketSections.map(([sectionName, matches], index) => {
+                            const isActiveSection = activeSection && sectionName === activeSection;
+
+                            return (
+                                <div
+                                    key={index}
+                                    className={`playoff-bracket-section ${isActiveSection ? 'active-section' : ''}`}
+                                    onClick={() => setActiveSection(sectionName)}>
+                                    <div className="playoff-section-title">
+                                        {sectionName}
+                                    </div>
+                                    <div className="playoff-section-title">
+                                        {moment(matches[0].startTime).format('MMMM Do')}
+                                    </div>
+                                    <div className="playoff-section-matches">
+                                        {
+                                            matches
+                                                .map((match) => renderPlayoffMatch(match))
+                                        }
+                                    </div>
                                 </div>
-                                <div className="playoff-section-title">
-                                    {moment(section.startTime).format('MMMM Do')}
+                            );
+                        })
+                    }
+                </div>
+                <div
+                    className="playoff-bracket lower-bracket"
+                    ref={playoffBracketRef}>
+                    {
+                        lowerBracketSections.map(([sectionName, matches], index) => {
+                            const isActiveSection = activeSection && sectionName === activeSection;
+
+                            return (
+                                <div
+                                    key={index}
+                                    className={`playoff-bracket-section ${isActiveSection ? 'active-section' : ''}`}
+                                    onClick={() => setActiveSection(sectionName)}>
+                                    <div className="playoff-section-title">
+                                        {sectionName}
+                                    </div>
+                                    <div className="playoff-section-title">
+                                        {moment(matches[0].startTime).format('MMMM Do')}
+                                    </div>
+                                    <div className="playoff-section-matches">
+                                        {
+                                            matches
+                                                .map((match) => renderPlayoffMatch(match))
+                                        }
+                                    </div>
                                 </div>
-                                <div className="playoff-section-matches">
-                                    {
-                                        section.matches
-                                            .sort((a, b) => moment(b.startTime).unix() - moment(a.startTime).unix())
-                                            .map((match) => renderPlayoffMatch(match))
-                                    }
-                                </div>
-                            </div>
-                        );
-                    })
-                }
-            </div>
-        );
+                            );
+                        })
+                    }
+                </div>
+            </>
+        )
     };
 
     const renderContentDropdown = () => {
+        if (!activeSection) return '';
+
         const activeSectionClass = (!activeSection) ? '' : 'section-visible';
+        let activeSectionMatches = matchesBySection[activeSection];
+        if (activeSectionMatches && activeSectionMatches.length !== 0) {
+            activeSectionMatches = activeSectionMatches.sort((a, b) => moment(a.startTime).unix() - moment(b.startTime).unix());
+        }
         const dropdownFcn = dropdownContent ? dropdownContent : renderPlayoffGuesses;
 
         return (
             <div className={`playoff-section-wrapper ${activeSectionClass}`}>
                 <div className="active-playoff-section">
-                    {dropdownFcn(activeSection)}
+                    {dropdownFcn(activeSectionMatches)}
                     <FontAwesomeIcon
                         icon={faTimes}
                         className="close-section"
@@ -155,13 +215,12 @@ export default ({
         );
     };
 
-    const renderPlayoffGuesses = () => {
-        let activeSectionMatches: ScheduleMatch[] = get(activeSection, 'matches', []);
-        const usersWithPredictions = users.filter((el) => el.flags.hasPredictions);
-
-        if (activeSectionMatches && activeSectionMatches.length !== 0) {
-            activeSectionMatches = activeSectionMatches.sort((a, b) => moment(a.startTime).unix() - moment(b.startTime).unix());
+    const renderPlayoffGuesses = (activeSectionMatches: MatchMetadata[]) => {
+        if (!activeSection || activeSectionMatches.length === 0) {
+            return;
         }
+
+        const usersWithPredictions = users.filter((el) => el.userFlags.includes('hasPredictions'));
 
         return (
             <Bo5Grid

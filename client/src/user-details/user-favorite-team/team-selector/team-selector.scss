@@ -6,7 +6,7 @@
     top: 0;
     width: 100vw;
     height: 0;
-    background-color: $secondary;
+    background-color: black;
     transition: all .3s;
     overflow: auto;
     color: $font-color;
@@ -23,7 +23,7 @@
             text-align: center;
             font-size: 2.4rem;
             padding: 24px;
-            border-bottom: $border;
+            border-bottom: black;
 
             .team-selector-close-icon {
                 position: absolute;
@@ -47,7 +47,7 @@
                 position: sticky;
                 top: 0;
                 flex: 0 0 200px;
-                border-right: $border;
+                border-right: black;
                 padding: 24px 24px 0 0;
 
                 .current-favorite-team-image {
@@ -71,7 +71,7 @@
                     padding: 24px 0;
 
                     &:not(:last-child) {
-                        border-bottom: $border;
+                        border-bottom: black;
                     }
         
                     .region-header {
@@ -120,7 +120,7 @@
                             }
         
                             &:hover {
-                                background-color: darken($secondary, 3%);
+                                background-color: darken(black, 3%);
                                 border-radius: 25px;
                                 transition: all .2s;
                                 cursor: pointer;

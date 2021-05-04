@@ -7,26 +7,31 @@
     .navbar-wrapper {
         width: $navbar-size;
         height: 100%;
-        background-color: $squad-blue-primary;
+        background-color: $squad-overlay-two;
         display: flex;
         flex-direction: column;
         align-items: center;
 
         .navbar-app-title {
-            font-size: 1.8rem;
-            color: white;
+            font-size: 2.4rem;
+            color: $squad-primary;
             text-decoration: none;
             font-weight: bold;
             text-align: center;
-            margin: 24px 0;
-            padding: 12px 0;
+            margin: 16px 0;
+
+            .squad-logo {
+                height: 85px;
+                width: auto;
+                padding-bottom: 12px;
+            }
         }
 
         .navbar-links {
             width: 100%;
 
             .navbar-link {
-                color: darken($lightest-gray, 35%);
+                color: darken($font-color, 35%);
                 text-decoration: none;
                 transition: all .2s;
                 margin: 12px 0;
@@ -37,13 +42,11 @@
                 font-size: 0.8rem;
 
                 &:hover {
-                    cursor: pointer;
-                    transition: background-color .2s;
-                    background-color: darken(#18246E, 5%);
+                    text-decoration: underline;
                 }
 
                 &.active-nav {
-                    color: white;
+                    color: $font-color;
                 }
         
                 .nav-icon {
@@ -66,8 +69,7 @@
 
             &:hover {
                 cursor: pointer;
-                transition: all .2s;
-                background-color: darken(#18246E, 3%);
+                text-decoration: underline;
             }
 
             .nav-icon {

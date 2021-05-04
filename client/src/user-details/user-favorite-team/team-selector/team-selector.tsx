@@ -6,11 +6,11 @@ import { faTimes, faUsers } from '@fortawesome/free-solid-svg-icons';
 import SquadButton from '../../../components/squad-button/squad-button';
 import _ from 'lodash';
 import LEAGUES_METADATA from '../../../constants/leagues.json';
-import { TeamMetadata } from '../../../types/pro-play-metadata';
+import { Team } from '../../../types/pro-play-metadata';
 
 const TeamSelector = ({ userTeam, teamMetadata, closeTeamSelector, updateUserTeam }) => {
     const [transition, setTransition] = useState(false);
-    const [selectedFavoriteTeam, setSelectedFavoriteTeam] = useState<TeamMetadata>(userTeam);
+    const [selectedFavoriteTeam, setSelectedFavoriteTeam] = useState<Team>(userTeam);
     const [unsavedChanges, setUnsavedChanges] = useState(false);
 
     const teamsByRegions = _

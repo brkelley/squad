@@ -5,10 +5,15 @@ import { withRouter } from 'react-router-dom';
 import React, { useState, useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import { Link } from 'react-router-dom';
+import SquadLogo from '../../assets/squad-logo.png';
 
 import SettingsPopover from './settings-popover/settings-popover.jsx';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faCog, faHeadphonesAlt } from '@fortawesome/free-solid-svg-icons';
+import {
+    faCheckCircle as faCheckCircleActive,
+    faCog,
+} from '@fortawesome/free-solid-svg-icons';
+import { faCheckCircle } from '@fortawesome/free-regular-svg-icons';
 
 const Navbar = ({ history, user, logout }) => {
     const node = useRef<HTMLDivElement>(null);
@@ -58,13 +63,15 @@ const Navbar = ({ history, user, logout }) => {
             <Link
                 to="/"
                 className="navbar-app-title">
-                <FontAwesomeIcon
-                    icon={faHeadphonesAlt}
-                    className="nav-icon" />
+                <img
+                    className="squad-logo"
+                    src={SquadLogo} />
             </Link>
             <div className="navbar-links">
-                <Link to="/predictions" className={`navbar-link${ activeNav === 'predictions' ? ' active-nav' : '' }`}>
-                    <FontAwesomeIcon icon={faEye} className="nav-icon" />
+                <Link to="/predictions" className={`navbar-link ${ activeNav === 'predictions' ? 'active-nav' : '' }`}>
+                    <FontAwesomeIcon
+                        icon={activeNav === 'predictions' ? faCheckCircleActive : faCheckCircle}
+                        className="nav-icon" />
                     Predictions
                 </Link>
             </div>

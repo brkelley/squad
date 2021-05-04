@@ -1,4 +1,11 @@
-import { TeamMetadata } from './pro-play-metadata';
+// import { Team } from './pro-play-metadata';
+
+export interface PredictionFilter {
+    leagueSlug: string
+    tournamentId: string
+    stageSlug: string
+    sectionName: string
+}
 
 export interface Team {
     abbr: string,
@@ -12,7 +19,7 @@ export interface User {
     lastName: string
     hash: string
     preferences: {
-        favoriteTeam: TeamMetadata
+        favoriteTeam: Team
     }
     role: Number
     salt: string

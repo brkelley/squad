@@ -1,3 +1,6 @@
+substitutions:
+  _APP: github.com/brkelley/squad
+
 timeout: 1000s
 steps:
 - name: node:10.15.1
@@ -5,15 +8,14 @@ steps:
   args: ["run", "create-env"]
   env:
     - 'FIREBASE_CONFIG_SERVICE_ACCOUNT=${_FIREBASE_CONFIG_SERVICE_ACCOUNT}'
-    - 'FIREBASE_CONFIG=${_FIREBASE_CONFIG}'
-- name: node
-  entrypoint: npm
-  args: ["ci"]
+    - 'FIREBASE_CONFIG_CLIENT=${_FIREBASE_CONFIG_CLIENT}'
+- name: golang
+  args: ['go', 'build', '.']
 - name: node
   entrypoint: npm
   args: ["ci", "--prefix", "client"]
 - name: node
   entrypoint: npm
-  args: ["run", "client"]
+  args: ["run", "start", "--prefix", "client"]
 - name: "gcr.io/cloud-builders/gcloud"
   args: ["app", "deploy", "--promote"]

@@ -2,28 +2,17 @@ $font: 'Cabin', sans-serif;
 
 $navbar-size: 100px;
 
-$squad-blue-primary: #18246E;
+$squad-dark-background: #121212;
+$squad-overlay-one: lighten($squad-dark-background, 5%);
+$squad-overlay-two: lighten($squad-dark-background, 8%);
+$squad-overlay-three: lighten($squad-dark-background, 10%);
+$squad-overlay-four: lighten($squad-dark-background, 12%);
 
-$lightest-gray: #f5f5f5;
-$rose-gold: #bd8c7d;
-$silver: #8e8e90;
-$onyx: #49494b;
-$soft-gold: #d1bfa7;
+$squad-primary: #23e8e1;
+$squad-triad-gold: #e8b323;
+$squad-triad-pink: #e82389;
+$squad-complimentary-orange: #e88223;
+$squad-complimentary-red: #e82326;
+$squad-complimentary: #e85123;
 
-$teal: #3aafa9;
-$darkest-teal: #17252a;
-$dark-teal: #2b7a78;
-$light-teal: #def2f1;
-
-$primary: #252120;
-$secondary: #463e3c;
-$tertiary: #91c7a1;
-$border-color: #848375;
-// $border-color: #5C5C5C;
 $font-color: white;
-$font-color-darker: darken($font-color, 30%);
-
-$border: solid 2px $border-color;
-
-// antd overrides
-$primary-color: purple;

@@ -11,21 +11,22 @@ module.exports = {
     module: {
         rules: [
             {
+                test: /\.(png|svg|jpg|gif)$/i,
+                type: 'asset'
+            },
+            {
                 test: /\.(t|j)sx?$/,
-                use: {
-                    loader: 'ts-loader'
-                },
+                use: 'ts-loader',
                 exclude: /node_modules/
             },
             {
                 enforce: 'pre',
-                test: /\.(t|j)s$/,
+                test: /\?(t|j)s$/,
                 exclude: /node_modules/,
-                loader: 'source-map-loader'
-            },
-            {
-                test: /\.(png|svg|jpg|gif)$/,
-                use: ['file-loader']
+                loader: 'source-map-loader',
+                resolve: {
+                    fullySpecified: false
+                }
             },
             {
                 test: /\.(css|scss)$/,

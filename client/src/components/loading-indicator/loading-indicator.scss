@@ -1,3 +1,5 @@
+@import '../../style/variables.scss';
+
 .loading-indicator {
     display: inline-block;
     position: relative;
@@ -13,7 +15,7 @@
         position: absolute;
         left: 8px;
         width: 16px;
-        background: lighten(black, 25%);
+        background: $squad-primary;
         animation: loading-indicator 1.2s cubic-bezier(0, 0.5, 0.5, 1) infinite;
     }
 

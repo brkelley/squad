@@ -1,6 +1,7 @@
-export const LEAGUES_IDS = [
-    '98767975604431411', // Worlds
-    '98767991299243165', // LCS
-    '98767991302996019', // LEC
-    '98767991325878492'  // MSI
-];
+export const TOURNAMENT_SLUG_MAP = {
+    'lcs_2021_lockin': 'Lock-In Tournament',
+    'lec_2021_split1': 'Spring Split',
+    'lcs_2021': 'Regular Season',
+    'mss_2021': 'Mid-Season Showdown',
+    'msi_2021': 'Mid-Season Invitational'
+}

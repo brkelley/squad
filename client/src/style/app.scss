@@ -8,13 +8,17 @@ body {
     .app-wrapper {
         width: 100%;
         min-height: 100vh;
-        background-color: $primary;
+        background-color: $squad-dark-background;
         display: flex;
+        color: $font-color;
 
         .content-wrapper {
             width: 100%;
             box-sizing: border-box;
-            padding-left: $navbar-size;
+
+            &.with-navbar {
+                padding-left: $navbar-size;
+            }
         }
     }
 }
