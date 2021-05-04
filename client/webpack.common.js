@@ -10,10 +10,7 @@ module.exports = {
     },
     module: {
         rules: [
-            {
-                test: /\.(png|svg|jpg|gif)$/i,
-                type: 'asset'
-            },
+            
             {
                 test: /\.(t|j)sx?$/,
                 use: 'ts-loader',
@@ -45,11 +42,15 @@ module.exports = {
                         }
                     }
                 ]
+            },
+            {
+                test: /\.(png|svg|jpg|gif)$/i,
+                type: 'asset'
             }
         ]
     },
     resolve: {
-        extensions: ['*', '.js', '.ts', '.jsx', '.tsx'],
+        extensions: ['*', '.js', '.ts', '.jsx', '.tsx', '.png'],
         alias: {
             '@': path.resolve(__dirname, ''),
         }
