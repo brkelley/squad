@@ -3,9 +3,8 @@ substitutions:
 
 timeout: 1000s
 steps:
-- name: 'gcr.io/cloud-builders/gcloud'
-  entrypoint: 'bash'
-  args: ["printenv > config.env"]
+- name: 'bash'
+  args: ["printenv", ">", "config.env"]
   env:
     - 'FIREBASE_CONFIG_SERVICE_ACCOUNT=${_FIREBASE_CONFIG_SERVICE_ACCOUNT}'
     - 'FIREBASE_CONFIG_CLIENT=${_FIREBASE_CONFIG_CLIENT}'
