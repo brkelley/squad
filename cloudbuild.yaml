@@ -3,22 +3,22 @@ substitutions:
 
 timeout: 1000s
 steps:
-- name: 'gcr.io/cloud-builders/gcloud'
-  entrypoint: 'bash'
-  args:
-    - 'printenv'
-    - '>'
-    - 'config.env'
+- name: golang
+  args: ['go', 'build', '.']
   env:
     - 'FIREBASE_CONFIG_SERVICE_ACCOUNT=${_FIREBASE_CONFIG_SERVICE_ACCOUNT}'
     - 'FIREBASE_CONFIG_CLIENT=${_FIREBASE_CONFIG_CLIENT}'
-- name: golang
-  args: ['go', 'build', '.']
 - name: node
   entrypoint: npm
   args: ["ci", "--prefix", "client"]
+  env:
+    - 'FIREBASE_CONFIG_SERVICE_ACCOUNT=${_FIREBASE_CONFIG_SERVICE_ACCOUNT}'
+    - 'FIREBASE_CONFIG_CLIENT=${_FIREBASE_CONFIG_CLIENT}'
 - name: node
   entrypoint: npm
   args: ["run", "start", "--prefix", "client"]
+  env:
+    - 'FIREBASE_CONFIG_SERVICE_ACCOUNT=${_FIREBASE_CONFIG_SERVICE_ACCOUNT}'
+    - 'FIREBASE_CONFIG_CLIENT=${_FIREBASE_CONFIG_CLIENT}'
 - name: "gcr.io/cloud-builders/gcloud"
   args: ["app", "deploy", "--promote"]
