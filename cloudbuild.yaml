@@ -9,6 +9,7 @@ steps:
   env:
   - 'FIREBASE_CONFIG_CLIENT=$_FIREBASE_CONFIG_CLIENT'
   - 'FIREBASE_CONFIG_SERVICE_ACCOUNT=$_FIREBASE_CONFIG_SERVICE_ACCOUNT'
+  - 'PORT="4444"'
 - name: golang
   args: ['go', 'build', '.']
 - name: node
