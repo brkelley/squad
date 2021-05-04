@@ -19,3 +19,4 @@ steps:
   args: ["run", "start", "--prefix", "client"]
 - name: "gcr.io/cloud-builders/gcloud"
   args: ["app", "deploy", "--promote"]
+
