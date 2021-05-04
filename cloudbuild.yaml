@@ -7,8 +7,8 @@ steps:
   entrypoint: /bin/bash
   args: ['-c', 'printenv > config.env']
   env:
-  - 'FIREBASE_CONFIG_CLIENT=_FIREBASE_CONFIG_CLIENT'
-  - 'FIREBASE_CONFIG_SERVICE_ACCOUNT=_FIREBASE_CONFIG_SERVICE_ACCOUNT'
+  - 'FIREBASE_CONFIG_CLIENT=$_FIREBASE_CONFIG_CLIENT'
+  - 'FIREBASE_CONFIG_SERVICE_ACCOUNT=$_FIREBASE_CONFIG_SERVICE_ACCOUNT'
 - name: golang
   args: ['go', 'build', '.']
 - name: node
