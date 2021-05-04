@@ -4,8 +4,7 @@ const common = require('./webpack.common.js');
 const dotenv = require('dotenv');
 
 const env = dotenv.config({ path: '../config.env' }).parsed;
-console.log('HERE HERE', env)
-  
+
 // reduce it to a nice object, the same as before
 const envKeys = Object.keys(env).reduce((prev, key) => {
     prev[`process.env.${key}`] = JSON.stringify(env[key]);
