@@ -74,18 +74,17 @@ func handleRequests() {
     api.Use(loggingMiddleware)
     api.Use(authenticationMiddleware)
 
+    if PORT == "" {
+        PORT = "4444"
+    }
     fmt.Println("Starting SQUAD server on port " + PORT)
     corsWrapper := cors.New(cors.Options{
         AllowedMethods: []string{"GET", "POST"},
         AllowedHeaders: []string{"Content-Type", "Origin", "Accept", "*"},
     })
-    log.Fatal(http.ListenAndServe("0.0.0.0:4444", corsWrapper.Handler(squadRouter)))
+    log.Fatal(http.ListenAndServe("0.0.0.0:" + PORT, corsWrapper.Handler(squadRouter)))
 }
 
 func main() {
     handleRequests()
-}
-
-func makeTimestamp() int64 {
-    return time.Now().UnixNano() / int64(time.Millisecond)
 }
