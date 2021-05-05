@@ -13,14 +13,11 @@ const envKeys = Object.keys(env).reduce((prev, key) => {
 
 module.exports = merge(common, {
     mode: 'production',
-    externals: {
-        serverUrl: ''
-    },
     plugins: [
         new webpack.HotModuleReplacementPlugin(),
         new webpack.DefinePlugin(envKeys),
         new webpack.DefinePlugin({
-            'SERVER_URL': '""',
+            'SERVER_URL': '"http://squad.rip"',
             'ENVIRONMENT': '"production"'
         }),
     ],
