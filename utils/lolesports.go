@@ -189,11 +189,8 @@ func GetTeams(regionNames []string) ([]Team, error) {
 
 	finalTeams := make([]Team, 0)
 	for _, team := range teamsResponse.Data.Teams {
-		for _, regionName := range regionNames {
-			if team.HomeLeague != nil && team.HomeLeague.Name == regionName {
-				finalTeams = append(finalTeams, team)
-				break;
-			}
+		if team.HomeLeague != nil {
+			finalTeams = append(finalTeams, team)
 		}
 	}
 

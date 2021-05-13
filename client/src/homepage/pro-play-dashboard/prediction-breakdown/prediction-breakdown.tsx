@@ -241,9 +241,6 @@ export default ({
             match.blockName.includes('Week') ? match.blockName : match.tournamentMetadata.stage.slug
         );
 
-        console.log('activeTournamentMetadata', activeTournamentMetadata)
-        console.log('matchesByStage', matchesByStage)
-
         const pastAndPresentStageIndex = Object.entries(matchesByStage)
             .sort(([aName, aMatches], [bName, bMatches]) => {
                 const aStartTime = new Date(aMatches[0].startTime).getTime();

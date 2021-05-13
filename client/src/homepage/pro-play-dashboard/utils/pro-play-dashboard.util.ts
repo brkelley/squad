@@ -184,7 +184,7 @@ export const calculateUserTeamStats = ({
         id: '100205572995797818',
         slug: 'tbd',
         alternativeImage: 'https://lolstatic-a.akamaihd.net/esports-assets/production/team/tbd-frpypqn6.png'
-      }
+    };
 
     const mostGuessedTeam = teams.find((team) => team.name === userStats.guessedTeam) || TBDTeam;
     const mostWonTeam = teams.find((team) => team.name === userStats.correctTeam) || TBDTeam;
