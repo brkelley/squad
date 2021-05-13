@@ -109,6 +109,7 @@ func getMatches(w http.ResponseWriter, r *http.Request) {
 
 		for _, stage := range currentSchedule[0].Stages {
 			stageCopy := stage
+			log.Println(stage)
 			stageCopy.Sections = make([]utils.TournamentSection, 0)
 
 			for _, section := range stage.Sections {

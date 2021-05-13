@@ -9,6 +9,7 @@ import { MatchMetadata, Tournament, TournamentMetadata, MatchLeague } from '../.
 import { Prediction } from '../../../types/predictions';
 import { User } from '../../../types/user';
 import every from 'lodash/every';
+import get from 'lodash/get';
 import groupBy from 'lodash/groupBy';
 import some from 'lodash/some';
 import startCase from 'lodash/startCase';
@@ -240,6 +241,9 @@ export default ({
             match.blockName.includes('Week') ? match.blockName : match.tournamentMetadata.stage.slug
         );
 
+        console.log('activeTournamentMetadata', activeTournamentMetadata)
+        console.log('matchesByStage', matchesByStage)
+
         const pastAndPresentStageIndex = Object.entries(matchesByStage)
             .sort(([aName, aMatches], [bName, bMatches]) => {
                 const aStartTime = new Date(aMatches[0].startTime).getTime();
@@ -248,19 +252,21 @@ export default ({
                 return bStartTime - aStartTime;
             })
             .findIndex(([stageName, matchesByStage]) => {
+                return get(activeTournamentMetadata, 'stage.slug') === stageName
                 // if all matches haven't yet occurred, return
-                if (every(matchesByStage, (match) => new Date(match.startTime).getTime() > currentDate)) {
-                    return true;
-                }
+                // if (every(matchesByStage, (match) => new Date(match.startTime).getTime() > currentDate)) {
+                //     return true;
+                // }
 
-                // return if some matches have occurred
-                return some(matchesByStage, (match) => new Date(match.startTime).getTime() < currentDate);
+                // // return if some matches have occurred
+                // return some(matchesByStage, (match) => new Date(match.startTime).getTime() < currentDate);
             });
         const pastAndPresentStages = Object.entries(matchesByStage).slice(0, pastAndPresentStageIndex + 1);
 
         // sort the active stages - this is assuming no 2 stages in a tournament
         // overlap each other
         return pastAndPresentStages
+            .reverse()
             .map(([stageName, matchesByStage]) => {
                 const stage = matchesByStage[0].tournamentMetadata.stage;
                 const league = matchesByStage[0].league.slug;

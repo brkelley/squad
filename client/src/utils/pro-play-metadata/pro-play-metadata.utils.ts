@@ -80,7 +80,14 @@ export function findNearestMatch (matches: MatchMetadata[]): MatchMetadata {
     let latestMatchTimestamp = 0;
     let latestMatch;
 
-    for (let currentMatch of matches) {
+    const sortedMatches = matches.sort((aMatch, bMatch) => {
+        const aStartTime = new Date(aMatch.startTime).getTime();
+        const bStartTime = new Date(bMatch.startTime).getTime();
+
+        return aStartTime - bStartTime;
+    });
+
+    for (let currentMatch of sortedMatches) {
         const matchStartTimestamp = new Date(currentMatch.startTime).getTime();
 
         if (currentTimestamp < matchStartTimestamp) {
