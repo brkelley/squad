@@ -18,14 +18,13 @@
             align-items: center;
 
             &:hover {
-                background-color: darken($squad-primary, 2%);
+                background-color: darken($squad-overlay-three, 2%);
                 cursor: pointer;
                 transition: background-color .2s;
             }
 
             &.active-section {
-                background-color: $squad-primary;
-                border: solid 2px $squad-primary;
+                background-color: $squad-overlay-three;
                 margin: -2px -2px 0 -2px;
                 border-bottom: 0;
                 z-index: 5;
@@ -39,9 +38,8 @@
             
             .playoff-section-matches {
                 .playoff-match {
-                    background-color: $squad-primary;
+                    background-color: $squad-overlay-two;
                     width: 225px;
-                    border: solid 1px $squad-primary;
                     margin-bottom: 28px;
 
                     &.condensed-match {
@@ -52,9 +50,10 @@
                         display: flex;
                         justify-content: space-between;
                         align-items: center;
+                        border: solid 1px $squad-overlay-five;
             
                         &:first-child {
-                            border-bottom: solid 1px $squad-primary;
+                            border-bottom: solid 1px $squad-overlay-five;
                         }
             
                         .left-side {
@@ -103,15 +102,13 @@
        transition: all 0.3s;
        overflow: hidden;
        margin-top: -2px;
-       background-color: $squad-primary;
+       background-color: $squad-overlay-three;
        z-index: 50;
 
         &.section-visible {
             max-height: 2000px;
             height: auto;
             transition: all 0.3s;
-            border-top: solid 2px $squad-primary;
-            border-bottom: solid 2px $squad-primary;
         }
 
         .active-playoff-section {

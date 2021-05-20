@@ -128,13 +128,15 @@ export default ({
         const upperBracketSections = Object.entries(matchesBySection).filter(([sectionName]) => sectionName.includes('Upper Bracket') || sectionName === 'Finals');
         const lowerBracketSections = Object.entries(matchesBySection).filter(([sectionName]) => sectionName.includes('Lower Bracket'));
 
+        const test = Object.entries(matchesBySection)
+
         return (
             <>
                 <div
                     className="playoff-bracket"
                     ref={playoffBracketRef}>
                     {
-                        upperBracketSections.map(([sectionName, matches], index) => {
+                        test.map(([sectionName, matches], index) => {
                             const isActiveSection = activeSection && sectionName === activeSection;
 
                             return (
@@ -159,7 +161,7 @@ export default ({
                         })
                     }
                 </div>
-                <div
+                {/* <div
                     className="playoff-bracket lower-bracket"
                     ref={playoffBracketRef}>
                     {
@@ -187,7 +189,7 @@ export default ({
                             );
                         })
                     }
-                </div>
+                </div> */}
             </>
         )
     };

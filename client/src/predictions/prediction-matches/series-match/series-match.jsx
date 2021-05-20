@@ -15,7 +15,7 @@ const SeriesMatch = ({
 }) => {
     const prediction = get(predictionMap, `${userId}.${matchMetadata.id}.prediction`, '').split(',')
     const [predictionResults] = useState(prediction);
-    const bestOfCount = get(matchMetadata, 'strategy.count');
+    const bestOfCount = get(matchMetadata, 'match.strategy.count');
 
     const setPredictionAtIndex = (prediction, index) => {
         predictionResults[index] = prediction;
@@ -25,8 +25,8 @@ const SeriesMatch = ({
         }
         updatePrediction({
             prediction: predictionResults.join(','),
-            matchId: matchMetadata.id,
-            timestamp: (new Date()).getDate(),
+            matchId: matchMetadata.match.id,
+            timestamp: new Date().getTime(),
             userId
         });
     };

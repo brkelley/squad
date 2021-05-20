@@ -246,7 +246,7 @@ export default ({
                 const aStartTime = new Date(aMatches[0].startTime).getTime();
                 const bStartTime = new Date(bMatches[0].startTime).getTime();
 
-                return bStartTime - aStartTime;
+                return aStartTime - bStartTime;
             })
             .findIndex(([stageName, matchesByStage]) => {
                 return get(activeTournamentMetadata, 'stage.slug') === stageName
@@ -259,7 +259,6 @@ export default ({
                 // return some(matchesByStage, (match) => new Date(match.startTime).getTime() < currentDate);
             });
         const pastAndPresentStages = Object.entries(matchesByStage).slice(0, pastAndPresentStageIndex + 1);
-
         // sort the active stages - this is assuming no 2 stages in a tournament
         // overlap each other
         return pastAndPresentStages
